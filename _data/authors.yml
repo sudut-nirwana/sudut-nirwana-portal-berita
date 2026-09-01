@@ -1,0 +1,17 @@
+redaksi:
+  name: "Tim Redaksi"
+  role: "Editorial Team"
+  avatar: "/assets/images/authors/redaksi.jpg"
+  bio: "Tim editorial SudutNirwana yang menyajikan informasi berita, wisata, dan gaya hidup terkurasi."
+
+yossi:
+  name: "Yossi Oktavia"
+  role: "Pemimpin Redaksi"
+  avatar: "/assets/images/authors/yossi.webp"
+  bio: "Jurnalis media digital dan pengamat tren gaya hidup modern."
+
+siti:
+  name: "Tavisha C Neira"
+  role: "Editor Lifestyle"
+  avatar: "/assets/images/authors/siti.jpg"
+  bio: "Pecinta kuliner dan penikmat konten eksplorasi wisata lokal."

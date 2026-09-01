@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="id">
+  {% include head.html %}
+<body>
+
+  <!-- Loader Screen -->
+  {% include loader.html %}
+
+  <!-- Header / Navbar -->
+  {% include header.html %}
+
+  <!-- Konten Utama -->
+  <main id="main-content">
+    {{ content }}
+  </main>
+
+  <!-- Footer -->
+  {% include footer.html %}
+
+  <!-- Global JavaScript -->
+  <script src="{{ '/assets/js/main.js' | relative_url }}" defer></script>
+  
+  <!-- Functions JavaScript -->
+  <script src="{{ '/functions/api/comment.js' | relative_url }}" defer></script>
+  
+  <script src="{{ '/functions/api/views.js' | relative_url }}" defer></script>
+
+</body>
+</html>

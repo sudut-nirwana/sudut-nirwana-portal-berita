@@ -1,0 +1,16 @@
+{% assign filtered_posts = site.categories[include.category] | where_exp: "item", "item.url != page.url" %}
+{% assign single_post = filtered_posts | first %}
+
+{% if single_post %}
+<div class="alert alert-single">
+  <span class="alert-label">Baca Juga Info ({{ include.category }})</span>
+  <h4 class="alert-title">
+    <a href="{{ single_post.url | relative_url }}">{{ single_post.title }}</a>
+  </h4>
+  {% if single_post.excerpt %}
+  <p class="alert-excerpt">
+    {{ single_post.excerpt | strip_html | truncate: 110 }}
+  </p>
+  {% endif %}
+</div>
+{% endif %}

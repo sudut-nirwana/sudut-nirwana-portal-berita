@@ -1,0 +1,34 @@
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<section class="post-comments">
+  <h3 class="comments-title">Komentar</h3>
+
+  <!-- Area Login Google (Tampil jika belum login) -->
+  <div id="authContainer" class="comment-auth">
+    <p>Silakan login dengan Google untuk menulis komentar terverifikasi.</p>
+    <div id="g_id_onload"
+         data-client_id="792703464464-d9bl3nhtmjuta3cclkqbfc05chpt6r6g.apps.googleusercontent.com"
+         data-callback="handleGoogleLogin">
+    </div>
+    <div class="g_id_signin" data-type="standard" data-theme="outline"></div>
+  </div>
+
+  <!-- Form Komentar (Tampil otomatis setelah login) -->
+  <form id="commentForm" class="comment-form" style="display: none;">
+    <div class="user-profile">
+      <img id="userAvatar" src="" alt="Avatar" class="avatar-img" width="40" height="40">
+      <div class="user-info">
+        <strong id="userName"></strong>
+        <button type="button" id="logoutBtn" class="btn-logout">Ganti Akun</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <textarea id="commentMessage" rows="3" placeholder="Tulis komentar Anda..." required></textarea>
+    </div>
+    <button type="submit" class="btn-submit">Kirim Komentar</button>
+  </form>
+
+  <!-- Wadah Tempat Komentar Ditampilkan -->
+  <div id="commentList" class="comment-list"></div>
+</section>

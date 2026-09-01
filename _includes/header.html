@@ -1,0 +1,105 @@
+<header class="site-header">
+  <div class="container header-container">
+    
+    <!-- Brand Logo -->
+    <a href="{{ '/' | relative_url }}" class="header-brand">
+      <span class="brand-title">Sudut<span>Nirwana</span></span>
+      <span class="brand-tagline">Lensa Berita & Lifestyle</span>
+    </a>
+
+    <!-- Independent Search Component -->
+    <div class="header-search">
+      {% include components/search-input.html %}
+    </div>
+
+    <!-- Actions & Weather Wrapper -->
+    <div class="header-actions">
+      <!-- Weather Trigger Button -->
+      <div class="weather-wrapper">
+        <button type="button" class="weather-trigger" id="weatherTrigger" aria-label="Informasi Cuaca">
+          <span data-icon="cloud-sun" class="weather-icon"></span>
+          <span class="weather-temp">--°C</span>
+        </button>
+
+        <!-- Weather Card Container -->
+        <div class="weather-card" id="weatherCard">
+          <div class="weather-card-header">
+            <h4>Prakiraan Cuaca</h4>
+            <button type="button" class="weather-close-btn" id="weatherClose">
+              <span data-icon="close"></span>
+            </button>
+          </div>
+          <div class="weather-card-body">
+            {% include components/weather.html %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Menu Trigger Button -->
+      <button type="button" class="nav-toggle-btn" id="navToggleBtn" aria-label="Buka Menu">
+        <span data-icon="menu"></span>
+      </button>
+    </div>
+
+    <!-- Sidebar Navigation Drawer -->
+    <aside class="nav-drawer" id="navDrawer">
+      <div class="drawer-header">
+        <span class="drawer-title">Navigasi</span>
+        <button type="button" class="drawer-close-btn" id="drawerClose">
+          <span data-icon="close"></span>
+        </button>
+      </div>
+
+      <nav class="drawer-nav">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="{{ '/' | relative_url }}" class="nav-link">
+              <span data-icon="home"></span>
+              <span>Beranda</span>
+            </a>
+          </li>
+
+          <li class="nav-item has-submenu">
+            <button type="button" class="nav-link submenu-toggle" id="submenuToggle">
+              <span data-icon="tag"></span>
+              <span>Kategori</span>
+              <span data-icon="chevron-down" class="arrow-icon"></span>
+            </button>
+            <ul class="submenu-list" id="submenuList">
+              {% for category in site.categories %}
+                {% assign cat_name = category[0] %}
+                <li>
+                  <a href="{{ '/search/' | relative_url }}?q={{ cat_name | slugify }}" class="submenu-link">
+                    {{ cat_name | capitalize }}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="/tentang-kami/" class="nav-link">
+              <span data-icon="info"></span>
+              <span>Tentang</span>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="{{ '/contact/' | relative_url }}" class="nav-link">
+              <span data-icon="mail"></span>
+              <span>Kontak</span>
+            </a>
+          </li>
+        </ul>
+        <hr>
+      </nav>
+      <br>
+      {% include widget/newsletter.html%}
+    </aside>
+
+  </div>
+</header>
+
+<!-- Global Backdrops -->
+<div class="nav-backdrop" id="navBackdrop"></div>
+<div class="weather-backdrop" id="weatherBackdrop"></div>

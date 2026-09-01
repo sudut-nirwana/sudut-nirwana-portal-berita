@@ -1,0 +1,55 @@
+{% assign popular_posts = site.posts | where: "popular", true %}
+{% if popular_posts.size == 0 %}
+  {% assign visible_posts = site.posts | where_exp: "item", "item.hide_from_feed!= true" %}
+{% else %}
+  {% assign visible_posts = popular_posts | where_exp: "item", "item.hide_from_feed!= true" %}
+{% endif %}
+
+<section class="featured-section loading-section">
+  <div class="container">
+    <div class="featured-grid">
+      {% assign main_post = visible_posts[0] %}
+      {% if main_post %}
+      <article class="featured-main">
+        <a href="{{ main_post.url | relative_url }}" class="featured-card">
+          <div class="featured-thumb">
+            <img src="{{ main_post.image | default: '/assets/images/default.jpg' | relative_url }}" alt="{{ main_post.title }}" loading="lazy">
+            {% if main_post.categories.first %}
+              <span class="badge">{{ main_post.categories.first | capitalize }}</span>
+            {% endif %}
+          </div>
+          <div class="featured-body">
+            <h2 class="featured-title">{{ main_post.title }}</h2>
+            <p class="featured-desc">{{ main_post.description }}</p>
+            <div class="featured-meta">
+              <span class="meta-item"><span data-icon="calendar"></span> {{ main_post.date | date: "%d %b %Y" }}</span>
+              <span class="meta-item"><span data-icon="eye"></span> {{ main_post.views | default: 0 }}</span>
+            </div>
+          </div>
+        </a>
+      </article>
+      {% endif %}
+
+      <div class="featured-sub">
+        {% for post in visible_posts limit: 3 offset: 1 %}
+        <article class="sub-card">
+          <a href="{{ post.url | relative_url }}">
+            <div class="sub-thumb">
+              <img src="{{ post.image | default: '/assets/images/default.jpg' | relative_url }}" alt="{{ post.title }}" loading="lazy">
+            </div>
+            <div class="sub-body">
+              {% if post.categories.first %}
+                <span class="badge-sm">{{ post.categories.first | capitalize }}</span>
+              {% endif %}
+              <h3 class="sub-title">{{ post.title }}</h3>
+              <div class="sub-meta">
+                <span class="meta-item"><span data-icon="calendar"></span> {{ post.date | date: "%d %b %Y" }}</span>
+              </div>
+            </div>
+          </a>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>

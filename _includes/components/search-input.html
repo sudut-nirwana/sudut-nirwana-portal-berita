@@ -1,0 +1,14 @@
+<form action="{{ '/search/' | relative_url }}" method="get" class="search-form-wrapper">
+  <div class="search-input-group">
+    <span data-icon="search" class="search-icon-inside"></span>
+    <input 
+      type="search" 
+      name="q" 
+      class="search-input-field" 
+      placeholder="Cari berita, wisata, gaya hidup..." 
+      autocomplete="off"
+      required 
+    />
+    <button type="submit" class="search-submit-btn">Cari</button>
+  </div>
+</form>

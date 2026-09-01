@@ -1,0 +1,16 @@
+{% assign filtered_posts = site.categories[include.category] | where_exp: "item", "item.url != page.url" %}
+{% assign filtered_posts = filtered_posts | where: "popular", true %}
+{% assign limit_count = include.limit | default: 3 %}
+
+{% if filtered_posts.size > 0 %}
+<div class="alert alert-group">
+  <strong class="alert-heading">Rekomendasi {{ include.category | capitalize }}:</strong>
+  <ul class="alert-list">
+    {% for item in filtered_posts limit: limit_count %}
+      <li>
+        <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

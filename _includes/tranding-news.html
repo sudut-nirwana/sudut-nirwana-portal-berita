@@ -1,0 +1,37 @@
+{% assign popular_posts = site.posts | where: "popular", true %}
+{% if popular_posts.size == 0 %}
+  {% assign visible_posts = site.posts | where_exp: "item", "item.hide_from_feed!= true" %}
+{% else %}
+  {% assign visible_posts = popular_posts | where_exp: "item", "item.hide_from_feed!= true" %}
+{% endif %}
+
+<section class="trending-section" id="trending-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="header-title-wrap">
+        <span data-icon="trending-up" class="header-icon"></span>
+        <h2 class="section-title">Berita Terpopuler</h2>
+      </div>
+    </div>
+
+    <div class="trending-list">
+      {% assign trending_posts = visible_posts | sort: "views" | reverse %}
+      {% for post in trending_posts limit: 5 %}
+      <article class="trending-card">
+        <a href="{{ post.url | relative_url }}">
+          <div class="trending-number">0{{ forloop.index }}</div>
+          <div class="trending-body">
+            {% if post.categories.first %}
+              <span class="badge-cat">{{ post.categories.first | capitalize }}</span>
+            {% endif %}
+            <h3 class="trending-title">{{ post.title }}</h3>
+            <div class="trending-meta">
+              <span class="meta-item"><span data-icon="eye"></span> {{ post.views | default: 0 }} views</span>
+            </div>
+          </div>
+        </a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>

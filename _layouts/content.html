@@ -1,0 +1,84 @@
+---
+layout: default
+---
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ page.url | absolute_url }}"
+  },
+  "headline": {{ page.title | jsonify }},
+  {% if page.image %}
+  "image": [
+    "{{ page.image | absolute_url }}"
+  ],
+  {% endif %}
+  "datePublished": "{{ page.date | date_to_xmlschema }}",
+  "dateModified": "{{ page.last_modified_at | default: page.date | date_to_xmlschema }}",
+  "author": {
+    "@type": "Person",
+    "name": {{ page.author | default: site.author | jsonify }}
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": {{ site.title | jsonify }},
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ site.logo | default: '/assets/images/logo.png' | absolute_url }}"
+    }
+  },
+  "description": {{ page.description | default: page.excerpt | strip_html | strip_newlines | truncate: 160 | jsonify }}
+}
+</script>
+
+<main class="layout-content">
+  {% include category-chips.html %}
+  <div class="container">
+    <div class="wrapper-search-input">
+      {% include components/search-input.html %}
+    </div>
+  
+    <div class="post-layout">
+      <article>
+        <header class="post-header">
+          <h1 class="post-title">{{ page.title }}</h1>
+          
+          <div class="post-meta">
+            {% if page.author %}
+              <span class="meta-author" data-icon="author">{{ page.author }}</span>
+            {% endif %}
+            
+            {% if page.date %}
+              <span class="meta-date" data-icon="calendar">{{ page.date | date: "%d %B %Y" }}</span>
+            {% endif %}
+            
+            {% include components/views.html %}
+          </div>
+          
+          {% if page.image %}
+            <img 
+              src="{{ page.image | relative_url }}" 
+              alt="{{ page.image_alt | default: page.title }}" 
+              class="post-image"
+              loading="lazy"
+            >
+          {% endif %}
+        </header>
+  
+        <div class="post-body">
+          {{ content }}
+          {% include components/comments.html %}
+        </div>
+      </article>
+  
+      <aside class="post-sidebar">
+        {% include widget/toc.html %}
+        {% include widget/populer-post.html %}
+        {% include widget/newsletter.html %}
+      </aside>
+    </div>
+  </div>
+</main>

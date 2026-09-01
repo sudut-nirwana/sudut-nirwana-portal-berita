@@ -1,0 +1,34 @@
+{% assign popular_posts = site.posts | where: "popular", "true" %}
+
+{% if popular_posts.size == 0 %}
+  {% assign popular_posts = site.posts %}
+{% endif %}
+
+{% assign popular_posts = popular_posts | slice: 0, 10 %}
+
+<div class="widget widget-popular">
+  <h3 class="widget-title">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+    Artikel Populer
+  </h3>
+  <div class="popular-list">
+    {% for post in popular_posts %}
+      <article class="popular-item">
+        <span class="popular-num">0{{ forloop.index }}</span>
+        
+        {% if post.image %}
+          <a href="{{ post.url | relative_url }}" class="popular-thumb">
+            <img src="{{ post.image | relative_url }}" alt="{{ post.image_alt | default: post.title }}" loading="lazy">
+          </a>
+        {% endif %}
+
+        <div class="popular-content">
+          <h4 class="popular-title">
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          </h4>
+          <span class="popular-date">{{ post.date | date: "%d %b %Y" }}</span>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</div>

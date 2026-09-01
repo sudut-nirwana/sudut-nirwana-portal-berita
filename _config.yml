@@ -1,0 +1,35 @@
+title: "Sudut Nirwana | Portal Berita dan Informasi Terkini"
+description: "Sudut Nirwana menyajikan berita terkini, analisis mendalam, gaya hidup, wisata, kuliner, olahraga, musik, seni budaya, hingga informasi lowongan kerja. Terpercaya dan update setiap hari."
+url: "https://sudutnirwana.com"
+baseurl: ""
+
+timezone: Asia/Jakarta
+lang: id
+
+# Build & Markdown Settings
+markdown: kramdown
+highlighter: rouge
+permalink: /:categories/:title/
+
+# SCSS Compression Settings
+sass:
+  sass_dir: _sass
+  style: compressed
+
+# Active Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Excluded Files
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - node_modules/
+  - vendor/
+  - .sass-cache/
+  - .jekyll-cache/
+  - .git/
+  - .gitignore

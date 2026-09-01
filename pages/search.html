@@ -1,0 +1,22 @@
+---
+layout: default
+title: Hasil Pencarian
+permalink: /search/
+---
+
+<div class="search-page loading-section">
+  <div class="container">
+    <!-- Independent Search Component -->
+    <div class="wrapper-search-input">
+      {% include components/search-input.html %}
+    </div>
+    <!-- SECTION 1: Hasil Pencarian Dinamis (Disuntik via search.js) -->
+    <section class="search-results-section">
+      <h2 class="section-title" id="searchTitle">Mencari artikel...</h2>
+      <div class="grid-vertical" id="searchResultCards"></div>
+    </section>
+  </div>
+  <!-- SECTION 2: Berita Terbaru (Liquid Jekyll) -->
+  {% include tranding-news.html %}
+  {% include editors-pick.html %}
+</div>

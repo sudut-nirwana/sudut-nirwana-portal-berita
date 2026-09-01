@@ -1,0 +1,34 @@
+---
+---
+
+/* base rule */
+@use "base/variable";
+@use "base/reset";
+@use "base/utilitie-animate-body";
+@use "base/utilitie-bg-patren";
+@use "base/utilitie-bg-card-patren";
+@use "base/utilitie-patren-dot";
+
+/* component rule */
+@use "component/splash-screen";
+@use "component/loader";
+@use "component/search-input";
+@use "component/header";
+@use "component/weather-widgate";
+@use "component/hero";
+@use "component/category-chips";
+@use "component/featured-news";
+@use "component/latest-news";
+@use "component/editors-pick";
+@use "component/tranding-news";
+@use "component/search-result";
+@use "component/style-post-content";
+@use "component/footer";
+
+/* widgate style */
+@use "widget/toc";
+@use "widget/populer-post";
+@use "widget/newsletter";
+
+/* page */
+@use "page/page";

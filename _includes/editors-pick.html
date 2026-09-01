@@ -1,0 +1,41 @@
+{% assign popular_posts = site.posts | where: "popular", true %}
+{% if popular_posts.size == 0 %}
+  {% assign visible_posts = site.posts | where_exp: "item", "item.hide_from_feed!= true" %}
+{% else %}
+  {% assign visible_posts = popular_posts | where_exp: "item", "item.hide_from_feed!= true" %}
+{% endif %}
+
+<section class="editors-section loading-section">
+  <div class="container">
+    <div class="editors-box">
+      <div class="section-header">
+        <div class="header-title-wrap">
+          <span data-icon="star" class="header-icon"></span>
+          <h2 class="section-title">Pilihan Redaksi</h2>
+        </div>
+      </div>
+
+      <div class="editors-grid">
+        {% for post in visible_posts limit: 3 offset: 10 %}
+        <article class="editors-card">
+          <a href="{{ post.url | relative_url }}">
+            <div class="editors-thumb">
+              <img src="{{ post.image | default: '/assets/images/default.jpg' | relative_url }}" alt="{{ post.title }}">
+              {% if post.categories.first %}
+                <span class="badge">{{ post.categories.first }}</span>
+              {% endif %}
+            </div>
+            <div class="editors-body">
+              <h3 class="editors-title">{{ post.title }}</h3>
+              <div class="editors-meta">
+                <span class="meta-item"><span data-icon="calendar"></span> {{ post.date | date: "%d %b %Y" }}</span>
+                <span class="meta-item"><span data-icon="eye"></span> {{ post.views | default: 0 }}</span>
+              </div>
+            </div>
+          </a>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>

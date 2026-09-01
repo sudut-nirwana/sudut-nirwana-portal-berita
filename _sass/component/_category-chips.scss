@@ -1,0 +1,45 @@
+/* Category Chips */
+.category-chips-section {
+  padding: 16px 0 16px 0;
+
+  .chips-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .chip-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    background-color: var(--color-card);
+    color: var(--text-main);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+
+    [data-icon] svg {
+      width: 1.1em;
+      height: 1.1em;
+    }
+
+    &:hover,
+    &.active {
+      background-color: var(--color-accent);
+      color: #FFFFFF;
+      border-color: var(--color-primary);
+    }
+  }
+}

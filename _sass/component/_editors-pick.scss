@@ -1,0 +1,128 @@
+/* Editors Pick */
+.editors-section {
+  padding: 16px 0 24px 0;
+
+  .editors-box {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 20px 16px;
+  }
+
+  .section-header {
+    margin-bottom: 16px;
+
+    .header-title-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      .header-icon {
+        color: var(--color-primary);
+      }
+    }
+
+    .section-title {
+      font-family: 'Poppins-Bold', sans-serif;
+      font-size: 1.15rem;
+      color: var(--text-main);
+      margin-bottom: 0;
+    }
+  }
+
+  .editors-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    @media(min-width: 640px) {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+  }
+
+  .editors-card {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+
+      .editors-thumb img {
+        transform: scale(1.04);
+      }
+    }
+
+    a {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+  }
+
+  .editors-thumb {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background-color: var(--color-body);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: var(--color-primary);
+      color: #FFFFFF;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .editors-body {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+
+    .editors-title {
+      font-size: 0.9rem;
+      color: var(--text-main);
+      margin-bottom: 10px;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .editors-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+    }
+  }
+}

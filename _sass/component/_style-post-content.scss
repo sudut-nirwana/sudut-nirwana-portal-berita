@@ -1,0 +1,331 @@
+/* Search Bar */
+.wrapper-search-input {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+/* Layout Grid */
+.post-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  padding-bottom: 60px;
+}
+
+/* 2 Kolom Aktif Mulai 768px (Sidebar 320px) */
+@media (min-width: 768px) {
+  .post-layout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 24px;
+  }
+  .wrapper-search-input{
+    display: none;
+  }
+  .post-header{
+    margin-top: 10px;
+  }
+}
+
+/* Desktop Monitor Screen (Sidebar 360px) */
+@media (min-width: 1024px) {
+  .post-layout {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 32px;
+  }
+}
+
+/* Post Header & Meta */
+.post-header { 
+  margin-bottom: 30px; 
+}
+
+.post-title { 
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 700; 
+  line-height: 1.25; 
+  margin-bottom: 16px;
+  color: var(--text-main);
+}
+
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+  color: var(--text-muted);
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 24px;
+}
+
+.meta-author,
+.meta-date,
+.meta-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.meta-author {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.meta-category {
+  background: var(--color-section);
+  color: var(--text-main);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.post-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+  margin-right: 12px;
+}
+
+.post-image { 
+  width: 100%; 
+  border-radius: var(--radius-md); 
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-md);
+}
+
+/* Post Body */
+.post-body {
+  color: var(--text-main);
+  width: 100%;
+}
+
+.post-body h2 {
+  font-size: clamp(22px, 4vw, 28px);
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 36px;
+  margin-bottom: 12px;
+}
+
+.post-body h3 {
+  font-size: clamp(18px, 3vw, 22px);
+  font-weight: 600;
+  margin-top: 28px;
+  margin-bottom: 10px;
+}
+
+.post-body p {
+  margin-bottom: 20px;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.post-body ul, 
+.post-body ol { 
+  margin: 0 0 24px 24px; 
+}
+
+.post-body li { 
+  margin-bottom: 10px;
+  line-height: 1.7;
+}
+
+.post-body img {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  margin: 28px 0;
+}
+
+.post-body blockquote {
+  border-left: 4px solid var(--color-primary);
+  padding: 4px 0 4px 20px;
+  margin: 28px 0;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.post-body a {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.post-body a:hover { 
+  text-decoration: underline; 
+}
+
+/* Sidebar */
+.post-sidebar {
+  background: var(--color-card);
+}
+
+@media (max-width: 767px) {
+  .post-sidebar {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding: 24px 1rem;
+    border-radius: 0;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 767px) {
+  .post-sidebar {
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+@media (min-width: 768px) {
+  .post-sidebar {
+    position: sticky;
+    top: 100px;
+    padding: 20px;
+    border-radius: var(--radius-md);
+    margin-top: 10px;
+  }
+}
+
+.post-sidebar h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-main);
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.post-sidebar p {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* SVG Icons */
+[data-icon] svg {
+  width: 1.1em;
+  height: 1.1em;
+  flex-shrink: 0;
+}
+
+.meta-category[data-icon] svg {
+  width: 1em;
+  height: 1em;
+}
+
+/* ==========================================
+   Alert Components (Warm Yellow & Green Tint)
+   ========================================== */
+
+.alert {
+  margin: 28px 0;
+  padding: 18px 20px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  font-family: inherit;
+  color: var(--text-main);
+
+  .alert-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+
+  .alert-heading {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .alert-title {
+    margin: 0 0 6px 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+
+    a {
+      color: var(--color-primary);
+      transition: color 0.2s ease;
+    }
+  }
+
+  .alert-excerpt {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .alert-list {
+    margin: 0 0 0 18px;
+    padding: 0;
+    list-style-type: disc;
+
+    li {
+      margin-bottom: 8px;
+      font-size: 14.5px;
+      color: var(--text-muted);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      a {
+        color: var(--text-main);
+        font-weight: 500;
+        transition: color 0.2s ease;
+      }
+    }
+  }
+
+  /* Variant Single: Warm Mustard Yellow Tint */
+  &.alert-single {
+    /* Opacity 8% dari warna kuning mustard hangat */
+    background-color: rgba(184, 134, 11, 0.08); 
+    border: 1px solid rgba(184, 134, 11, 0.22);
+    border-left: 4px solid #B8860B;
+
+    .alert-label {
+      color: #946904;
+    }
+
+    .alert-title a:hover {
+      color: #B8860B;
+      text-decoration: underline;
+    }
+  }
+
+  /* Variant Group: Olive Green Tint */
+  &.alert-group {
+    /* Opacity 10% dari hijau zaitun (#5D6530) */
+    background-color: rgba(93, 101, 48, 0.1); 
+    border: 1px solid rgba(93, 101, 48, 0.25);
+    border-left: 4px solid var(--green-primary);
+
+    .alert-heading {
+      color: var(--green-primary);
+    }
+
+    .alert-list li::marker {
+      color: var(--green-primary);
+    }
+
+    .alert-list li a:hover {
+      color: var(--green-accent);
+      text-decoration: underline;
+    }
+  }
+}

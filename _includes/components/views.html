@@ -1,0 +1,13 @@
+{% assign v = page.views | default: 0 %}
+{% if v >= 1000000 %}
+  {% assign views = v | divided_by: 1000000.0 | round: 1 | append: 'M' %}
+{% elsif v >= 1000 %}
+  {% assign views = v | divided_by: 1000.0 | round: 1 | append: 'K' %}
+{% else %}
+  {% assign views = v %}
+{% endif %}
+
+<span class="post-meta-item">
+  <span data-icon="eye"></span> 
+  <span id="view-count" data-slug="{{ page.url }}">{{ views }}</span> Dilihat
+</span>

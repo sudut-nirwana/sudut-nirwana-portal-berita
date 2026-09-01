@@ -1,0 +1,17 @@
+<!-- Category Chips -->
+<section class="category-chips-section">
+  <div class="container">
+    <div class="chips-wrapper">
+      <a href="/search?q=terbaru" class="chip-item active">
+        <span data-icon="grid"></span>
+        <span>Semua</span>
+      </a>
+      {% for category in site.categories %}
+        {% assign cat_name = category[0] %}
+        <a href="/search?q={{ cat_name | slugify }}" class="chip-item">
+          <span>{{ cat_name | capitalize }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>

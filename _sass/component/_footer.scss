@@ -1,0 +1,124 @@
+/* Footer */
+.site-footer {
+  background-color: #2D2824;
+  color: #E5E0D8;
+  padding: 40px 0 24px 0;
+
+  .footer-top {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+
+    @media(min-width: 640px) {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+  }
+
+  .footer-brand {
+    max-width: 360px;
+
+    .footer-logo {
+      font-family: 'Poppins-Bold', sans-serif;
+      font-size: 1.4rem;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+
+      span {
+        color: var(--color-accent);
+      }
+    }
+
+    .footer-desc {
+      font-size: 0.85rem;
+      color: #A39E98;
+      line-height: 1.6;
+    }
+  }
+
+  .footer-nav {
+    display: flex;
+    gap: 48px;
+
+    .footer-col {
+      display: flex;
+      flex-direction: column;
+
+      .footer-heading {
+        font-family: 'JakartaSans', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #FFFFFF;
+        margin-bottom: 14px;
+        letter-spacing: 0.3px;
+      }
+
+      ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        a {
+          font-size: 0.85rem;
+          color: #A39E98;
+          transition: color 0.2s ease, padding-left 0.2s ease;
+
+          &:hover {
+            color: var(--color-accent);
+            padding-left: 2px;
+          }
+        }
+      }
+    }
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid #423C36;
+    margin: 32px 0 20px 0;
+  }
+
+  .footer-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+
+    @media(min-width: 640px) {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .copyright {
+      font-size: 0.775rem;
+      color: #8C8781;
+    }
+
+    .social-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+
+      a {
+        color: #A39E98;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s ease, transform 0.2s ease;
+
+        &:hover {
+          color: #FFFFFF;
+          transform: translateY(-2px);
+        }
+
+        [data-icon] svg {
+          width: 1.25em;
+          height: 1.25em;
+        }
+      }
+    }
+  }
+}

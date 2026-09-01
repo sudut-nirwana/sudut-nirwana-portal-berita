@@ -1,0 +1,40 @@
+{% assign popular_posts = site.posts | where: "popular", true %}
+{% if popular_posts.size == 0 %}
+  {% assign visible_posts = site.posts | where_exp: "item", "item.hide_from_feed!= true" %}
+{% else %}
+  {% assign visible_posts = popular_posts | where_exp: "item", "item.hide_from_feed!= true" %}
+{% endif %}
+
+<section class="latest-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Berita Terbaru</h2>
+      <a href="{{ '/search' | relative_url }}?q=terbaru" class="see-all">
+        <span>Lihat Semua</span>
+        <span data-icon="chevron-right"></span>
+      </a>
+    </div>
+
+    <div class="latest-list">
+      {% for post in visible_posts limit: 6 offset: 4 %}
+      <article class="latest-card">
+        <a href="{{ post.url | relative_url }}">
+          <div class="latest-thumb">
+            <img src="{{ post.image | default: '/assets/images/default.jpg' | relative_url }}" alt="{{ post.title }}" loading="lazy">
+          </div>
+          <div class="latest-body">
+            {% if post.categories.first %}
+              <span class="badge-cat">{{ post.categories.first | capitalize }}</span>
+            {% endif %}
+            <h3 class="latest-title">{{ post.title }}</h3>
+            <div class="latest-meta">
+              <span class="meta-item"><span data-icon="calendar"></span> {{ post.date | date: "%d %b %Y" }}</span>
+              <span class="meta-item"><span data-icon="eye"></span> {{ post.views | default: 0 }}</span>
+            </div>
+          </div>
+        </a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>

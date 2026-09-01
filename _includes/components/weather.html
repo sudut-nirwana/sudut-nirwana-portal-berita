@@ -1,0 +1,93 @@
+<div class="weather-dashboard theme-malam" id="weatherDashboard">
+  <!-- Main Weather Card -->
+  <div class="weather-main-card">
+    <div class="weather-header-info">
+      <div class="weather-title-group">
+        <h3 class="weather-city" id="weatherCity">Jakarta</h3>
+        <p class="weather-condition-text" id="weatherCondition">Malam Cerah</p>
+        <div class="weather-temp-main" id="weatherMainTemp">28°C</div>
+      </div>
+      <div class="weather-main-emoji" id="weatherMainEmoji">🌙</div>
+    </div>
+
+    <!-- 24-Hour Forecast -->
+    <div class="weather-forecast-section">
+      <span class="forecast-title">24-HOUR FORECAST</span>
+      <div class="forecast-grid" id="forecastGrid">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="weather-metrics-grid">
+      <div class="metric-card">
+        <span class="metric-label">UV INDEX</span>
+        <span class="metric-value" id="weatherUV">5</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">AIR QUALITY</span>
+        <span class="metric-value" id="weatherAQI">35</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">WIND SPEED</span>
+        <span class="metric-value" id="weatherWind">6 km/h</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sub Metrics -->
+  <div class="weather-sub-metrics">
+    <div class="sub-metric-item">
+      <span class="sub-label">TEMPERATURE</span>
+      <span class="sub-value" id="subTemp">28°C</span>
+    </div>
+    <div class="divider">|</div>
+    <div class="sub-metric-item">
+      <span class="sub-label">HUMIDITY</span>
+      <span class="sub-value" id="subHumidity">70%</span>
+    </div>
+  </div>
+
+  <!-- Controls Panel -->
+  <div class="weather-controls">
+    <div class="control-row">
+      <label for="citySelect" class="control-label">City</label>
+      <div class="control-input-wrap">
+        <select id="citySelect" class="control-select">
+          <option value="Jakarta">Jakarta</option>
+          <option value="Bandung">Bandung</option>
+          <option value="Surabaya">Surabaya</option>
+          <option value="Bali">Bali</option>
+          <option value="GPS">📍 Pakai GPS Presisi</option>
+        </select>
+      </div>
+
+      <!-- Badge Otomatis Waktu (Pagi / Siang / Sore / Senja / Malam) -->
+      <div class="time-auto-pill" id="timeAutoPill">
+        <span id="timeBadgeIcon">🌙</span>
+        <span id="timeBadgeText">Malam</span>
+      </div>
+    </div>
+
+    <div class="control-row toggle-row">
+      <span class="control-label">Metric (°C)</span>
+      <label class="switch">
+        <input type="checkbox" id="unitToggle" checked>
+        <span class="slider round"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi GPS (Anti Kaget) -->
+  <div class="gps-modal-overlay" id="gpsModal">
+    <div class="gps-modal-content">
+      <div class="gps-icon">📍</div>
+      <h4>Akses Lokasi Presisi</h4>
+      <p>Kami memerlukan izin lokasi browser Anda untuk menampilkan prakiraan cuaca secara akurat sesuai posisi Anda saat ini.</p>
+      <div class="gps-modal-actions">
+        <button type="button" class="btn-gps-cancel" id="gpsCancelBtn">Batal</button>
+        <button type="button" class="btn-gps-confirm" id="gpsConfirmBtn">Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+</div>
