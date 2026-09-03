@@ -111,9 +111,11 @@
         <div class="card">
             <h2>Pengaturan Akun</h2>
             <form id="account-form">
+                <label>Nama Lengkap</label>
+                <input type="text" id="settings-name" required>
                 <label>Email</label>
                 <input type="email" id="settings-email" required>
-                <label>Password Lama <small>(Wajib jika ganti sandi)</small></label>
+                <label>Password Lama <small>(Wajib jika ganti sandi / email)</small></label>
                 <input type="password" id="settings-old-password">
                 <label>Password Baru <small>(Opsional)</small></label>
                 <input type="password" id="settings-new-password">
@@ -142,6 +144,7 @@
                 if (data.success) {
                     currentUser = data.user;
                     document.getElementById('welcome-user').innerText = `Halo, ${currentUser.name} (${currentUser.role})`;
+                    document.getElementById('settings-name').value = currentUser.name;
                     document.getElementById('settings-email').value = currentUser.email;
                     document.getElementById('login-section').classList.add('hidden');
                     document.getElementById('dashboard-section').classList.remove('hidden');
@@ -267,6 +270,28 @@
                 loadAdminData(); 
             } else { 
                 alert('Gagal: ' + data.error); 
+            }
+        });
+
+        document.getElementById('account-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const res = await fetch('/api/update-account', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    admin_email: currentUser.email,
+                    new_name: document.getElementById('settings-name').value,
+                    new_email: document.getElementById('settings-email').value,
+                    old_password: document.getElementById('settings-old-password').value,
+                    new_password: document.getElementById('settings-new-password').value
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('Perubahan berhasil disimpan.');
+                location.reload();
+            } else {
+                alert('Gagal menyimpan: ' + data.error);
             }
         });
 

@@ -1,35 +1,56 @@
 export async function onRequestPost(context) {
     try {
-        const { admin_email, target_user_id, new_email, new_password, old_password } = await context.request.json();
+        const { admin_email, target_user_id, new_name, new_email, new_password, old_password } = await context.request.json();
         const db = context.env.DB;
 
         const requester = await db.prepare("SELECT * FROM users WHERE email = ?").bind(admin_email).first();
         if (!requester) {
-            return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), { status: 401 });
+            return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), { 
+                status: 401, 
+                headers: { 'Content-Type': 'application/json' } 
+            });
         }
 
         let targetId = requester.id;
-        let isChangingEmail = false;
+        let isUpdatingDetails = false;
 
+        if (target_user_id && requester.role === 'admin') {
+            targetId = target_user_id;
+        }
+
+        // Validasi Email jika diubah
         if (new_email && new_email !== requester.email) {
             if (requester.role !== 'admin') {
-                return new Response(JSON.stringify({ success: false, error: 'Hanya admin yang dapat mengubah nama email.' }), { status: 403 });
+                return new Response(JSON.stringify({ success: false, error: 'Hanya admin yang dapat mengubah alamat email.' }), { 
+                    status: 403, 
+                    headers: { 'Content-Type': 'application/json' } 
+                });
             }
             if (!new_email.endsWith('@sudutnirwana.com')) {
-                return new Response(JSON.stringify({ success: false, error: 'Email baru wajib menggunakan domain @sudutnirwana.com' }), { status: 400 });
+                return new Response(JSON.stringify({ success: false, error: 'Email baru wajib menggunakan domain @sudutnirwana.com' }), { 
+                    status: 400, 
+                    headers: { 'Content-Type': 'application/json' } 
+                });
             }
-            if (target_user_id) targetId = target_user_id;
-            isChangingEmail = true;
         }
 
+        // Validasi Password jika diisi
         if (new_password) {
-            if (requester.role !== 'admin' && requester.password_hash !== old_password) {
-                return new Response(JSON.stringify({ success: false, error: 'Password lama salah.' }), { status: 401 });
+            if (requester.role !== 'admin' && requester.password !== old_password) {
+                return new Response(JSON.stringify({ success: false, error: 'Password lama salah.' }), { 
+                    status: 401, 
+                    headers: { 'Content-Type': 'application/json' } 
+                });
             }
-            await db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").bind(new_password, targetId).run();
+            await db.prepare("UPDATE users SET password = ? WHERE id = ?").bind(new_password, targetId).run();
         }
 
-        if (isChangingEmail) {
+        // Perbarui Nama dan Email
+        if (new_name) {
+            await db.prepare("UPDATE users SET name = ? WHERE id = ?").bind(new_name, targetId).run();
+        }
+
+        if (new_email) {
             await db.prepare("UPDATE users SET email = ? WHERE id = ?").bind(new_email, targetId).run();
         }
 
@@ -37,6 +58,9 @@ export async function onRequestPost(context) {
             headers: { 'Content-Type': 'application/json' }
         });
     } catch (err) {
-        return new Response(JSON.stringify({ success: false, error: err.message }), { status: 500 });
+        return new Response(JSON.stringify({ success: false, error: err.message }), { 
+            status: 500, 
+            headers: { 'Content-Type': 'application/json' } 
+        });
     }
 }
