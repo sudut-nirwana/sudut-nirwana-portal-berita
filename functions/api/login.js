@@ -3,18 +3,14 @@ export async function onRequestPost(context) {
         const { email, password } = await context.request.json();
         const db = context.env.DB;
 
-        const user = await db.prepare(
-            "SELECT * FROM users WHERE email = ?"
-        ).bind(email).first();
+        const user = await db.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
 
         if (!user || user.password_hash !== password) {
             return new Response(JSON.stringify({ success: false, error: 'Email atau password salah' }), {
-                status: 401,
-                headers: { 'Content-Type': 'application/json' }
+                status: 401, headers: { 'Content-Type': 'application/json' }
             });
         }
 
-        // Sederhana: Kembalikan data sukses beserta role
         return new Response(JSON.stringify({ 
             success: true, 
             message: 'Login berhasil', 
@@ -22,11 +18,9 @@ export async function onRequestPost(context) {
         }), {
             headers: { 'Content-Type': 'application/json' }
         });
-
     } catch (err) {
         return new Response(JSON.stringify({ success: false, error: err.message }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
+            status: 500, headers: { 'Content-Type': 'application/json' }
         });
     }
 }
