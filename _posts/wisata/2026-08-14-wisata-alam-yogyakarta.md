@@ -2,13 +2,12 @@
 layout: content
 title: "Tren Slow Tourism: Mengapa Wisata Alam Yogyakarta Semakin Digemari Global"
 author: "Tavisha C Neira"
-date: 2026-08-31
+date: 2026-08-14 21:13 +0700
 categories: [wisata]
 tags: [travel, wisata jogja, slow living, eksplorasi, alam nusantara]
 image: /assets/images/posts/wisata-alam-jogja.webp
 description: "Mengenal tren gaya hidup pelan melalui pariwisata berbasis alam di perbukitan Yogyakarta yang kian naik daun bagi pelancong modern."
 popular: "true"
-views: 1780
 ---
 
 ## Menepi Sejenak: Menikmati Sisi Damai Pariwisata Yogyakarta

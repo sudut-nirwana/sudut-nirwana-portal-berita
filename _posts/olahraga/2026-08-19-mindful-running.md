@@ -2,13 +2,12 @@
 layout: content
 title: "Mindful Running: Mengubah Olahraga Lari Menjadi Sarana Meditasi Mental"
 author: "yossi"
-date: 2026-08-30
+date: 2026-08-19 08:06 +0700
 categories: [olahraga]
 tags: [olahraga, kesehatan, lari, kesehatan mental, mindful living]
 image: /assets/images/posts/mindful-running.webp
 description: "Bukan sekadar membakar kalori, pelajari bagaimana olahraga lari dengan kesadaran penuh mampu mereduksi kecemasan secara efektif."
 popular: "true"
-views: 290
 ---
 
 ## Lari sebagai Terapi Mental di Tengah Hustle Culture

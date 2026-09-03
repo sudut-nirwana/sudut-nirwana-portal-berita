@@ -1,14 +1,13 @@
 ---
 layout: content
 title: "Menguak Kisah Wisanggeni: Ksatria Digdaya yang Ditakuti di Ranah Pewayangan"
-author: "yossi"
-date: 2026-08-30
+author: "Tavisha C Neira"
+date: 2026-08-14 11:45 +0700
 categories: [seni & budaya]
 tags: [wayang, budaya jawa, wisanggeni, sastra, karakter, filosofi]
 image: /assets/images/posts/kisah-wisanggeni.webp
 description: "Mengenal Raden Wisanggeni, ksatria pewayangan Jawa yang cerdas, digdaya, berani menantang dewa, namun berjiwa kesatria sejati."
 popular: "true"
-views: 620
 ---
 
 ## Ksatria Tanpa Kasta yang Mengguncang Kahyangan

@@ -2,14 +2,13 @@
 layout: content
 title: "Mengintip Isi JMK Auto Gallery Sunter: Dari Ferrari Hingga Lamborghini Bekas"
 author: "yossi"
-date: 2026-08-25
+date: 2026-08-18 15:32 +0700
 categories: [otomotif, gaya hidup]
 tags: [showroom mobil mewah, jmk auto gallery, ferrari bekas, lamborghini bekas, mobil sport, sunter, maikel wijaya]
 image: /assets/images/posts/jmk-auto-gallery.webp
 image_alt: "Interior JMK Auto Gallery Sunter dengan koleksi Lamborghini dan Ferrari"
 description: "JMK Auto Gallery di Sunter jadi surganya kolektor mobil mewah. Kami mengintip langsung koleksi Ferrari, Lamborghini, dan supercar lain yang dijual."
 popular: "true"
-views: 1230
 ---
 
 Pintu showroom kebuka. Bukan bau leasing, tapi wangi leather + AC dingin langsung nyambut. 

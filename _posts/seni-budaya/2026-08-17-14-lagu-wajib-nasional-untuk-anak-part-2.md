@@ -2,13 +2,12 @@
 layout: content
 title: "14 Lagu Wajib Nasional Untuk Anak: Warisan Cinta Tanah Air [Part 2]"
 author: "yossi"
-date: 2026-08-29
+date: 2026-08-17 08:10 +0700
 categories: [seni & budaya]
 tags: [lagu nasional, lagu perjuangan, pendidikan karakter, semangat anak, lirik lagu, seni musik indonesia]
 image: /assets/images/posts/lagu-wajib-anak-part2.webp
 description: "Part 2: 5 lagu semangat dan juang wajib nasional beserta pencipta, tahun, makna dan lirik. Ajarkan anak nilai pantang menyerah dan menghargai pahlawan."
 popular: "false"
-views: 1250
 ---
 
 ## Lagu Semangat & Juang Pembentuk Mental Baja Anak

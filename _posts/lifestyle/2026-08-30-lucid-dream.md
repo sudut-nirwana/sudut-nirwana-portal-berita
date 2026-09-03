@@ -1,14 +1,13 @@
 ---
 layout: content
 title: "Sains di Balik Lucid Dream: Seni Mengendalikan Mimpi Secara Sadar"
-author: "yossi"
-date: 2026-08-30
+author: "Tavisha"
+date: 2026-08-30 07:15 +0700
 categories: [gaya hidup, kesehatan]
 tags: [psikologi, neurosains, tidur, lucid dream, edukasi, kesehatan mental]
 image: /assets/images/posts/sains-lucid-dream.webp
 description: "Mengenal fenomena ilmiah lucid dream, bagaimana korteks prefrontal otak aktif saat bermimpi, serta manfaatnya dalam mengatasi trauma psikologis."
 popular: "true"
-views: 1420
 ---
 
 ## Ketika Alam Mimpi Berada di Bawah Kendali Kesadaran Anda

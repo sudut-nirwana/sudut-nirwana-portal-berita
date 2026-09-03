@@ -1,14 +1,13 @@
 ---
 layout: content
 title: "Mengenal Aksara Jawa dan Sandangannya: Panduan Mudah Belajar Warisan Budaya Nusantara"
-author: "yossi"
-date: 2026-08-30
+author: "Tavisha C Neira"
+date: 2026-08-15 13:36 +0700
 categories: [seni & budaya]
 tags: [budaya jawa, aksara jawa, edukasi anak, bahasa daerah, sastra, nusantara]
 image: /assets/images/posts/belajar-aksara-jawa.webp
 description: "Panduan praktis dan mudah dipahami untuk mengenalkan 20 Aksara Carakan serta aturan fungsi Sandangan bagi anak-anak dan pemula."
 popular: "false"
-views: 310
 ---
 
 ## Merawat Identitas: Mengapa Mengenalkan Aksara Jawa pada Anak Itu Penting?

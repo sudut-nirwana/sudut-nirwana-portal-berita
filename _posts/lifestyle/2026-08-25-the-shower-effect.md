@@ -2,13 +2,12 @@
 layout: content
 title: "The Shower Effect: Mengapa Ide Cemerlang Sering Muncul Saat Kita Sedang Mandi?"
 author: "yossi"
-date: 2026-08-30
+date: 2026-08-25 07:03 +0700
 categories: [lifestyle]
 tags: [psikologi, kreativitas, otak, sains populer, kesehatan mental, tips fokus]
 image: /assets/images/posts/the-shower-effect.webp
 description: "Menjelaskan fenomena psikologi kognitif mengapa pikiran bawah sadar kita justru melahirkan solusi kreatif saat melakukan aktivitas santai dan monoton."
 popular: "false"
-views: 1120
 ---
 
 ## Misteri Momen \"Aha!\" di Ruang Kamar Mandi

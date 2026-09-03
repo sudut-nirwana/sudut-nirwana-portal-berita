@@ -1,14 +1,13 @@
 ---
 layout: content
 title: "Membaca Respons Bawah Sadar Lewan Bicara Melalui Pola Obrolan [Part 2]"
-author: "yossi"
-date: 2026-08-27
+author: "Tavisha C Neira"
+date: 2026-08-27 21:20 +0700
 categories: [lifestyle]
 tags: [psikologi, pengembangan diri, komunikasi, cara membaca orang, tips sosial]
 image: /assets/images/posts/menebak-karakter-1.webp
 description: "Part 2: Lanjutkan 3 teknik komunikasi proyektif berikutnya untuk menggali informasi lebih dalam, termasuk metode untuk membaca sifat ketahanan masa lalu seseorang."
 popular: "false"
-views: 1035
 ---
 
 ## Pertanyaan Santai Mengalir Ikuti Konteks Awal, Tanpa Sadar Dia Mengungkapkan Karakter Dirinya

@@ -1,14 +1,13 @@
 ---
 layout: content
 title: "[Part-3] Bedah Tuntas: Arti 6 Jawaban Ini Ungkap Karakter Asli Lawan Bicaramu"
-author: "yossi"
-date: 2026-08-27
+author: "Tavisha C Neira"
+date: 2026-08-27 21:45 +0700
 categories: [lifestyle]
 tags: [psikologi, pengembangan diri, komunikasi, cara membaca orang, tips sosial]
 image: /assets/images/posts/menebak-karakter-1.webp
 description: "Part 3: Bongkar makna psikologis di balik 6 jawaban proyektif dari Part 1 & 2. Dari pilihan visual bunga hingga rute kepulangan yang mengungkap sifat aslinya."
 popular: "false"
-views: 1056
 ---
 
 ## Ungkap Arti dari Setiap Jawaban Bawah Sadar yang Diberikan

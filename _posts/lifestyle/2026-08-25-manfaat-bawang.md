@@ -2,13 +2,12 @@
 layout: content
 title: "8 Manfaat Bawang Putih dan Bawang Merah untuk Kesehatan Tubuh"
 author: "Tavisha C Neira"
-date: 2026-08-25
+date: 2026-08-30 11:36 +0700
 categories: [lifestyle, kesehatan]
 tags: [sehat, gaya hidup, tips kesehatan, bawang putih, bawang merah, herbal]
 image: /assets/images/posts/manfaat-bawang.webp
 description: "Bawang putih dan bawang merah kaya allicin, quercetin, dan antioksidan. Simak 8 manfaat dan cara konsumsi yang tepat untuk jantung dan imun."
 popular: "true"
-views: 790
 ---
 
 Bawang putih dan bawang merah adalah dua bumbu dapur utama yang hampir selalu tersedia di setiap rumah. Selain menjadi kunci rahasia di balik kelezatan berbagai masakan, kedua jenis umbi lapis (*Allium*) ini ternyata menyimpan kekayaan senyawa bioaktif yang luar biasa bagi ketahanan tubuh.

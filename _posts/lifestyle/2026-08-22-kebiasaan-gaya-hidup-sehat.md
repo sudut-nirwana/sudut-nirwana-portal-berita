@@ -2,13 +2,12 @@
 layout: content
 title: "5 Kebiasaan Gaya Hidup Sehat yang Bisa Dimulai dari Rumah"
 author: "Tavisha C Neira"
-date: 2026-08-22
+date: 2026-08-22 07:25 +0700
 categories: [lifestyle]
 tags: [lifestyle, sehat, gaya hidup, tips kesehatan, keluarga, hidup pelan]
 image: /assets/images/posts/gaya-hidup-sehat.webp
 description: "Panduan praktis membangun gaya hidup sehat sederhana di dalam rumah tanpa biaya mahal. Cocok untuk diterapkan oleh lintas generasi, baik muda maupun tua."
 popular: "true"
-views: 1201
 ---
 
 ## Sehat itu Dimulai dari Hal-Hal Kecil di Sekitar Kita

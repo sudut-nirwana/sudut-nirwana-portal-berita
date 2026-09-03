@@ -1,14 +1,13 @@
 ---
 layout: content
 title: "Tanya 6 Hal Ini, Dan Kamu Akan Mengetahui Sifat Asli Lawan Bicaramu [Part 1]"
-author: "yossi"
-date: 2026-08-27
+author: "Tavisha C Neira"
+date: 2026-08-27 21:11 +0700
 categories: [lifestyle]
 tags: [psikologi, pengembangan diri, komunikasi, cara membaca orang, tips sosial]
 image: /assets/images/posts/menebak-karakter-1.webp
 description: "Part 1: Pelajari 3 teknik komunikasi awal untuk memancing karakter jujur dari seseorang lewat obrolan santai tanpa terkesan menghakimi."
 popular: "true"
-views: 1100
 ---
 
 ## 6 Cara Menebak Karakter Seseorang Hanya dari Obrolan

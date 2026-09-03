@@ -2,13 +2,12 @@
 layout: content
 title: "14 Lagu Wajib Nasional Untuk Anak: Warisan Cinta Tanah Air [Part 3]"
 author: "yossi"
-date: 2026-08-29
+date: 2026-08-17 08:11 +0700
 categories: [seni & budaya]
 tags: [lagu nasional, pendidikan karakter, akhlak anak, pancasila, lirik lagu, seni musik indonesia]
 image: /assets/images/posts/lagu-wajib-anak-part3.webp
 description: "Part 3: 5 lagu karakter dan moral wajib nasional beserta pencipta, tahun, makna dan lirik. Tanamkan nilai syukur, hormat, dan Pancasila sejak dini."
 popular: "false"
-views: 1470
 ---
 
 ## Lagu Karakter & Moral Pembentuk Akhlak Anak

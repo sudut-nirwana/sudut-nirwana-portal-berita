@@ -2,13 +2,12 @@
 layout: content
 title: "Romantisasi Rasa: Mengapa Kuliner Tradisional Bertema Pedesaan Selalu Diburu"
 author: "Tavisha C Neira"
-date: 2026-08-30
+date: 2026-08-22 20:23 +0700
 categories: [kuliner]
 tags: [kuliner jogja, makanan tradisional, gaya hidup, budaya jawa]
 image: /assets/images/posts/kuliner-tradisional.webp
 description: "Menilik fenomena sosiologis di balik ramainya warung kuliner tradisional bergaya pedesaan di tengah gempuran kafe modern."
 popular: "true"
-views: 415
 ---
 
 ## Di Balik Aroma Kopi Klotok dan Sayur Lodeh Khas Desa

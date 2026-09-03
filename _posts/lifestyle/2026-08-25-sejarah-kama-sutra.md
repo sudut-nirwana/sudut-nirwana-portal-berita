@@ -2,13 +2,12 @@
 layout: content
 title: "Menguak Sejarah Asli Kama Sutra: Kitab Kuno Hubungan dan Etika Sosial"
 author: "Tavisha C Neira"
-date: 2026-08-30
+date: 2026-08-25 18:30 +0700
 categories: [lifestyle]
 tags: [sejarah, filsafat, hubungan, kamasutra, fakta dunia, edukasi]
 image: /assets/images/posts/sejarah-kamasutra.webp
 description: "Menelusuri sejarah asli Kama Sutra karya Vātsyāyana, makna filosofis yang sesungguhnya, serta meluruskan salah kaprah yang beredar di masyarakat."
 popular: "true"
-views: 1540
 ---
 
 ## Mengenal Kama Sutra: Lebih dari Sekadar Panduan Fisik

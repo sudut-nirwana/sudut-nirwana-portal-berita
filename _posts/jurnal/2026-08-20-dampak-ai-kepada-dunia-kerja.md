@@ -2,13 +2,12 @@
 layout: content
 title: "Dampak AI terhadap Dunia Kerja: Kreativitas dan Dilema Eksistensial Manusia"
 author: "Tavisha C Neira"
-date: 2026-08-30
+date: 2026-08-20 14:35 +0700
 categories: [jurnal]
 tags: [teknologi, artificial intelligence, masa depan, dunia kerja, analisis, gaya hidup]
 image: /assets/images/posts/dampak-ai-modern.webp
 description: "Sebuah catatan analisis mengenai bagaimana kecerdasan buatan (AI) mengubah peta industri kreatif dan memicu dilema eksistensial manusia modern."
 popular: "true"
-views: 890
 ---
 
 ## Selamat Datang di Era Otomasi Pikiran

@@ -2,13 +2,12 @@
 layout: content
 title: "14 Lagu Wajib Nasional Untuk Anak: Warisan Cinta Tanah Air [Part 1]"
 author: "yossi"
-date: 2026-08-29
+date: 2026-08-17 08:09 +0700
 categories: [seni & budaya]
 tags: [lagu nasional, lagu wajib, pendidikan anak, cinta tanah air, lirik lagu, seni musik indonesia]
 image: /assets/images/posts/lagu-wajib-anak-part1.webp
 description: "Part 1: 4 lagu cinta tanah air wajib diajarkan ke anak beserta pencipta, tahun, makna dan lirik lengkap. Melestarikan warisan musik Indonesia sejak dini."
 popular: "true"
-views: 1225
 ---
 
 ## Lagu Cinta Tanah Air Wajib Diajarkan ke Anak
