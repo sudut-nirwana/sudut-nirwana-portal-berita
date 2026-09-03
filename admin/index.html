@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Sudut Nirwana</title>
+    <style>
+        body { font-family: sans-serif, system-ui; max-width: 600px; margin: 40px auto; padding: 20px; background: #f9f9f9; color: #333; }
+        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        input, textarea, select { width: 100%; padding: 10px; margin: 8px 0 16px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background: #0070f3; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
+        button:hover { background: #0051a2; }
+        .hidden { display: none; }
+        .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- Form Login -->
+    <div id="login-section" class="card">
+        <h2>Login Admin / Penulis</h2>
+        <form id="login-form">
+            <label>Email</label>
+            <input type="email" id="email" required value="admin@sudutnirwana.com">
+            <label>Password</label>
+            <input type="password" id="password" required value="sudutnirwana12345">
+            <button type="submit">Masuk</button>
+        </form>
+    </div>
+
+    <!-- Form Publish Artikel -->
+    <div id="publish-section" class="card hidden">
+        <div class="user-info">
+            <span id="welcome-user"></span>
+            <button type="button" onclick="logout()" style="width: auto; background: #e53e3e; padding: 5px 10px; font-size: 14px;">Keluar</button>
+        </div>
+        <h2>Tulis Artikel Baru</h2>
+        <form id="publish-form">
+            <label>Judul Artikel</label>
+            <input type="text" id="title" required placeholder="Contoh: Perkembangan AI 2026">
+            
+            <label>Slug URL</label>
+            <input type="text" id="slug" required placeholder="perkembangan-ai-2026">
+            
+            <label>Kategori</label>
+            <input type="text" id="category" required placeholder="Teknologi">
+            
+            <label>Ringkasan (Description)</label>
+            <textarea id="description" rows="2" placeholder="Deskripsi singkat untuk kartu beranda..."></textarea>
+            
+            <label>Path Gambar</label>
+            <input type="text" id="image" placeholder="/assets/images/posts/sample.webp">
+            
+            <label>Konten (Markdown)</label>
+            <textarea id="content" rows="8" required placeholder="Tulis isi artikel dengan format Markdown di sini..."></textarea>
+            
+            <button type="submit">Publikasikan ke GitHub & D1</button>
+        </form>
+    </div>
+
+    <script>
+        let currentUserEmail = '';
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                currentUserEmail = data.user.email;
+                document.getElementById('welcome-user').innerText = `Halo, ${data.user.name} (${data.user.role})`;
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('publish-section').classList.remove('hidden');
+            } else {
+                alert('Login Gagal: ' + data.error);
+            }
+        });
+
+        document.getElementById('publish-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                title: document.getElementById('title').value,
+                slug: document.getElementById('slug').value,
+                category: document.getElementById('category').value,
+                description: document.getElementById('description').value,
+                image: document.getElementById('image').value,
+                content: document.getElementById('content').value,
+                author_email: currentUserEmail
+            };
+
+            const res = await fetch('/api/publish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                alert('Berhasil! Artikel telah dipublikasikan.');
+                document.getElementById('publish-form').reset();
+            } else {
+                alert('Gagal Publikasi: ' + data.error);
+            }
+        });
+
+        function logout() {
+            currentUserEmail = '';
+            document.getElementById('publish-section').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
