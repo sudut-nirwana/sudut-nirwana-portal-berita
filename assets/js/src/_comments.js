@@ -1,11 +1,13 @@
 (function() {
   'use strict';
+  const commentSection = document.querySelector('.post-comments');
   const commentForm = document.getElementById('commentForm');
   const commentList = document.getElementById('commentList');
-  const viewElem = document.getElementById('view-count');
-  if (!commentList) return;
+  
+  if (!commentList || !commentSection) return;
 
-  const slug = viewElem?.getAttribute('data-slug');
+  const slug = commentSection.getAttribute('data-slug');
+  if (!slug) return;
 
   // Load Komentar
   function loadComments() {
@@ -42,8 +44,11 @@
       if (res.success) {
         commentForm.reset();
         loadComments();
+      } else {
+        alert('Gagal mengirim komentar: ' + (res.error || 'Terjadi kesalahan'));
       }
-    });
+    })
+    .catch(err => console.error('Error submitting comment:', err));
   });
 
   loadComments();
