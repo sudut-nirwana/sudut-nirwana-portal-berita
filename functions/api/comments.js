@@ -21,8 +21,25 @@ export async function onRequestPost(context) {
         }
 
         await context.env.DB.prepare(
-            "INSERT INTO comments (article_slug, name, message, created_at) VALUES (?, ?, ?, datetime('now'))"
+            "INSERT INTO comments (article_slug, name, message, likes, created_at) VALUES (?, ?, ?, 0, datetime('now'))"
         ).bind(slug, name, message).run();
+
+        return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
+    } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+}
+
+export async function onRequestPatch(context) {
+    try {
+        const { id } = await context.request.json();
+        if (!id) {
+            return new Response(JSON.stringify({ success: false, error: 'ID tidak valid' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+        }
+
+        await context.env.DB.prepare(
+            "UPDATE comments SET likes = likes + 1 WHERE id = ?"
+        ).bind(id).run();
 
         return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
     } catch (err) {

@@ -1,16 +1,22 @@
 <section class="post-comments" data-slug="{{ page.slug }}">
   <h3 class="comments-title">Komentar</h3>
 
-  <!-- Form Komentar Langsung -->
-  <form id="commentForm" class="comment-form">
-    <div class="form-group">
-      <input type="text" id="commentName" placeholder="Nama Anda" required>
-    </div>
-    <div class="form-group">
-      <textarea id="commentMessage" rows="3" placeholder="Tulis komentar Anda..." required></textarea>
-    </div>
-    <button type="submit" class="btn-submit">Kirim Komentar</button>
-  </form>
+  <!-- Form Komentar & Notifikasi Status Harian -->
+  <div id="formWrapper">
+    <form id="commentForm" class="comment-form">
+      <div class="form-group">
+        <input type="text" id="commentName" placeholder="Nama Anda" required>
+      </div>
+      <div class="form-group">
+        <textarea id="commentMessage" rows="3" placeholder="Tulis komentar Anda..." required></textarea>
+      </div>
+      <button type="submit" class="btn-submit">Kirim Komentar</button>
+    </form>
+  </div>
+  
+  <div id="commentNotice" class="comment-notice" style="display: none;">
+    <p>✨ Terima kasih! Anda sudah mengirimkan komentar pada artikel ini hari ini.</p>
+  </div>
 
   <!-- Wadah Tempat Komentar Ditampilkan -->
   <div id="commentList" class="comment-list"></div>

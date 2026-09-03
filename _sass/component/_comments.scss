@@ -1,80 +1,36 @@
-.post-comments {
-  margin-top: 40px;
-  padding-top: 24px;
-  border-top: 1px solid var(--color-border);
-}
-
-.comments-title {
-  font-size: 1.25rem;
+.comment-notice {
+  background: var(--color-card);
+  border: 1px dashed var(--color-primary);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  text-align: center;
   color: var(--text-main);
-  margin-bottom: 16px;
-}
-
-.comment-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  font-size: 0.9rem;
   margin-bottom: 24px;
 }
 
-.comment-form .form-group input,
-.comment-form .form-group textarea {
-  width: 100%;
-  padding: 12px;
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--text-main);
-}
-
-.comment-form .form-group input:focus,
-.comment-form .form-group textarea:focus {
-  border-color: var(--color-primary);
-}
-
-.btn-submit {
-  background-color: var(--color-primary);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-  cursor: pointer;
-  align-self: flex-start;
-  transition: background 0.2s;
-}
-
-.btn-submit:hover {
-  background-color: var(--color-accent);
-}
-
-.comment-list {
+.comment-actions {
+  margin-top: 10px;
   display: flex;
-  flex-direction: column;
   gap: 12px;
 }
 
-.comment-item {
-  background: var(--color-card);
-  padding: 16px;
-  border-radius: var(--radius-sm);
+.btn-like {
+  background: transparent;
   border: 1px solid var(--color-border);
-}
-
-.comment-content strong {
-  display: inline-block;
-  color: var(--text-main);
-  font-size: 0.95rem;
-}
-
-.comment-content small {
-  float: right;
-  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
   font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
 }
 
-.comment-content p {
-  margin-top: 8px;
-  font-size: 0.95rem;
-  color: var(--text-main);
-  word-break: break-word;
+.btn-like:hover {
+  background: var(--color-body);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
 }
