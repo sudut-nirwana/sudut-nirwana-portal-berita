@@ -23,7 +23,7 @@
             <p class="featured-desc">{{ main_post.description }}</p>
             <div class="featured-meta">
               <span class="meta-item"><span data-icon="calendar"></span> {{ main_post.date | date: "%d %b %Y" }}</span>
-              <span class="meta-item"><span data-icon="eye"></span> {{ main_post.views | default: 0 }}</span>
+              <span class="meta-item"><span data-icon="eye"></span> <span class="post-views" data-slug="{{ main_post.slug }}">0</span></span>
             </div>
           </div>
         </a>
@@ -44,6 +44,7 @@
               <h3 class="sub-title">{{ post.title }}</h3>
               <div class="sub-meta">
                 <span class="meta-item"><span data-icon="calendar"></span> {{ post.date | date: "%d %b %Y" }}</span>
+                <span class="meta-item"><span data-icon="eye"></span> <span class="post-views" data-slug="{{ post.slug }}">0</span></span>
               </div>
             </div>
           </a>

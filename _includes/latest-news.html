@@ -29,7 +29,7 @@
             <h3 class="latest-title">{{ post.title }}</h3>
             <div class="latest-meta">
               <span class="meta-item"><span data-icon="calendar"></span> {{ post.date | date: "%d %b %Y" }}</span>
-              <span class="meta-item"><span data-icon="eye"></span> {{ post.views | default: 0 }}</span>
+              <span class="meta-item"><span data-icon="eye"></span> <span class="post-views" data-slug="{{ post.slug }}">0</span></span>
             </div>
           </div>
         </a>

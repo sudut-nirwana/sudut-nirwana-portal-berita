@@ -26,7 +26,7 @@
             {% endif %}
             <h3 class="trending-title">{{ post.title }}</h3>
             <div class="trending-meta">
-              <span class="meta-item"><span data-icon="eye"></span> {{ post.views | default: 0 }} views</span>
+              <span class="meta-item"><span data-icon="eye"></span> <span class="post-views" data-slug="{{ post.slug }}">0</span> views</span>
             </div>
           </div>
         </a>
