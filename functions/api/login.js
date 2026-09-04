@@ -17,11 +17,13 @@ export async function onRequestPost(context) {
             });
         }
 
-        // HASH PASSWORD INPUT PAKE SHA-256 SAMA KAYA SAAT REGISTER
-        const inputHash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password))))
-            .map(b => b.toString(16).padStart(2, '0')).join('');
+        const encoder = new TextEncoder();
+        const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(password));
+        const inputHash = Array.from(new Uint8Array(hashBuffer))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
 
-        if (inputHash !== user.password) { // kolomnya 'password' bukan 'password_hash'
+        if (inputHash !== user.password) {
             return new Response(JSON.stringify({ success: false, error: 'Email atau password salah' }), {
                 status: 401, headers: { 'Content-Type': 'application/json' }
             });
