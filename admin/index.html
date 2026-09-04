@@ -17,6 +17,13 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background: #f1f1f1; }
+
+        /* Styling Tambahan untuk Tab & Preview */
+        .editor-tabs { display: flex; gap: 10px; margin-bottom: 8px; }
+        .tab-btn { background: #cbd5e0; color: #333; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; width: auto; }
+        .tab-btn.active { background: #0070f3; color: white; }
+        .preview-box { border: 1px solid #ccc; border-radius: 4px; padding: 15px; min-height: 180px; background: #fff; margin-bottom: 16px; box-sizing: border-box; }
+        .preview-box h1, .preview-box h2, .preview-box h3 { margin-top: 0; }
     </style>
 </head>
 <body>
@@ -56,8 +63,24 @@
                 <textarea id="description" rows="2"></textarea>
                 <label>Path Gambar</label>
                 <input type="text" id="image" placeholder="/assets/images/posts/sample.webp">
+                
                 <label>Konten (Markdown)</label>
-                <textarea id="content" rows="6" required></textarea>
+                <!-- Tombol Navigasi Tab Editor & Preview -->
+                <div class="editor-tabs">
+                    <button type="button" id="btn-tab-edit" class="tab-btn active" onclick="switchEditorTab('edit')">Editor Markdown</button>
+                    <button type="button" id="btn-tab-preview" class="tab-btn" onclick="switchEditorTab('preview')">Pratinjau (Preview)</button>
+                </div>
+
+                <!-- Area Editor (Textarea) -->
+                <div id="editor-pane">
+                    <textarea id="content" rows="8" required placeholder="Tulis konten Markdown di sini..."></textarea>
+                </div>
+
+                <!-- Area Hasil Pratinjau (Preview Box) -->
+                <div id="preview-pane" class="hidden preview-box">
+                    <p style="color: #888; font-style: italic;">Pratinjau artikel akan muncul di sini...</p>
+                </div>
+
                 <button type="submit">Publikasikan Artikel</button>
             </form>
         </div>
@@ -127,6 +150,48 @@
     <script>
         'use strict';
         let currentUser = null;
+
+        // Fungsi Tab Editor & Lazy Load Markdown Preview
+        function switchEditorTab(mode) {
+            const editorPane = document.getElementById('editor-pane');
+            const previewPane = document.getElementById('preview-pane');
+            const btnEdit = document.getElementById('btn-tab-edit');
+            const btnPreview = document.getElementById('btn-tab-preview');
+            const contentVal = document.getElementById('content').value;
+
+            if (mode === 'edit') {
+                editorPane.classList.remove('hidden');
+                previewPane.classList.add('hidden');
+                btnEdit.classList.add('active');
+                btnPreview.classList.remove('active');
+            } else {
+                editorPane.classList.add('hidden');
+                previewPane.classList.remove('hidden');
+                btnPreview.classList.add('active');
+                btnEdit.classList.remove('active');
+
+                // Muat marked.js otomatis via CDN hanya saat tombol preview ditekan pertama kali
+                if (typeof marked === 'undefined') {
+                    previewPane.innerHTML = '<p style="color: #888; font-style: italic;">Memuat modul pratinjau...</p>';
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+                    script.onload = () => {
+                        renderPreviewContent(contentVal, previewPane);
+                    };
+                    document.head.appendChild(script);
+                } else {
+                    renderPreviewContent(contentVal, previewPane);
+                }
+            }
+        }
+
+        function renderPreviewContent(text, pane) {
+            if (!text.trim()) {
+                pane.innerHTML = '<p style="color: #888; font-style: italic;">Belum ada konten untuk dipratinjau.</p>';
+            } else {
+                pane.innerHTML = marked.parse(text);
+            }
+        }
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();

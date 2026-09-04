@@ -225,7 +225,16 @@
       views.className = 'meta-views';
       const iconViews = document.createElement('span');
       iconViews.setAttribute('data-icon', 'eye');
-      views.append(iconViews, ` ${formatNumber(post.views || 0)}`);
+
+      // Ambil slug langsung dari post atau ekstrak dari URL
+      const postSlug = post.slug || (post.url ? post.url.split('/').filter(Boolean).pop() : '');
+      
+      const viewCountSpan = document.createElement('span');
+      viewCountSpan.className = 'post-views';
+      viewCountSpan.setAttribute('data-slug', postSlug);
+      viewCountSpan.textContent = formatNumber(post.views || 0);
+
+      views.append(iconViews, ' ', viewCountSpan);
 
       meta.append(date, views);
       body.append(h3, meta);
