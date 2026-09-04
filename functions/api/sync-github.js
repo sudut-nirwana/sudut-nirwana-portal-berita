@@ -51,6 +51,7 @@ export async function onRequestPost(context) {
             let image = '';
             let popular = 'true';
             let categoryName = 'Uncategorized';
+            let tagsStr = '';
 
             frontMatterLines.forEach(line => {
                 const parts = line.split(':');
@@ -64,6 +65,9 @@ export async function onRequestPost(context) {
                 if (key === 'image') image = val;
                 if (key === 'popular') popular = val;
                 if (key === 'categories') categoryName = val.replace(/[\[\]]/g, '').trim() || 'Uncategorized';
+                if (key === 'tags') {
+                    tagsStr = val.replace(/[\[\]]/g, '').replace(/["']/g, '').split(',').map(t => t.trim()).filter(Boolean).join(', ');
+                }
             });
 
             if (!slug) {
@@ -71,29 +75,36 @@ export async function onRequestPost(context) {
             }
             if (!title) title = slug;
 
-            const catSlug = categoryName.toLowerCase().replace(/\s+/g, '-');
-            let catRecord = await db.prepare("SELECT id FROM categories WHERE slug = ?").bind(catSlug).first();
-            let categoryId = catRecord ? catRecord.id : (await db.prepare("INSERT INTO categories (name, slug) VALUES (?, ?) RETURNING id").bind(categoryName, catSlug).first()).id;
+            const catSlug = categoryName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            let catRecord = await db.prepare("SELECT id FROM categories WHERE slug = ? OR name = ?").bind(catSlug, categoryName).first();
+            let categoryId;
+            if (catRecord) {
+                categoryId = catRecord.id;
+            } else {
+                const insertRes = await db.prepare("INSERT INTO categories (name, slug) VALUES (?, ?) ON CONFLICT(name) DO UPDATE SET slug=excluded.slug RETURNING id").bind(categoryName, catSlug).first();
+                categoryId = insertRes.id;
+            }
 
             let author = await db.prepare("SELECT id FROM users LIMIT 1").first();
             let authorId = author ? author.id : 1;
 
             await db.prepare(`
-                INSERT INTO articles (slug, title, description, image, popular, category_id, author_id, content) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?) 
+                INSERT INTO articles (slug, title, description, image, popular, tags, category_id, author_id, content) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) 
                 ON CONFLICT(slug) DO UPDATE SET 
                     title=excluded.title, 
                     description=excluded.description, 
                     image=excluded.image, 
                     popular=excluded.popular,
+                    tags=excluded.tags,
                     category_id=excluded.category_id,
                     content=excluded.content
-            `).bind(slug, title, description, image, popular, categoryId, authorId, content).run();
+            `).bind(slug, title, description, image, popular, tagsStr, categoryId, authorId, content).run();
 
             syncedCount++;
         }
 
-        return new Response(JSON.stringify({ success: true, message: `Berhasil menyinkronkan ${syncedCount} artikel dari seluruh subfolder GitHub.` }), { headers: { 'Content-Type': 'application/json' } });
+        return new Response(JSON.stringify({ success: true, message: `Berhasil menyinkronkan ${syncedCount} artikel beserta tags dari seluruh subfolder GitHub.` }), { headers: { 'Content-Type': 'application/json' } });
 
     } catch (err) {
         return new Response(JSON.stringify({ success: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });

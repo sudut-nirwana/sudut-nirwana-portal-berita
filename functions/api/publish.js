@@ -14,8 +14,14 @@ export async function onRequestPost(context) {
         const catSlug = rawCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
         const categoryName = rawCategory;
 
-        let catRecord = await db.prepare("SELECT id FROM categories WHERE slug = ?").bind(catSlug).first();
-        let categoryId = catRecord ? catRecord.id : (await db.prepare("INSERT INTO categories (name, slug) VALUES (?, ?) RETURNING id").bind(categoryName, catSlug).first()).id;
+        let catRecord = await db.prepare("SELECT id FROM categories WHERE slug = ? OR name = ?").bind(catSlug, categoryName).first();
+        let categoryId;
+        if (catRecord) {
+            categoryId = catRecord.id;
+        } else {
+            const insertRes = await db.prepare("INSERT INTO categories (name, slug) VALUES (?, ?) ON CONFLICT(name) DO UPDATE SET slug=excluded.slug RETURNING id").bind(categoryName, catSlug).first();
+            categoryId = insertRes.id;
+        }
 
         const user = await db.prepare("SELECT id, name FROM users WHERE email = ?").bind(author_email).first();
         if (!user) return new Response(JSON.stringify({ success: false, error: 'Penulis tidak ditemukan' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
@@ -29,6 +35,7 @@ export async function onRequestPost(context) {
         
         const tagsArray = tags ? tags.split(',').map(t => `"${t.trim()}"`).filter(Boolean) : [];
         const tagsFrontmatter = tagsArray.length > 0 ? `tags: [${tagsArray.join(', ')}]\n` : '';
+        const tagsStr = tags ? tags.split(',').map(t => t.trim()).filter(Boolean).join(', ') : '';
 
         const markdownContent = `---
 layout: content
@@ -67,19 +74,20 @@ ${content}`;
             return new Response(JSON.stringify({ success: false, error: `GitHub API Error: ${errText}` }), { status: 502, headers: { 'Content-Type': 'application/json' } });
         }
 
-        // 4. SIMPAN KE DATABASE D1 BESERTA KONTROL KONTENNYA
+        // 4. SIMPAN KE DATABASE D1 BESERTA TAGS DAN KONTROL KONTENNYA
         await db.prepare(`
-            INSERT INTO articles (slug, title, description, image, popular, category_id, author_id, content) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?) 
+            INSERT INTO articles (slug, title, description, image, popular, tags, category_id, author_id, content) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) 
             ON CONFLICT(slug) DO UPDATE SET 
                 title=excluded.title, 
                 description=excluded.description, 
                 image=excluded.image, 
                 popular=excluded.popular,
+                tags=excluded.tags,
                 category_id=excluded.category_id, 
                 content=excluded.content
         `)
-        .bind(slug, title, description || '', image || '', popular || 'true', categoryId, user.id, content).run();
+        .bind(slug, title, description || '', image || '', popular || 'true', tagsStr, categoryId, user.id, content).run();
 
         return new Response(JSON.stringify({ success: true, message: 'Artikel berhasil dipublikasikan ke subfolder GitHub.' }), { headers: { 'Content-Type': 'application/json' } });
 
