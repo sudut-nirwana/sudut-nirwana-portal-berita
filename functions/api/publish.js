@@ -34,7 +34,6 @@ export async function onRequestPost(context) {
         const dateStr = now.toISOString().replace('T', ' ').substring(0, 19) + ' +0700';
         const fileDatePrefix = now.toISOString().substring(0, 10);
         
-        // Memformat tags menjadi array string untuk frontmatter Markdown
         const tagsArray = tags ? tags.split(',').map(t => `"${t.trim()}"`).filter(Boolean) : [];
         const tagsFrontmatter = tagsArray.length > 0 ? `tags: [${tagsArray.join(', ')}]\n` : '';
 
@@ -68,7 +67,7 @@ ${content}`;
 
         if (!githubResponse.ok) {
             const errText = await githubResponse.text();
-            throw new Response(JSON.stringify({ success: false, error: `GitHub API Error: ${errText}` }), {
+            return new Response(JSON.stringify({ success: false, error: `GitHub API Error: ${errText}` }), {
                 status: 502, headers: { 'Content-Type': 'application/json' }
             });
         }
@@ -87,7 +86,7 @@ ${content}`;
             headers: { 'Content-Type': 'application/json' }
         });
     } catch (err) {
-        return new Response(JSON.stringify({ success: false, error: err.message }), {
+        return new Response(JSON.stringify({ success: false, error: err.message || String(err) }), {
             status: 500, headers: { 'Content-Type': 'application/json' }
         });
     }
