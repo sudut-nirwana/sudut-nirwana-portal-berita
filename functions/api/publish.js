@@ -66,8 +66,18 @@ ${content}`;
             return new Response(JSON.stringify({ success: false, error: `GitHub API Error: ${errText}` }), { status: 502, headers: { 'Content-Type': 'application/json' } });
         }
 
-        await db.prepare(`INSERT INTO articles (slug, title, description, image, category_id, author_id) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(slug) DO UPDATE SET title=excluded.title, description=excluded.description, image=excluded.image, category_id=excluded.category_id`)
-        .bind(slug, title, description || '', image || '', categoryId, user.id).run();
+        // 4. SIMPAN KE DATABASE D1 BESERTA KONTROL KONTENNYA
+        await db.prepare(`
+            INSERT INTO articles (slug, title, description, image, category_id, author_id, content) 
+            VALUES (?, ?, ?, ?, ?, ?, ?) 
+            ON CONFLICT(slug) DO UPDATE SET 
+                title=excluded.title, 
+                description=excluded.description, 
+                image=excluded.image, 
+                category_id=excluded.category_id, 
+                content=excluded.content
+        `)
+        .bind(slug, title, description || '', image || '', categoryId, user.id, content).run();
 
         return new Response(JSON.stringify({ success: true, message: 'Artikel berhasil dipublikasikan ke subfolder GitHub.' }), { headers: { 'Content-Type': 'application/json' } });
 
