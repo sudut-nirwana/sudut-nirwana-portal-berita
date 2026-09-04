@@ -17,13 +17,23 @@ export async function onRequestPost(context) {
             });
         }
 
+        // AMBIL DATA ARTIKEL BESERTA KATEGORI (BAGIAN INI YANG SEBELUMNYA KURANG)
+        const articlesQuery = await db.prepare(`
+            SELECT articles.*, categories.name as category, categories.slug as cat_slug 
+            FROM articles 
+            LEFT JOIN categories ON articles.category_id = categories.id 
+            ORDER BY articles.created_at DESC
+        `).all();
+
         // Ambil data users dengan lengkap termasuk id
         const usersQuery = await db.prepare("SELECT id, name, email, role FROM users").all();
+        
         // Ambil data comments
         const commentsQuery = await db.prepare("SELECT id, article_slug, name AS author_name, message AS content FROM comments").all();
 
         return new Response(JSON.stringify({
             success: true,
+            articles: articlesQuery.results || [],
             users: usersQuery.results || [],
             comments: commentsQuery.results || []
         }), {
