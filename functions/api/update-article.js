@@ -1,11 +1,11 @@
 export async function onRequestPost(context) {
     try {
-        const { admin_email, article_id, title, slug, category, description, image, tags, content } = await context.request.json();
+        const { admin_email, article_id, title, slug, category, popular, description, image, tags, content } = await context.request.json();
         const db = context.env.DB;
         const githubToken = context.env.GITHUB_TOKEN;
         const githubRepo = context.env.GITHUB_REPO;
 
-        const admin = await db.prepare("SELECT role FROM users WHERE email = ?").bind(admin_email).first();
+        const admin = await db.prepare("SELECT role, name FROM users WHERE email = ?").bind(admin_email).first();
         if (!admin || admin.role !== 'admin') {
             return new Response(JSON.stringify({ success: false, error: 'Akses ditolak' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
         }
@@ -16,8 +16,7 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ success: false, error: 'Artikel tidak ditemukan di database' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
         }
 
-        // Cari file .md di folder _posts berdasarkan slug lama atau tanggal lama
-        // Kita cari file di GitHub yang mengandung slug tersebut
+        // Cari file .md di folder _posts berdasarkan slug lama
         const searchRes = await fetch(`https://api.github.com/repos/${githubRepo}/contents/_posts`, {
             headers: { 'Authorization': `Bearer ${githubToken}`, 'User-Agent': 'Cloudflare-Pages-Function' }
         });
@@ -40,7 +39,7 @@ export async function onRequestPost(context) {
         const tagsArray = tags ? tags.split(',').map(t => `"${t.trim()}"`).filter(Boolean) : [];
         const tagsFrontmatter = tagsArray.length > 0 ? `tags: [${tagsArray.join(', ')}]\n` : '';
 
-        // Pertahankan tanggal asli dari nama file atau database
+        // Pertahankan tanggal asli dari nama file atau database, tambahkan popular
         const markdownContent = `---
 layout: content
 title: "${title.replace(/"/g, '\\"')}"
@@ -50,13 +49,14 @@ categories: [${catSlug}]
 ${tagsFrontmatter}image: ${image || ''}
 description: "${(description || '').replace(/"/g, '\\"')}"
 slug: "${slug}"
+popular: "${popular || 'true'}"
 ---
 
 ${content}`;
 
         const contentBase64 = btoa(Array.from(new TextEncoder().encode(markdownContent)).map(b => String.fromCharCode(b)).join(''));
 
-        // Update file di GitHub (Butuh SHA dari file yang ada)
+        // Update file di GitHub
         const githubResponse = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${targetFile.path}`, {
             method: 'PUT',
             headers: { 'Authorization': `Bearer ${githubToken}`, 'User-Agent': 'Cloudflare-Pages-Function', 'Content-Type': 'application/json' },
@@ -73,9 +73,9 @@ ${content}`;
             return new Response(JSON.stringify({ success: false, error: `GitHub API Error: ${errText}` }), { status: 502, headers: { 'Content-Type': 'application/json' } });
         }
 
-        // Update database lokal D1
-        await db.prepare("UPDATE articles SET title = ?, slug = ?, category_id = ?, description = ?, image = ?, content = ? WHERE id = ?")
-            .bind(title, slug, categoryId, description || '', image || '', content, article_id)
+        // Update database lokal D1 dengan kolom popular
+        await db.prepare("UPDATE articles SET title = ?, slug = ?, category_id = ?, popular = ?, description = ?, image = ?, content = ? WHERE id = ?")
+            .bind(title, slug, categoryId, popular || 'true', description || '', image || '', content, article_id)
             .run();
 
         return new Response(JSON.stringify({ success: true, message: 'Artikel berhasil diperbarui di GitHub dan Database' }), { headers: { 'Content-Type': 'application/json' } });

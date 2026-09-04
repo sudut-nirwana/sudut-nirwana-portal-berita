@@ -102,6 +102,7 @@ document.getElementById('publish-form').addEventListener('submit', async (e) => 
         title: document.getElementById('title').value,
         slug: document.getElementById('slug').value,
         category: document.getElementById('category').value,
+        popular: document.getElementById('popular').value, // Ditambahkan untuk menangkap status popular
         description: document.getElementById('description').value,
         image: document.getElementById('image').value,
         tags: document.getElementById('tags').value,
@@ -151,7 +152,7 @@ async function loadAdminData() {
         if (!data.success) return;
 
         allArticles = data.articles || [];
-        renderArticlesTable(); // Render tabel artikel dengan filter & pagination
+        renderArticlesTable();
 
         const userTableBody = document.getElementById('users-table-body');
         if (data.users && data.users.length > 0) {
@@ -194,7 +195,6 @@ function renderArticlesTable() {
     const articlesTableBody = document.getElementById('articles-table-body');
     if (!articlesTableBody) return;
 
-    // Filter berdasarkan kata kunci pencarian (judul atau kategori)
     const filtered = allArticles.filter(art => 
         (art.title && art.title.toLowerCase().includes(searchQuery)) ||
         (art.category && art.category.toLowerCase().includes(searchQuery))
@@ -247,6 +247,7 @@ function editArticle(articleId) {
     document.getElementById('title').value = article.title || '';
     document.getElementById('slug').value = article.slug || '';
     document.getElementById('category').value = article.category || '';
+    document.getElementById('popular').value = article.popular || 'true'; // Mengisi pilihan popular saat edit
     document.getElementById('description').value = article.description || '';
     document.getElementById('image').value = article.image || '';
     document.getElementById('tags').value = article.tags || '';

@@ -49,6 +49,7 @@ export async function onRequestPost(context) {
             let slug = '';
             let description = '';
             let image = '';
+            let popular = 'true';
             let categoryName = 'Uncategorized';
 
             frontMatterLines.forEach(line => {
@@ -61,6 +62,7 @@ export async function onRequestPost(context) {
                 if (key === 'slug') slug = val;
                 if (key === 'description') description = val;
                 if (key === 'image') image = val;
+                if (key === 'popular') popular = val;
                 if (key === 'categories') categoryName = val.replace(/[\[\]]/g, '').trim() || 'Uncategorized';
             });
 
@@ -77,15 +79,16 @@ export async function onRequestPost(context) {
             let authorId = author ? author.id : 1;
 
             await db.prepare(`
-                INSERT INTO articles (slug, title, description, image, category_id, author_id, content) 
-                VALUES (?, ?, ?, ?, ?, ?, ?) 
+                INSERT INTO articles (slug, title, description, image, popular, category_id, author_id, content) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?) 
                 ON CONFLICT(slug) DO UPDATE SET 
                     title=excluded.title, 
                     description=excluded.description, 
                     image=excluded.image, 
+                    popular=excluded.popular,
                     category_id=excluded.category_id,
                     content=excluded.content
-            `).bind(slug, title, description, image, categoryId, authorId, content).run();
+            `).bind(slug, title, description, image, popular, categoryId, authorId, content).run();
 
             syncedCount++;
         }

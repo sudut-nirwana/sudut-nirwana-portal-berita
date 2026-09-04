@@ -1,6 +1,6 @@
 export async function onRequestPost(context) {
     try {
-        const { title, slug, description, category, content, image, tags, author_email } = await context.request.json();
+        const { title, slug, description, category, popular, content, image, tags, author_email } = await context.request.json();
         const db = context.env.DB;
         const githubToken = context.env.GITHUB_TOKEN;
         const githubRepo = context.env.GITHUB_REPO; // format: user/repo
@@ -39,6 +39,7 @@ categories: [${category}]
 ${tagsFrontmatter}image: ${image || ''}
 description: "${(description || '').replace(/"/g, '\\"')}"
 slug: "${slug}"
+popular: "${popular || 'true'}"
 ---
 
 ${content}`;
@@ -68,16 +69,17 @@ ${content}`;
 
         // 4. SIMPAN KE DATABASE D1 BESERTA KONTROL KONTENNYA
         await db.prepare(`
-            INSERT INTO articles (slug, title, description, image, category_id, author_id, content) 
-            VALUES (?, ?, ?, ?, ?, ?, ?) 
+            INSERT INTO articles (slug, title, description, image, popular, category_id, author_id, content) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?) 
             ON CONFLICT(slug) DO UPDATE SET 
                 title=excluded.title, 
                 description=excluded.description, 
                 image=excluded.image, 
+                popular=excluded.popular,
                 category_id=excluded.category_id, 
                 content=excluded.content
         `)
-        .bind(slug, title, description || '', image || '', categoryId, user.id, content).run();
+        .bind(slug, title, description || '', image || '', popular || 'true', categoryId, user.id, content).run();
 
         return new Response(JSON.stringify({ success: true, message: 'Artikel berhasil dipublikasikan ke subfolder GitHub.' }), { headers: { 'Content-Type': 'application/json' } });
 
