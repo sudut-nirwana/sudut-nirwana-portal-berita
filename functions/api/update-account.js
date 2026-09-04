@@ -12,14 +12,20 @@ export async function onRequestPost(context) {
         }
 
         let targetId = requester.id;
+        let targetUser = requester;
 
-        // Jika admin ingin mengubah data/sandi pengguna lain
         if (target_user_id && requester.role === 'admin') {
             targetId = target_user_id;
+            targetUser = await db.prepare("SELECT * FROM users WHERE id = ?").bind(targetId).first();
+            if (!targetUser) {
+                return new Response(JSON.stringify({ success: false, error: 'Target user not found' }), { 
+                    status: 404, 
+                    headers: { 'Content-Type': 'application/json' } 
+                });
+            }
         }
 
-        // Validasi Email jika diubah
-        if (new_email && new_email !== requester.email) {
+        if (new_email && new_email !== targetUser.email) {
             if (requester.role !== 'admin') {
                 return new Response(JSON.stringify({ success: false, error: 'Hanya admin yang dapat mengubah alamat email.' }), { 
                     status: 403, 
@@ -34,27 +40,41 @@ export async function onRequestPost(context) {
             }
         }
 
-        // Validasi Password jika diisi
+        const encoder = new TextEncoder();
+
         if (new_password) {
-            // Jika author mengubah password sendiri, wajib verifikasi password lama.
-            // Jika admin mereset password akun lain (targetId !== requester.id), tidak perlu password lama.
             if (targetId === requester.id && requester.role !== 'admin') {
-                if (requester.password !== old_password) {
+                if (!old_password) {
+                    return new Response(JSON.stringify({ success: false, error: 'Password lama wajib diisi.' }), { 
+                        status: 400, 
+                        headers: { 'Content-Type': 'application/json' } 
+                    });
+                }
+                const oldHashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(old_password));
+                const oldInputHash = Array.from(new Uint8Array(oldHashBuffer))
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
+
+                if (oldInputHash !== targetUser.password_hash) {
                     return new Response(JSON.stringify({ success: false, error: 'Password lama salah.' }), { 
                         status: 401, 
                         headers: { 'Content-Type': 'application/json' } 
                     });
                 }
             }
-            await db.prepare("UPDATE users SET password = ? WHERE id = ?").bind(new_password, targetId).run();
+
+            const newHashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(new_password));
+            const newPasswordHash = Array.from(new Uint8Array(newHashBuffer))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+
+            await db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").bind(newPasswordHash, targetId).run();
         }
 
-        // Perbarui Nama Lengkap
         if (new_name) {
             await db.prepare("UPDATE users SET name = ? WHERE id = ?").bind(new_name, targetId).run();
         }
 
-        // Perbarui Email
         if (new_email) {
             await db.prepare("UPDATE users SET email = ? WHERE id = ?").bind(new_email, targetId).run();
         }
