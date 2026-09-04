@@ -9,7 +9,7 @@ export async function onRequestPost(context) {
             });
         }
 
-        const user = await db.prepare("SELECT id, name, email, role, password FROM users WHERE email = ?").bind(email).first();
+        const user = await db.prepare("SELECT id, name, email, role, password_hash FROM users WHERE email = ?").bind(email).first();
 
         if (!user) {
             return new Response(JSON.stringify({ success: false, error: 'Email atau password salah' }), {
@@ -23,7 +23,7 @@ export async function onRequestPost(context) {
             .map(b => b.toString(16).padStart(2, '0'))
             .join('');
 
-        if (inputHash !== user.password) {
+        if (inputHash !== user.password_hash) {
             return new Response(JSON.stringify({ success: false, error: 'Email atau password salah' }), {
                 status: 401, headers: { 'Content-Type': 'application/json' }
             });
