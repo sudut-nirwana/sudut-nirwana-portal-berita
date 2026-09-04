@@ -12,8 +12,8 @@ export async function onRequestPost(context) {
         }
 
         let targetId = requester.id;
-        let isUpdatingDetails = false;
 
+        // Jika admin ingin mengubah data/sandi pengguna lain
         if (target_user_id && requester.role === 'admin') {
             targetId = target_user_id;
         }
@@ -36,20 +36,25 @@ export async function onRequestPost(context) {
 
         // Validasi Password jika diisi
         if (new_password) {
-            if (requester.role !== 'admin' && requester.password !== old_password) {
-                return new Response(JSON.stringify({ success: false, error: 'Password lama salah.' }), { 
-                    status: 401, 
-                    headers: { 'Content-Type': 'application/json' } 
-                });
+            // Jika author mengubah password sendiri, wajib verifikasi password lama.
+            // Jika admin mereset password akun lain (targetId !== requester.id), tidak perlu password lama.
+            if (targetId === requester.id && requester.role !== 'admin') {
+                if (requester.password !== old_password) {
+                    return new Response(JSON.stringify({ success: false, error: 'Password lama salah.' }), { 
+                        status: 401, 
+                        headers: { 'Content-Type': 'application/json' } 
+                    });
+                }
             }
             await db.prepare("UPDATE users SET password = ? WHERE id = ?").bind(new_password, targetId).run();
         }
 
-        // Perbarui Nama dan Email
+        // Perbarui Nama Lengkap
         if (new_name) {
             await db.prepare("UPDATE users SET name = ? WHERE id = ?").bind(new_name, targetId).run();
         }
 
+        // Perbarui Email
         if (new_email) {
             await db.prepare("UPDATE users SET email = ? WHERE id = ?").bind(new_email, targetId).run();
         }

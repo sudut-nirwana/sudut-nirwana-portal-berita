@@ -185,7 +185,12 @@
                             <td>${escapeHtml(u.name)}</td>
                             <td>${escapeHtml(u.email)}</td>
                             <td>${escapeHtml(u.role)}</td>
-                            <td>${u.email !== currentUser.email ? `<button type="button" class="btn-danger" onclick="deleteUser(${u.id})">Hapus</button>` : '<strong>(Anda)</strong>'}</td>
+                            <td>
+                                ${u.email !== currentUser.email ? `
+                                    <button type="button" class="btn-danger" onclick="deleteUser(${u.id})" style="margin-right: 5px; margin-bottom: 5px;">Hapus</button>
+                                    <button type="button" onclick="resetUserPassword(${u.id}, '${escapeHtml(u.name)}')" style="background: #d69e2e; width: auto; padding: 5px 10px; font-size: 13px;">Reset Sandi</button>
+                                ` : '<strong>(Akun Anda)</strong>'}
+                            </td>
                         </tr>
                     `).join('');
                 } else {
@@ -225,6 +230,31 @@
                     loadAdminData();
                 } else {
                     alert('Gagal menghapus: ' + data.error);
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan jaringan.');
+            }
+        }
+
+        async function resetUserPassword(userId, userName) {
+            const newPassword = prompt(`Masukkan kata sandi baru untuk ${userName}:`);
+            if (!newPassword) return;
+
+            try {
+                const res = await fetch('/api/update-account', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        admin_email: currentUser.email,
+                        target_user_id: userId,
+                        new_password: newPassword
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`Kata sandi untuk ${userName} berhasil diubah.`);
+                } else {
+                    alert('Gagal mereset sandi: ' + data.error);
                 }
             } catch (err) {
                 alert('Terjadi kesalahan jaringan.');
