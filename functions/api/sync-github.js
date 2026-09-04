@@ -1,3 +1,22 @@
+async function getMarkdownFilesFromGithub(url, headers) {
+    let filesList = [];
+    const res = await fetch(url, { headers });
+    if (!res.ok) return filesList;
+
+    const items = await res.json();
+    if (!Array.isArray(items)) return filesList;
+
+    for (const item of items) {
+        if (item.type === 'file' && item.name.endsWith('.md')) {
+            filesList.push(item);
+        } else if (item.type === 'dir') {
+            const subFiles = await getMarkdownFilesFromGithub(item.url, headers);
+            filesList = filesList.concat(subFiles);
+        }
+    }
+    return filesList;
+}
+
 export async function onRequestPost(context) {
     try {
         const { admin_email } = await context.request.json();
@@ -10,22 +29,13 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ success: false, error: 'Akses ditolak' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
         }
 
-        const res = await fetch(`https://api.github.com/repos/${githubRepo}/contents/_posts`, {
-            headers: { 'Authorization': `Bearer ${githubToken}`, 'User-Agent': 'Cloudflare-Pages-Function' }
-        });
+        const headers = { 'Authorization': `Bearer ${githubToken}`, 'User-Agent': 'Cloudflare-Pages-Function' };
+        const mdFiles = await getMarkdownFilesFromGithub(`https://api.github.com/repos/${githubRepo}/contents/_posts`, headers);
 
-        if (!res.ok) {
-            return new Response(JSON.stringify({ success: false, error: 'Gagal mengambil daftar file dari GitHub' }), { status: 502, headers: { 'Content-Type': 'application/json' } });
-        }
-
-        const files = await res.json();
-        const mdFiles = files.filter(f => f.name.endsWith('.md'));
         let syncedCount = 0;
 
         for (const file of mdFiles) {
-            const fileRes = await fetch(file.download_url, {
-                headers: { 'User-Agent': 'Cloudflare-Pages-Function' }
-            });
+            const fileRes = await fetch(file.download_url, { headers });
             if (!fileRes.ok) continue;
 
             const markdownText = await fileRes.text();
@@ -80,7 +90,7 @@ export async function onRequestPost(context) {
             syncedCount++;
         }
 
-        return new Response(JSON.stringify({ success: true, message: `Berhasil menyinkronkan ${syncedCount} artikel dari GitHub.` }), { headers: { 'Content-Type': 'application/json' } });
+        return new Response(JSON.stringify({ success: true, message: `Berhasil menyinkronkan ${syncedCount} artikel dari seluruh subfolder GitHub.` }), { headers: { 'Content-Type': 'application/json' } });
 
     } catch (err) {
         return new Response(JSON.stringify({ success: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
