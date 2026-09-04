@@ -45,8 +45,15 @@ export async function onRequestPost(context) {
 
         const rawCategory = category.split(',')[0].trim();
         const catSlug = rawCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-        let catRecord = await db.prepare("SELECT id FROM categories WHERE slug = ?").bind(catSlug).first();
-        let categoryId = catRecord ? catRecord.id : (await db.prepare("INSERT INTO categories (name, slug) VALUES (?, ?) RETURNING id").bind(rawCategory, catSlug).first()).id;
+        
+        let catRecord = await db.prepare("SELECT id FROM categories WHERE slug = ? OR name = ?").bind(catSlug, rawCategory).first();
+        let categoryId;
+        if (catRecord) {
+            categoryId = catRecord.id;
+        } else {
+            const insertRes = await db.prepare("INSERT INTO categories (name, slug) VALUES (?, ?) ON CONFLICT(name) DO UPDATE SET slug=excluded.slug RETURNING id").bind(rawCategory, catSlug).first();
+            categoryId = insertRes.id;
+        }
 
         const tagsArray = tags ? tags.split(',').map(t => `"${t.trim()}"`).filter(Boolean) : [];
         const tagsFrontmatter = tagsArray.length > 0 ? `tags: [${tagsArray.join(', ')}]\n` : '';
