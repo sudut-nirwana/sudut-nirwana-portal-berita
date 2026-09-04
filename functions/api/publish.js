@@ -1,6 +1,6 @@
 export async function onRequestPost(context) {
     try {
-        const { title, slug, description, category, content, image, author_email } = await context.request.json();
+        const { title, slug, description, category, content, image, tags, author_email } = await context.request.json();
         const db = context.env.DB;
         const githubToken = context.env.GITHUB_TOKEN;
         const githubRepo = context.env.GITHUB_REPO;
@@ -34,13 +34,17 @@ export async function onRequestPost(context) {
         const dateStr = now.toISOString().replace('T', ' ').substring(0, 19) + ' +0700';
         const fileDatePrefix = now.toISOString().substring(0, 10);
         
+        // Memformat tags menjadi array string untuk frontmatter Markdown
+        const tagsArray = tags ? tags.split(',').map(t => `"${t.trim()}"`).filter(Boolean) : [];
+        const tagsFrontmatter = tagsArray.length > 0 ? `tags: [${tagsArray.join(', ')}]\n` : '';
+
         const markdownContent = `---
 layout: content
 title: "${title}"
 author: "${user.name}"
 date: ${dateStr}
 categories: [${catSlug}]
-image: ${image || ''}
+${tagsFrontmatter}image: ${image || ''}
 description: "${description || ''}"
 slug: "${slug}"
 ---

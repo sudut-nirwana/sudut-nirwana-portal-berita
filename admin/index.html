@@ -17,8 +17,6 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background: #f1f1f1; }
-
-        /* Styling Tambahan untuk Tab & Preview */
         .editor-tabs { display: flex; gap: 10px; margin-bottom: 8px; }
         .tab-btn { background: #cbd5e0; color: #333; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; width: auto; }
         .tab-btn.active { background: #0070f3; color: white; }
@@ -28,7 +26,6 @@
 </head>
 <body>
 
-    <!-- Form Login Universal -->
     <div id="login-section" class="card">
         <h2>Login Dashboard</h2>
         <form id="login-form">
@@ -40,7 +37,6 @@
         </form>
     </div>
 
-    <!-- Dashboard Utama -->
     <div id="dashboard-section" class="hidden">
         <div class="card">
             <div class="user-info">
@@ -49,7 +45,6 @@
             </div>
         </div>
 
-        <!-- Form Tulis Artikel -->
         <div class="card">
             <h2>Tulis Artikel Baru</h2>
             <form id="publish-form">
@@ -63,20 +58,19 @@
                 <textarea id="description" rows="2"></textarea>
                 <label>Path Gambar</label>
                 <input type="text" id="image" placeholder="/assets/images/posts/sample.webp">
+                <label>Tags (pisahkan dengan koma)</label>
+                <input type="text" id="tags" placeholder="sastra, sitti nurbaya, sejarah">
                 
                 <label>Konten (Markdown)</label>
-                <!-- Tombol Navigasi Tab Editor & Preview -->
                 <div class="editor-tabs">
                     <button type="button" id="btn-tab-edit" class="tab-btn active" onclick="switchEditorTab('edit')">Editor Markdown</button>
                     <button type="button" id="btn-tab-preview" class="tab-btn" onclick="switchEditorTab('preview')">Pratinjau (Preview)</button>
                 </div>
 
-                <!-- Area Editor (Textarea) -->
                 <div id="editor-pane">
                     <textarea id="content" rows="8" required placeholder="Tulis konten Markdown di sini..."></textarea>
                 </div>
 
-                <!-- Area Hasil Pratinjau (Preview Box) -->
                 <div id="preview-pane" class="hidden preview-box">
                     <p style="color: #888; font-style: italic;">Pratinjau artikel akan muncul di sini...</p>
                 </div>
@@ -85,7 +79,6 @@
             </form>
         </div>
 
-        <!-- Panel Khusus Admin -->
         <div id="admin-panel" class="hidden">
             <div class="card">
                 <h2>Tambah Penulis Baru</h2>
@@ -130,7 +123,6 @@
             </div>
         </div>
 
-        <!-- Pengaturan Akun -->
         <div class="card">
             <h2>Pengaturan Akun</h2>
             <form id="account-form">
@@ -147,11 +139,10 @@
         </div>
     </div>
 
-    <script>
+      <script>
         'use strict';
         let currentUser = null;
 
-        // Fungsi Tab Editor & Lazy Load Markdown Preview
         function switchEditorTab(mode) {
             const editorPane = document.getElementById('editor-pane');
             const previewPane = document.getElementById('preview-pane');
@@ -170,7 +161,6 @@
                 btnPreview.classList.add('active');
                 btnEdit.classList.remove('active');
 
-                // Muat marked.js otomatis via CDN hanya saat tombol preview ditekan pertama kali
                 if (typeof marked === 'undefined') {
                     previewPane.innerHTML = '<p style="color: #888; font-style: italic;">Memuat modul pratinjau...</p>';
                     const script = document.createElement('script');
@@ -228,6 +218,44 @@
             }
         });
 
+        document.getElementById('publish-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) {
+                alert('Sesi login tidak valid. Silakan login ulang.');
+                return;
+            }
+
+            const payload = {
+                title: document.getElementById('title').value,
+                slug: document.getElementById('slug').value,
+                category: document.getElementById('category').value,
+                description: document.getElementById('description').value,
+                image: document.getElementById('image').value,
+                tags: document.getElementById('tags').value,
+                content: document.getElementById('content').value,
+                author_email: currentUser.email
+            };
+
+            try {
+                const res = await fetch('/api/posts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    alert('Artikel berhasil dipublikasikan!');
+                    e.target.reset();
+                    switchEditorTab('edit');
+                } else {
+                    alert('Gagal mempublikasikan: ' + (data.error || 'Terjadi kesalahan.'));
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan jaringan saat mengirim data.');
+            }
+        });
+
         async function loadAdminData() {
             try {
                 const res = await fetch('/api/admin-data', {
@@ -242,7 +270,6 @@
                     return;
                 }
 
-                // Render Tabel Users
                 const userTableBody = document.getElementById('users-table-body');
                 if (data.users && data.users.length > 0) {
                     userTableBody.innerHTML = data.users.map(u => `
@@ -262,7 +289,6 @@
                     userTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Tidak ada anggota terdaftar.</td></tr>';
                 }
 
-                // Render Tabel Comments
                 const commentTableBody = document.getElementById('comments-table-body');
                 if (data.comments && data.comments.length > 0) {
                     commentTableBody.innerHTML = data.comments.map(c => `
@@ -370,23 +396,27 @@
 
         document.getElementById('account-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const res = await fetch('/api/update-account', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    admin_email: currentUser.email,
-                    new_name: document.getElementById('settings-name').value,
-                    new_email: document.getElementById('settings-email').value,
-                    old_password: document.getElementById('settings-old-password').value,
-                    new_password: document.getElementById('settings-new-password').value
-                })
-            });
-            const data = await res.json();
-            if (data.success) {
-                alert('Perubahan berhasil disimpan.');
-                location.reload();
-            } else {
-                alert('Gagal menyimpan: ' + data.error);
+            try {
+                const res = await fetch('/api/update-account', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        admin_email: currentUser.email,
+                        new_name: document.getElementById('settings-name').value,
+                        new_email: document.getElementById('settings-email').value,
+                        old_password: document.getElementById('settings-old-password').value,
+                        new_password: document.getElementById('settings-new-password').value
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Perubahan berhasil disimpan.');
+                    location.reload();
+                } else {
+                    alert('Gagal menyimpan: ' + data.error);
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan jaringan saat menyimpan akun.');
             }
         });
 
