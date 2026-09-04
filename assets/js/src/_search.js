@@ -226,7 +226,6 @@
       const iconViews = document.createElement('span');
       iconViews.setAttribute('data-icon', 'eye');
 
-      // Ambil slug langsung dari post atau ekstrak dari URL
       const postSlug = post.slug || (post.url ? post.url.split('/').filter(Boolean).pop() : '');
       
       const viewCountSpan = document.createElement('span');
@@ -247,6 +246,10 @@
 
     if (typeof window.renderIcons === 'function') {
       window.renderIcons(searchResultCards);
+    }
+
+    if (typeof window.updatePostViews === 'function') {
+      window.updatePostViews();
     }
   }
 })();
