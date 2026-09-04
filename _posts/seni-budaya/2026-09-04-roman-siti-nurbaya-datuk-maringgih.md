@@ -1,12 +1,12 @@
 ---
 layout: content
 title: "Menguak Kisah Siti Nurbaya: Lebih dari Sekadar Tragedi Cinta dan Kawin Paksa"
-author: "Tavisha C Neira"
-date: 2026-09-04 18:00 +0700
+author: "Yossi Oktavia"
+date: 2026-09-04 00:00:00 +0700
 categories: [seni & budaya]
-tags: [sastra, sastra indonesia, siti nurbaya, balai pustaka, adat, budaya minang]
 image: /assets/images/posts/kisah-siti-nurbaya.webp
 description: "Mengenal esensi cerita Siti Nurbaya karya Marah Rusli. Kisah cinta tragis yang menjadi simbol perlawanan terhadap jeratan adat lama dan keserakahan."
+slug: "roman-siti-nurbaya-datuk-maringgih"
 popular: "true"
 ---
 
@@ -53,3 +53,5 @@ Analisis karakter dan jalan cerita ini disarikan dari teks asli serta kajian sas
 
 * Naskah asli roman *Siti Nurbaya: Kasih Tak Sampai* diterbitkan secara resmi dan dikurasi oleh penerbit negara [Balai Pustaka](https://balaipustaka.co.id).
 * Analisis struktural dan nilai moral cerita dapat divalidasi melalui ensiklopedia sastra [Badan Pengembangan dan Pembinaan Bahasa, Kemendikbudristek](https://kemdikbud.go.id).
+
+{% include alert-group.html category="seni & budaya" %}
