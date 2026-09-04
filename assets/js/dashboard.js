@@ -1,6 +1,20 @@
 'use strict';
 let currentUser = null;
 let allArticles = [];
+let currentPage = 1;
+const rowsPerPage = 10;
+let searchQuery = '';
+
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('article-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase();
+            currentPage = 1; // Reset ke halaman pertama saat mencari
+            renderArticlesTable();
+        });
+    }
+});
 
 document.getElementById('title').addEventListener('input', (e) => {
     const editId = document.getElementById('edit-article-id').value;
@@ -137,21 +151,7 @@ async function loadAdminData() {
         if (!data.success) return;
 
         allArticles = data.articles || [];
-        const articlesTableBody = document.getElementById('articles-table-body');
-        if (allArticles.length > 0) {
-            articlesTableBody.innerHTML = allArticles.map(art => `
-                <tr>
-                    <td>${escapeHtml(art.title)}</td>
-                    <td>${escapeHtml(art.category || '-')}</td>
-                    <td>
-                        <button type="button" onclick="editArticle('${art.id}')" style="background: #319795; width: auto; padding: 5px 10px; font-size: 13px; margin-right: 5px; margin-bottom: 5px;">Edit</button>
-                        <button type="button" class="btn-danger" onclick="deleteArticle('${art.id}')">Hapus</button>
-                    </td>
-                </tr>
-            `).join('');
-        } else {
-            articlesTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Tidak ada artikel.</td></tr>';
-        }
+        renderArticlesTable(); // Render tabel artikel dengan filter & pagination
 
         const userTableBody = document.getElementById('users-table-body');
         if (data.users && data.users.length > 0) {
@@ -188,6 +188,52 @@ async function loadAdminData() {
     } catch (err) {
         console.error('Error loading admin data:', err);
     }
+}
+
+function renderArticlesTable() {
+    const articlesTableBody = document.getElementById('articles-table-body');
+    if (!articlesTableBody) return;
+
+    // Filter berdasarkan kata kunci pencarian (judul atau kategori)
+    const filtered = allArticles.filter(art => 
+        (art.title && art.title.toLowerCase().includes(searchQuery)) ||
+        (art.category && art.category.toLowerCase().includes(searchQuery))
+    );
+
+    const totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const paginated = filtered.slice(start, start + rowsPerPage);
+
+    if (paginated.length > 0) {
+        articlesTableBody.innerHTML = paginated.map(art => `
+            <tr>
+                <td>${escapeHtml(art.title)}</td>
+                <td>${escapeHtml(art.category || '-')}</td>
+                <td>
+                    <button type="button" onclick="editArticle('${art.id}')" style="background: #319795; width: auto; padding: 5px 10px; font-size: 13px; margin-right: 5px; margin-bottom: 5px;">Edit</button>
+                    <button type="button" class="btn-danger" onclick="deleteArticle('${art.id}')">Hapus</button>
+                </td>
+            </tr>
+        `).join('');
+    } else {
+        articlesTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Tidak ada artikel ditemukan.</td></tr>';
+    }
+
+    const pageInfo = document.getElementById('page-info');
+    const prevBtn = document.getElementById('prev-page-btn');
+    const nextBtn = document.getElementById('next-page-btn');
+
+    if (pageInfo) pageInfo.innerText = `Hal ${currentPage} dari ${totalPages} (Total: ${filtered.length})`;
+    if (prevBtn) prevBtn.disabled = currentPage === 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+}
+
+function changePage(direction) {
+    currentPage += direction;
+    renderArticlesTable();
 }
 
 function editArticle(articleId) {

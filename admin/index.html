@@ -92,7 +92,10 @@
         <div id="admin-panel" class="hidden">
             <div class="card">
                 <h2>Kelola Artikel</h2>
-                <button type="button" onclick="syncGithubArticles()" style="background: #d69e2e; width: auto; margin-bottom: 15px; padding: 8px 12px; font-size: 14px;">🔄 Sinkronkan Artikel dari GitHub</button>
+                <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center;">
+                    <input type="text" id="article-search" placeholder="Cari judul atau kategori artikel..." style="margin: 0; flex: 1;">
+                    <button type="button" onclick="syncGithubArticles()" style="background: #d69e2e; width: auto; padding: 10px 12px; font-size: 14px; margin: 0; white-space: nowrap;">🔄 Sinkron</button>
+                </div>
                 <table>
                     <thead>
                         <tr><th>Judul</th><th>Kategori</th><th>Aksi</th></tr>
@@ -101,6 +104,13 @@
                         <tr><td colspan="3" style="text-align:center;">Memuat artikel...</td></tr>
                     </tbody>
                 </table>
+                
+                <!-- Navigasi Halaman / Pagination -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 14px;">
+                    <button type="button" id="prev-page-btn" onclick="changePage(-1)" style="width: auto; padding: 6px 12px; background: #718096;" disabled>Sebelumnya</button>
+                    <span id="page-info" style="color: #555; font-size: 13px;">Halaman 1 dari 1</span>
+                    <button type="button" id="next-page-btn" onclick="changePage(1)" style="width: auto; padding: 6px 12px; background: #0070f3;" disabled>Selanjutnya</button>
+                </div>
             </div>
 
             <div class="card">
