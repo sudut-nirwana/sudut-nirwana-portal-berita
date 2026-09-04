@@ -92,6 +92,7 @@
         <div id="admin-panel" class="hidden">
             <div class="card">
                 <h2>Kelola Artikel</h2>
+                <button type="button" onclick="syncGithubArticles()" style="background: #d69e2e; width: auto; margin-bottom: 15px; padding: 8px 12px; font-size: 14px;">🔄 Sinkronkan Artikel dari GitHub</button>
                 <table>
                     <thead>
                         <tr><th>Judul</th><th>Kategori</th><th>Aksi</th></tr>
@@ -101,8 +102,7 @@
                     </tbody>
                 </table>
             </div>
-
-            <div class="card">
+                        <div class="card">
                 <h2>Tambah Penulis Baru</h2>
                 <form id="author-form">
                     <label>Nama Lengkap</label>
@@ -268,7 +268,7 @@
             btn.innerText = editId ? 'Menyimpan Perubahan...' : 'Mempublikasikan...';
 
             try {
-                const res = styleFetch = await fetch(endpoint, {
+                const res = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -351,7 +351,8 @@
                 console.error('Error loading admin data:', err);
             }
         }
-              function editArticle(id, title, slug, category, description, image, tags, content) {
+
+        function editArticle(id, title, slug, category, description, image, tags, content) {
             document.getElementById('edit-article-id').value = id;
             document.getElementById('title').value = title;
             document.getElementById('slug').value = slug;
@@ -387,8 +388,30 @@
                 });
                 const data = await res.json();
                 if (data.success) { alert('Artikel berhasil dihapus.'); loadAdminData(); }
-                else { alert('Gagal menghapus: ' + data.error); }
-            } catch (err) { alert('Terjadi kesalahan jaringan.'); }
+                else { alert('Gagal menghapus: ' + (data.error || 'Terjadi kesalahan')); }
+            } catch (err) {
+                alert('Terjadi kesalahan jaringan.');
+            }
+        }
+
+        async function syncGithubArticles() {
+            if (!confirm('Tarik dan sinkronkan semua artikel dari folder _posts GitHub ke database?')) return;
+            try {
+                const res = await fetch('/api/sync-github', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ admin_email: currentUser.email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(data.message);
+                    loadAdminData();
+                } else {
+                    alert('Gagal sinkronisasi: ' + (data.error || 'Terjadi kesalahan'));
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan jaringan saat sinkronisasi.');
+            }
         }
 
         async function deleteUser(userId) {
