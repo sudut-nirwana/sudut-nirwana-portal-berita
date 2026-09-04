@@ -16,8 +16,20 @@ export async function onRequestPost(context) {
             });
         }
 
+        if (!password) {
+            return new Response(JSON.stringify({ success: false, error: 'Password wajib diisi' }), {
+                status: 400, headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
+        const encoder = new TextEncoder();
+        const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(password));
+        const passwordHash = Array.from(new Uint8Array(hashBuffer))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+
         await db.prepare("INSERT INTO users (email, password_hash, role, name) VALUES (?, ?, ?, ?)")
-            .bind(email, password, role || 'author', name)
+            .bind(email, passwordHash, role || 'author', name)
             .run();
 
         return new Response(JSON.stringify({ success: true, message: 'Penulis baru berhasil ditambahkan.' }), {
