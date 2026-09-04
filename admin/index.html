@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sudut Nirwana</title>
-    <!-- WAJIB: Load marked.js dari awal biar preview gak error -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         body { font-family: sans-serif, system-ui; max-width: 800px; margin: 30px auto; padding: 20px; background: #f9f9f9; color: #333; }
@@ -16,6 +15,8 @@
         .user-info { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
         .btn-danger { background: #e53e3e; width: auto; padding: 5px 10px; font-size: 13px; }
         .btn-danger:hover { background: #c53030; }
+        .btn-secondary { background: #718096; width: auto; padding: 10px 15px; font-size: 15px; margin-top: 8px; }
+        .btn-secondary:hover { background: #4a5568; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background: #f1f1f1; }
@@ -25,6 +26,7 @@
         .preview-box { border: 1px solid #ccc; border-radius: 4px; padding: 15px; min-height: 180px; background: #fff; margin-bottom: 16px; box-sizing: border-box; }
         .preview-box h1, .preview-box h2, .preview-box h3 { margin-top: 0; }
         .info-text { font-size: 12px; color: #666; margin-top: -12px; margin-bottom: 16px; }
+        .form-actions { display: flex; gap: 10px; }
     </style>
 </head>
 <body>
@@ -49,8 +51,9 @@
         </div>
 
         <div class="card">
-            <h2>Tulis Artikel Baru</h2>
+            <h2 id="form-title">Tulis Artikel Baru</h2>
             <form id="publish-form">
+                <input type="hidden" id="edit-article-id" value="">
                 <label>Judul Artikel</label>
                 <input type="text" id="title" required>
                 <label>Slug URL - Otomatis dari Judul</label>
@@ -79,11 +82,26 @@
                     <p style="color: #888; font-style: italic;">Pratinjau artikel akan muncul di sini...</p>
                 </div>
 
-                <button type="submit">Publikasikan Artikel</button>
+                <div class="form-actions">
+                    <button type="submit" id="submit-btn">Publikasikan Artikel</button>
+                    <button type="button" id="cancel-edit-btn" class="btn-secondary hidden" onclick="cancelEdit()">Batal Edit</button>
+                </div>
             </form>
         </div>
 
         <div id="admin-panel" class="hidden">
+            <div class="card">
+                <h2>Kelola Artikel</h2>
+                <table>
+                    <thead>
+                        <tr><th>Judul</th><th>Kategori</th><th>Aksi</th></tr>
+                    </thead>
+                    <tbody id="articles-table-body">
+                        <tr><td colspan="3" style="text-align:center;">Memuat artikel...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
             <div class="card">
                 <h2>Tambah Penulis Baru</h2>
                 <form id="author-form">
@@ -147,8 +165,9 @@
         'use strict';
         let currentUser = null;
 
-        // AUTO GENERATE SLUG DARI JUDUL + BATASI 6 KATA
         document.getElementById('title').addEventListener('input', (e) => {
+            const editId = document.getElementById('edit-article-id').value;
+            if (editId) return;
             let slug = e.target.value.toLowerCase()
                 .replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-')
                 .replace(/^-+/, '').replace(/-+$/, '');
@@ -225,6 +244,9 @@
                 return;
             }
 
+            const editId = document.getElementById('edit-article-id').value;
+            const endpoint = editId ? '/api/update-article' : '/api/publish';
+
             const payload = {
                 title: document.getElementById('title').value,
                 slug: document.getElementById('slug').value,
@@ -233,29 +255,37 @@
                 image: document.getElementById('image').value,
                 tags: document.getElementById('tags').value,
                 content: document.getElementById('content').value,
+                admin_email: currentUser.email,
                 author_email: currentUser.email
             };
+
+            if (editId) {
+                payload.article_id = editId;
+            }
             
-            const btn = e.target.querySelector('button[type="submit"]');
-            btn.disabled = true; btn.innerText = 'Mempublikasikan...';
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true; 
+            btn.innerText = editId ? 'Menyimpan Perubahan...' : 'Mempublikasikan...';
 
             try {
-                const res = await fetch('/api/publish', {
+                const res = styleFetch = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert('Artikel berhasil dipublikasikan!');
-                    e.target.reset(); switchEditorTab('edit');
+                    alert(editId ? 'Artikel berhasil diperbarui!' : 'Artikel berhasil dipublikasikan!');
+                    cancelEdit();
+                    if (currentUser.role === 'admin') loadAdminData();
                 } else {
-                    alert('Gagal mempublikasikan: ' + (data.error || 'Terjadi kesalahan.'));
+                    alert('Gagal: ' + (data.error || 'Terjadi kesalahan.'));
                 }
             } catch (err) {
                 alert('Terjadi kesalahan jaringan saat mengirim data.');
             }
-            btn.disabled = false; btn.innerText = 'Publikasikan Artikel';
+            btn.disabled = false; 
+            btn.innerText = editId ? 'Simpan Perubahan Artikel' : 'Publikasikan Artikel';
         });
 
         async function loadAdminData() {
@@ -268,6 +298,22 @@
                 const data = await res.json();
                 
                 if (!data.success) return;
+
+                const articlesTableBody = document.getElementById('articles-table-body');
+                if (data.articles && data.articles.length > 0) {
+                    articlesTableBody.innerHTML = data.articles.map(art => `
+                        <tr>
+                            <td>${escapeHtml(art.title)}</td>
+                            <td>${escapeHtml(art.category)}</td>
+                            <td>
+                                <button type="button" onclick="editArticle('${art.id}', '${escapeHtml(art.title).replace(/'/g, "\\'")}', '${escapeHtml(art.slug)}', '${escapeHtml(art.category)}', '${escapeHtml(art.description || '').replace(/'/g, "\\'")}', '${escapeHtml(art.image || '')}', '${escapeHtml(art.tags || '')}', \`${escapeHtml(art.content || '').replace(/`/g, '\\`')}\`)" style="background: #319795; width: auto; padding: 5px 10px; font-size: 13px; margin-right: 5px; margin-bottom: 5px;">Edit</button>
+                                <button type="button" class="btn-danger" onclick="deleteArticle('${art.id}')">Hapus</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    articlesTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Tidak ada artikel.</td></tr>';
+                }
 
                 const userTableBody = document.getElementById('users-table-body');
                 if (data.users && data.users.length > 0) {
@@ -304,6 +350,45 @@
             } catch (err) {
                 console.error('Error loading admin data:', err);
             }
+        }
+              function editArticle(id, title, slug, category, description, image, tags, content) {
+            document.getElementById('edit-article-id').value = id;
+            document.getElementById('title').value = title;
+            document.getElementById('slug').value = slug;
+            document.getElementById('category').value = category;
+            document.getElementById('description').value = description;
+            document.getElementById('image').value = image;
+            document.getElementById('tags').value = tags;
+            document.getElementById('content').value = content;
+
+            document.getElementById('form-title').innerText = 'Edit Artikel';
+            document.getElementById('submit-btn').innerText = 'Simpan Perubahan Artikel';
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            document.getElementById('edit-article-id').value = '';
+            document.getElementById('publish-form').reset();
+            document.getElementById('form-title').innerText = 'Tulis Artikel Baru';
+            document.getElementById('submit-btn').innerText = 'Publikasikan Artikel';
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+            switchEditorTab('edit');
+        }
+
+        async function deleteArticle(articleId) {
+            if (!confirm('Yakin ingin menghapus artikel ini?')) return;
+            try {
+                const res = await fetch('/api/delete-article', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ admin_email: currentUser.email, article_id: articleId })
+                });
+                const data = await res.json();
+                if (data.success) { alert('Artikel berhasil dihapus.'); loadAdminData(); }
+                else { alert('Gagal menghapus: ' + data.error); }
+            } catch (err) { alert('Terjadi kesalahan jaringan.'); }
         }
 
         async function deleteUser(userId) {
