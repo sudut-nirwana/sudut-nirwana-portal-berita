@@ -2,38 +2,38 @@
 layout: page
 title: "Kebijakan Privasi"
 permalink: /privacy-policy/
-last_updated: "24 Agustus 2026"
+last_updated: "4 September 2026"
 ---
 
 <div class="callout-box">
-  <p><strong>Ringkasan:</strong> Kebijakan Privasi ini menjelaskan bagaimana <strong>SudutNirwana</strong> mengumpulkan, menggunakan, dan melindungi data pribadi Anda saat menggunakan situs web kami.</p>
+  <p><strong>Ringkasan:</strong> Kebijakan Privasi ini menjelaskan secara santai bagaimana <strong>SudutNirwana</strong> mengelola data standar Anda saat nongkrong dan membaca artikel di situs kami.</p>
 </div>
 
-Selamat datang di **SudutNirwana**. Kami sangat menghargai privasi pengunjung kami dan berkomitmen untuk melindungi informasi pribadi yang Anda bagikan saat mengakses situs web kami.
+Selamat datang di **SudutNirwana**. Kami sangat menjaga privasi Anda dan berkomitmen untuk melindungi informasi standar yang terekam saat Anda mengakses situs web kami.
 
 ## 1. Informasi yang Kami Kumpulkan
 
-Kami mengumpulkan dua jenis informasi dari pengguna kami:
+Kami mengumpulkan dua jenis informasi dari pengguna kami secara wajar:
 
-* **Informasi Non-Pribadi:** Data teknis seperti alamat IP, jenis peramban (*browser*), perangkat yang digunakan, serta halaman yang dikunjungi melalui alat analitik web standar.
-* **Informasi Pribadi (Opsional):** Alamat email atau nama yang Anda berikan secara sukarela saat mendaftar buletin (*newsletter*) atau mengirimkan pesan melalui formulir kontak.
+* **Informasi Non-Pribadi:** Data teknis anonim seperti alamat IP, jenis peramban (*browser*), perangkat yang digunakan, serta halaman yang dikunjungi melalui alat analitik web standar untuk melihat tren pembaca.
+* **Informasi Pribadi (Opsional):** Alamat email atau nama panggilan yang Anda berikan secara sukarela saat mengisi kolom komentar, mendaftar buletin (*newsletter*), atau mengirimkan pesan lewat email.
 
 ## 2. Penggunaan Informasi
 
-Informasi yang dikumpulkan digunakan untuk tujuan berikut:
+Informasi yang dikumpulkan digunakan semata-mata untuk tujuan berikut:
 
-* Menyajikan dan meningkatkan kualitas konten informasi serta gaya hidup yang kami publikasikan.
-* Mengirimkan buletin berkala mengenai artikel terbaru jika Anda telah memilih untuk berlangganan.
-* Menganalisis tren penggunaan demi mengoptimalkan performa dan kecepatan situs web.
+* Menyajikan dan meningkatkan kualitas konten gaya hidup, otomotif, wisata, kuliner, dan budaya yang kami publikasikan agar makin asik dibaca.
+* Mengirimkan buletin berkala mengenai update artikel terbaru jika Anda memilih untuk berlangganan.
+* Kami berjanji **tidak akan pernah menjual, menyewakan, atau membagikan** informasi pribadi Anda kepada pihak ketiga untuk kepentingan spam atau komersial.
 
 ## 3. Cookie dan Teknologi Pelacak
 
-**SudutNirwana** menggunakan *cookie* untuk menyimpan informasi preferensi pengunjung serta mengoptimalkan pengalaman penjelajahan Anda. Anda dapat memilih untuk mematikan cookie melalui pengaturan peramban Anda masing-masing.
+**SudutNirwana** menggunakan *cookie* browser standar untuk menyimpan informasi preferensi pengunjung serta mengoptimalkan pengalaman penjelajahan Anda agar lebih cepat saat memuat halaman. Anda bebas memilih untuk mematikan cookie melalui pengaturan peramban Anda masing-masing jika kurang berkenan.
 
 ## 4. Layanan Pihak Ketiga
 
-Kami dapat bekerja sama dengan penyedia layanan pihak ketiga (seperti penyedia analitik web atau jaringan iklan). Pihak ketiga ini memiliki kebijakan privasi terpisah atas penggunaan data yang mereka kumpulkan melalui cookie mereka sendiri.
+Kami dapat bekerja sama dengan penyedia layanan pihak ketiga (seperti penyedia analitik web atau jaringan periklanan blog). Pihak ketiga ini memiliki kebijakan privasi terpisah atas penggunaan data yang mereka kumpulkan melalui cookie mereka sendiri di luar kendali situs kami.
 
 ## 5. Hubungi Kami & Layanan Aduan
 
-Jika Anda memiliki pertanyaan mengenai Kebijakan Privasi ini, ingin memperbarui data langganan, atau menyampaikan saran dan pengaduan terkait konten, silakan hubungi kami melalui [Halaman Kontak](/kontak/).
+Jika Anda memiliki pertanyaan mengenai Kebijakan Privasi ini, ingin memperbarui data langganan email, atau menyampaikan saran terkait konten, silakan hubungi kami langsung via email di **sudutnirwana.real@gmail.com**.

@@ -4,18 +4,18 @@ title: "Tentang Kami"
 permalink: /tentang-kami/
 ---
 
-**SudutNirwana** adalah portal media digital independen yang menyajikan informasi kurasi tepercaya seputar berita, gaya hidup, wisata, kuliner, dan budaya populer.
+**SudutNirwana** adalah ruang dokumentasi digital independen tempat kami merangkum berbagai keseruan harian, gaya hidup, hobi otomotif, petualangan wisata, ulasan kuliner, hingga seni dan budaya populer.
 
-Kami hadir dengan komitmen menghadirkan sudut pandang yang jernih, mendalam, dan relevan bagi para pembaca modern di tengah arus informasi yang serba cepat.
+Situs ini dibangun sebagai wadah kreatif dan portofolio konten kreator untuk menghadirkan sudut pandang yang santai, jernih, dan menarik bagi para pembaca modern yang ingin rehat sejenak dari penatnya arus informasi.
 
 ## Visi & Misi
 
-* **Visi:** Menjadi media alternatif terdepan yang menginspirasi pembaca melalui jurnalisme berita dan gaya hidup yang akurat dan estetis.
-* **Misi:** Menyajikan konten berkualitas tinggi yang berimbang, independen, serta nyaman diakses di berbagai perangkat penjelajah.
+* **Visi:** Menjadi ruang baca alternatif yang seru, estetik, dan menginspirasi bagi pembaca dalam mengeksplorasi gaya hidup serta budaya lokal.
+* **Misi:** Menyajikan konten harian yang jujur berdasarkan pengalaman nyata, disajikan dengan visual menarik, serta nyaman diakses di berbagai perangkat penjelajah.
 
-## Tim Redaksi
+## Tim Redaksi (Author)
 
-Portal ini dikelola oleh tim yang berdedikasi tinggi dalam bidang media digital dan jurnalistik:
+Portal dokumentasi ini dikelola secara mandiri oleh kreator dan didukung oleh rekanan penulis (*author biasa*) yang berdedikasi menghasilkan tulisan kreatif yang segar:
 
 <div class="team-grid">
   {% if site.data.authors %}
@@ -31,6 +31,6 @@ Portal ini dikelola oleh tim yang berdedikasi tinggi dalam bidang media digital 
       </div>
     {% endfor %}
   {% else %}
-    <p>Data redaksi sedang diperbarui.</p>
+    <p>Data penulis sedang diperbarui.</p>
   {% endif %}
 </div>
