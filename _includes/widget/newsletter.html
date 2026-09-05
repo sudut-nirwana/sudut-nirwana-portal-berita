@@ -4,8 +4,41 @@
     Newsletter
   </h3>
   <p class="newsletter-desc">Dapatkan update resep dan informasi wisata terbaru langsung ke email kamu.</p>
-  <form class="newsletter-form" onsubmit="event.preventDefault();">
-    <input type="email" placeholder="Email kamu..." required class="newsletter-input">
+  <form id="sidebarNewsletterForm" class="newsletter-form">
+    <input type="email" id="sidebarEmail" placeholder="Email kamu..." required class="newsletter-input">
     <button type="submit" class="newsletter-btn">Berlangganan</button>
   </form>
+  <p id="newsletterMsg" style="font-size: 12px; margin-top: 6px; display: none;"></p>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const sbForm = document.getElementById('sidebarNewsletterForm');
+    if (sbForm) {
+        sbForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('sidebarEmail').value;
+            const msgEl = document.getElementById('newsletterMsg');
+            try {
+                const res = await fetch('/api/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                msgEl.style.display = 'block';
+                if (data.success) {
+                    msgEl.style.color = 'green';
+                    msgEl.innerText = 'Berhasil berlangganan!';
+                    sbForm.reset();
+                } else {
+                    msgEl.style.color = 'red';
+                    msgEl.innerText = data.error || 'Gagal mendaftar.';
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+    }
+});
+</script>

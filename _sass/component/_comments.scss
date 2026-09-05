@@ -1,13 +1,13 @@
 .post-comments {
   margin-top: 40px;
-  padding-top: 24px;
-  border-top: 1px solid var(--color-border);
-}
+  padding-top: 20px;
+  border-top: 1px solid var(--color-section);
 
-.comments-title {
-  font-size: 1.25rem;
-  color: var(--text-main);
-  margin-bottom: 16px;
+  .comments-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: var(--text-main);
+  }
 }
 
 .comment-form {
@@ -15,103 +15,89 @@
   flex-direction: column;
   gap: 12px;
   margin-bottom: 24px;
+
+  input[type="text"],
+  input[type="email"],
+  textarea {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 13px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-card);
+    color: var(--text-main);
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+
+    &:focus {
+      border-color: var(--color-primary);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 90px;
+  }
 }
 
-.comment-form .form-group input,
-.comment-form .form-group textarea {
-  width: 100%;
-  padding: 12px;
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--text-main);
-}
-
-.comment-form .form-group input:focus,
-.comment-form .form-group textarea:focus {
-  border-color: var(--color-primary);
+.form-group-checkbox {
+  font-size: 13px;
+  color: var(--text-muted);
+  
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
 }
 
 .btn-submit {
-  background-color: var(--color-primary);
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 700;
   color: #fff;
-  padding: 10px 20px;
+  background: var(--color-accent);
+  border: none;
   border-radius: var(--radius-sm);
-  font-weight: 500;
   cursor: pointer;
-  align-self: flex-start;
-  transition: background 0.2s;
-}
+  transition: background 0.2s ease;
 
-.btn-submit:hover {
-  background-color: var(--color-accent);
-}
+  &:hover {
+    background: var(--color-primary);
+  }
 
-.comment-notice {
-  background: var(--color-card);
-  border: 1px dashed var(--color-primary);
-  padding: 14px;
-  border-radius: var(--radius-sm);
-  text-align: center;
-  color: var(--text-main);
-  font-size: 0.9rem;
-  margin-bottom: 24px;
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .comment-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .comment-item {
   background: var(--color-card);
-  padding: 16px;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-}
+  padding: 16px;
 
-.comment-content strong {
-  display: inline-block;
-  color: var(--text-main);
-  font-size: 0.95rem;
-}
+  &.reply-item {
+    margin-left: 24px;
+    margin-top: 12px;
+    border-left: 3px solid var(--color-primary);
+    background: var(--color-body);
+  }
 
-.comment-content small {
-  float: right;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-}
-
-.comment-content p {
-  margin-top: 8px;
-  font-size: 0.95rem;
-  color: var(--text-main);
-  word-break: break-word;
-}
-
-.comment-actions {
-  margin-top: 10px;
-  display: flex;
-  gap: 12px;
-}
-
-.btn-like {
-  background: transparent;
-  border: 1px solid var(--color-border);
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  transition: all 0.2s ease;
-}
-
-.btn-like:hover {
-  background: var(--color-body);
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-main);
+    margin: 8px 0 12px 0;
+  }
 }

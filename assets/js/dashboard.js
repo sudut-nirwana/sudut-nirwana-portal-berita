@@ -1,6 +1,7 @@
 'use strict';
 let currentUser = null;
 let allArticles = [];
+let allSubscribers = [];
 let currentPage = 1;
 const rowsPerPage = 10;
 let searchQuery = '';
@@ -10,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.toLowerCase();
-            currentPage = 1; // Reset ke halaman pertama saat mencari
+            currentPage = 1; 
             renderArticlesTable();
         });
     }
@@ -77,6 +78,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
             if (currentUser.role === 'admin') {
                 document.getElementById('admin-panel').classList.remove('hidden');
                 loadAdminData();
+                loadSubscribers();
             } else {
                 document.getElementById('settings-email').disabled = true;
             }
@@ -102,7 +104,7 @@ document.getElementById('publish-form').addEventListener('submit', async (e) => 
         title: document.getElementById('title').value,
         slug: document.getElementById('slug').value,
         category: document.getElementById('category').value,
-        popular: document.getElementById('popular').value, // Ditambahkan untuk menangkap status popular
+        popular: document.getElementById('popular').value,
         description: document.getElementById('description').value,
         image: document.getElementById('image').value,
         tags: document.getElementById('tags').value,
@@ -129,7 +131,10 @@ document.getElementById('publish-form').addEventListener('submit', async (e) => 
         if (data.success) {
             alert(editId ? 'Artikel berhasil diperbarui!' : 'Artikel berhasil dipublikasikan!');
             cancelEdit();
-            if (currentUser.role === 'admin') loadAdminData();
+            if (currentUser.role === 'admin') {
+                loadAdminData();
+                loadSubscribers();
+            }
         } else {
             alert('Gagal: ' + (data.error || 'Terjadi kesalahan.'));
         }
@@ -178,8 +183,8 @@ async function loadAdminData() {
             commentTableBody.innerHTML = data.comments.map(c => `
                 <tr>
                     <td>${escapeHtml(c.article_slug)}</td>
-                    <td>${escapeHtml(c.author_name || 'Anonim')}</td>
-                    <td>${escapeHtml(c.content)}</td>
+                    <td>${escapeHtml(c.name || 'Anonim')} <br><small style="color:#718096;">${escapeHtml(c.email || '-')}</small></td>
+                    <td>${escapeHtml(c.message)}</td>
                     <td><button type="button" class="btn-danger" onclick="deleteComment(${c.id})">Hapus</button></td>
                 </tr>
             `).join('');
@@ -189,6 +194,62 @@ async function loadAdminData() {
     } catch (err) {
         console.error('Error loading admin data:', err);
     }
+}
+
+async function loadSubscribers() {
+    const tbody = document.getElementById('subscribers-table-body');
+    try {
+        const res = await fetch('/api/subscribers');
+        const subscribers = await res.json();
+        allSubscribers = subscribers || [];
+        
+        if (allSubscribers.length > 0) {
+            tbody.innerHTML = allSubscribers.map(s => `
+                <tr>
+                    <td>${escapeHtml(s.email)}</td>
+                    <td>${s.created_at || '-'}</td>
+                    <td><button type="button" class="btn-danger" onclick="deleteSubscriber(${s.id})">Hapus</button></td>
+                </tr>
+            `).join('');
+        } else {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Belum ada subscriber.</td></tr>';
+        }
+    } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Gagal memuat subscriber.</td></tr>';
+    }
+}
+
+async function deleteSubscriber(id) {
+    if (!confirm('Yakin ingin menghapus email ini dari daftar subscriber?')) return;
+    try {
+        const res = await fetch(`/api/subscribers?id=${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+            loadSubscribers();
+        } else {
+            alert('Gagal menghapus: ' + (data.error || 'Terjadi kesalahan'));
+        }
+    } catch (err) {
+        alert('Terjadi kesalahan jaringan.');
+    }
+}
+
+function exportSubscribersCSV() {
+    if (!allSubscribers || allSubscribers.length === 0) {
+        alert('Tidak ada data subscriber untuk diekspor.');
+        return;
+    }
+    let csvContent = "data:text/csv;charset=utf-8,Email,Tanggal Bergabung\n";
+    allSubscribers.forEach(s => {
+        csvContent += `"${s.email}","${s.created_at || ''}"\n`;
+    });
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "subscribers_sudutnirwana.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 function renderArticlesTable() {
@@ -247,7 +308,7 @@ function editArticle(articleId) {
     document.getElementById('title').value = article.title || '';
     document.getElementById('slug').value = article.slug || '';
     document.getElementById('category').value = article.category || '';
-    document.getElementById('popular').value = article.popular || 'true'; // Mengisi pilihan popular saat edit
+    document.getElementById('popular').value = article.popular || 'true';
     document.getElementById('description').value = article.description || '';
     document.getElementById('image').value = article.image || '';
     document.getElementById('tags').value = article.tags || '';

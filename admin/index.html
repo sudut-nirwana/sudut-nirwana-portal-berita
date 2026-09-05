@@ -162,6 +162,22 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="card">
+                <h2>Kelola Subscriber Newsletter</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <p style="font-size: 13px; color: #666; margin: 0;">Daftar email pembaca untuk disalin ke BCC Gmail.</p>
+                    <button type="button" onclick="exportSubscribersCSV()" style="background: #38a169; width: auto; padding: 6px 12px; font-size: 13px;">📥 Ekspor ke CSV</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>Email</th><th>Tanggal Bergabung</th><th>Aksi</th></tr>
+                    </thead>
+                    <tbody id="subscribers-table-body">
+                        <tr><td colspan="3" style="text-align:center;">Memuat subscriber...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="card">

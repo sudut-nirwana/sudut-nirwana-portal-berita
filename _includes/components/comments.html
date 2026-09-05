@@ -1,23 +1,194 @@
 <section class="post-comments" data-slug="{{ page.slug }}">
   <h3 class="comments-title">Komentar</h3>
 
-  <!-- Form Komentar & Notifikasi Status Harian -->
+  <!-- Form Komentar -->
   <div id="formWrapper">
     <form id="commentForm" class="comment-form">
+      <input type="hidden" id="replyParentId" value="">
       <div class="form-group">
         <input type="text" id="commentName" placeholder="Nama Anda" required>
       </div>
       <div class="form-group">
+        <input type="email" id="commentEmail" placeholder="Email Anda (untuk foto profil Gravatar)" required>
+      </div>
+      <div class="form-group">
         <textarea id="commentMessage" rows="3" placeholder="Tulis komentar Anda..." required></textarea>
       </div>
-      <button type="submit" class="btn-submit">Kirim Komentar</button>
+      
+      <!-- Checkbox opsional otomatis daftar newsletter tanpa teks berlebihan -->
+      <div class="form-group-checkbox" style="margin-bottom: 12px; font-size: 14px;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input type="checkbox" id="newsletterCheckbox" checked> Kirimkan juga update artikel terbaru via email ini
+        </label>
+      </div>
+
+      <div id="replyingIndicator" style="font-size: 13px; color: #0070f3; margin-bottom: 8px; display: none;">
+        Membalas komentar... <button type="button" onclick="cancelReply()" style="background:none; border:none; color:red; cursor:pointer; padding:0;">Batalkan</button>
+      </div>
+      <button type="submit" class="btn-submit" id="submitCommentBtn">Kirim Komentar</button>
     </form>
-  </div>
-  
-  <div id="commentNotice" class="comment-notice" style="display: none;">
-    <p>✨ Terima kasih! Anda sudah mengirimkan komentar pada artikel ini hari ini.</p>
   </div>
 
   <!-- Wadah Tempat Komentar Ditampilkan -->
-  <div id="commentList" class="comment-list"></div>
+  <div id="commentList" class="comment-list" style="margin-top: 20px;"></div>
 </section>
+
+<script>
+// Fungsi pembuat URL Gravatar otomatis berbasis SHA-256 email
+async function getGravatarUrl(email) {
+    if (!email) return 'https://www.gravatar.com/avatar/?d=mp';
+    const trimmed = email.trim().toLowerCase();
+    const encoder = new TextEncoder();
+    const data = encoder.encode(trimmed);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return `https://www.gravatar.com/avatar/${hashHex}?s=80&d=identicon`;
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const section = document.querySelector('.post-comments');
+    const slug = section ? section.getAttribute('data-slug') : window.location.pathname.split('/').filter(Boolean).pop();
+    
+    if (slug) loadComments(slug);
+
+    // Handler Kirim Komentar
+    const commentForm = document.getElementById('commentForm');
+    if (commentForm) {
+        commentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('commentName').value;
+            const email = document.getElementById('commentEmail').value;
+            const message = document.getElementById('commentMessage').value;
+            const parent_id = document.getElementById('replyParentId').value || null;
+            const subscribe = document.getElementById('newsletterCheckbox').checked;
+
+            const btn = document.getElementById('submitCommentBtn');
+            btn.disabled = true;
+            btn.innerText = 'Mengirim...';
+
+            try {
+                const res = await fetch('/api/comments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ slug, name, email, message, parent_id, subscribe })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    commentForm.reset();
+                    cancelReply();
+                    loadComments(slug);
+                } else {
+                    alert('Gagal mengirim komentar: ' + (data.error || 'Terjadi kesalahan'));
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan jaringan.');
+            }
+            btn.disabled = false;
+            btn.innerText = 'Kirim Komentar';
+        });
+    }
+});
+
+async function loadComments(slug) {
+    const listEl = document.getElementById('commentList');
+    try {
+        const res = await fetch(`/api/comments?slug=${slug}`);
+        const comments = await res.json();
+        
+        if (!comments || comments.length === 0) {
+            listEl.innerHTML = '<p style="color: #666; font-size: 14px;">Belum ada komentar. Jadilah yang pertama berkomentar!</p>';
+            return;
+        }
+
+        const parents = comments.filter(c => !c.parent_id);
+        const replies = comments.filter(c => c.parent_id);
+
+        let html = '';
+        for (const c of parents) {
+            html += await renderCommentItem(c, replies);
+        }
+        listEl.innerHTML = html;
+    } catch (err) {
+        listEl.innerHTML = '<p style="color: red; font-size: 14px;">Gagal memuat komentar.</p>';
+    }
+}
+
+async function renderCommentItem(c, allReplies) {
+    const avatarUrl = await getGravatarUrl(c.email);
+    const childReplies = allReplies.filter(r => r.parent_id == c.id);
+
+    let repliesHtml = '';
+    for (const r of childReplies) {
+        const rAvatar = await getGravatarUrl(r.email);
+        repliesHtml += `
+            <div class="comment-item reply-item" style="margin-left: 30px; margin-top: 12px; border-left: 2px solid #e2e8f0; padding-left: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                    <img src="${rAvatar}" alt="Avatar" width="32" height="32" style="border-radius: 50%;">
+                    <div>
+                        <strong>${escapeHtml(r.name)}</strong>
+                        <span style="font-size: 12px; color: #718096; margin-left: 6px;">${r.created_at}</span>
+                    </div>
+                </div>
+                <p style="margin: 4px 0; font-size: 14px;">${escapeHtml(r.message)}</p>
+                <button onclick="likeComment(${r.id})" style="background:none; border:none; color:#e53e3e; cursor:pointer; font-size:13px; padding:0;">❤️ Suka (${r.likes || 0})</button>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="comment-item" style="margin-bottom: 16px; border-bottom: 1px solid #edf2f7; padding-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <img src="${avatarUrl}" alt="Avatar" width="40" height="40" style="border-radius: 50%;">
+                <div>
+                    <strong>${escapeHtml(c.name)}</strong>
+                    <span style="font-size: 12px; color: #718096; margin-left: 6px;">${c.created_at}</span>
+                </div>
+            </div>
+            <p style="margin: 6px 0; font-size: 14px;">${escapeHtml(c.message)}</p>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <button onclick="likeComment(${c.id})" style="background:none; border:none; color:#e53e3e; cursor:pointer; font-size:13px; padding:0;">❤️ Suka (${c.likes || 0})</button>
+                <button onclick="prepareReply(${c.id}, '${escapeHtml(c.name)}')" style="background:none; border:none; color:#0070f3; cursor:pointer; font-size:13px; padding:0;">Balas</button>
+            </div>
+            <div class="replies-container" style="margin-top: 10px;">
+                ${repliesHtml}
+            </div>
+        </div>
+    `;
+}
+
+function prepareReply(parentId, parentName) {
+    document.getElementById('replyParentId').value = parentId;
+    const indicator = document.getElementById('replyingIndicator');
+    indicator.style.display = 'block';
+    indicator.innerHTML = `Membalas <strong>${parentName}</strong> <button type="button" onclick="cancelReply()" style="background:none; border:none; color:red; cursor:pointer; padding:0; margin-left: 8px;">Batalkan</button>`;
+    document.getElementById('commentMessage').focus();
+}
+
+function cancelReply() {
+    document.getElementById('replyParentId').value = '';
+    document.getElementById('replyingIndicator').style.display = 'none';
+}
+
+async function likeComment(id) {
+    try {
+        const res = await fetch('/api/comments', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if (data.success) {
+            const slug = document.querySelector('.post-comments').getAttribute('data-slug') || window.location.pathname.split('/').filter(Boolean).pop();
+            loadComments(slug);
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+</script>
