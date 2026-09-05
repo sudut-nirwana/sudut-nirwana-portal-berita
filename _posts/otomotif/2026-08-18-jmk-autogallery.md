@@ -1,19 +1,21 @@
 ---
 layout: content
 title: "Mengintip Isi JMK Auto Gallery Sunter: Dari Ferrari Hingga Lamborghini Bekas"
-author: "yossi"
-date: 2026-08-18 15:32 +0700
+author: "Yossi Oktavia"
+date: 2026-08-18 00:00:00 +0700
 categories: [otomotif, gaya hidup]
-tags: [showroom mobil mewah, jmk auto gallery, ferrari bekas, lamborghini bekas, mobil sport, sunter, maikel wijaya]
+tags: ["showroom mobil mewah", "jmk auto gallery", "ferrari bekas", "lamborghini bekas", "mobil sport", "sunter", "maikel wijaya"]
 image: /assets/images/posts/jmk-auto-gallery.webp
-image_alt: "Interior JMK Auto Gallery Sunter dengan koleksi Lamborghini Aventador"
 description: "JMK Auto Gallery di Sunter jadi surganya kolektor mobil mewah. Kami mengintip langsung koleksi Ferrari, Lamborghini, dan supercar lain yang dijual."
+slug: "jmk-autogallery"
 popular: "true"
 ---
 
 ## Tempat Nongkrongnya Para Kolektor dan Pencinta Supercar
 
 Pintu showroom baru saja terbuka. Alih-alih mencium bau menyengat cairan pembersih khas leasing pada umumnya, hidung kami langsung disambut oleh aroma mewah dari *leather* (kulit premium) berpadu dengan embusan AC yang sejuk. 
+
+{% include alert-single.html category="kuliner" %}
 
 Tepat di depan mata, satu unit Lamborghini Aventador berwarna oranye mentereng berdiri dengan gagah. Di sebelahnya, ada Ferrari 488 dan Porsche 911 yang seolah-olah menantang siapa saja untuk duduk di balik kemudinya. Selamat datang di **JMK Auto Gallery**, Sunter.
 
@@ -53,6 +55,8 @@ Dari sekian banyak koleksi yang berjejer rapi, kami memilih 3 unit yang paling s
 * **Highlight:** Hadir dengan kelir hitam yang elegan dan berwibawa. Porsche dikenal sebagai mobil sport yang paling fungsional; nyaman dipakai ke kantor, namun siap dipacu di lintasan balap kapan saja. Hebatnya lagi, bagasi depannya cukup luas untuk memuat dua koper ukuran kabin.
 * **Karakter:** Cocok untuk Anda yang menginginkan performa kecepatan tinggi tanpa harus terlihat terlalu mencolok di jalan raya.
 * **Kata David:** *"Ini salah satu tipe yang paling cepat laku di pasaran. Desainnya tidak terlalu intimidatif, tapi tenaganya luar biasa gila."*
+
+{% include alert-group.html category="gaya hidup" %}
 
 ## Pengalaman Bertransaksi dan Layanan After Sales
 
