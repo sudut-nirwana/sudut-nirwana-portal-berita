@@ -1,3 +1,5 @@
+import crypto from 'node:crypto';
+
 export async function onRequestGet(context) {
     const url = new URL(context.request.url);
     const slug = url.searchParams.get('slug');
@@ -22,14 +24,8 @@ export async function onRequestPost(context) {
         }
 
         const cleanEmail = email.trim().toLowerCase();
-        
-        // Hashing SHA-256 aman via WebCrypto API standar Cloudflare
-        const encoder = new TextEncoder();
-        const dataBuffer = encoder.encode(cleanEmail);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
-        const email_hash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        const email_hash = crypto.createHash('md5').update(cleanEmail).digest('hex');
 
-        // Simpan murni ke tabel comments
         await context.env.DB.prepare(
             "INSERT INTO comments (article_slug, parent_id, name, email_hash, message, likes, created_at) VALUES (?, ?, ?, ?, ?, 0, datetime('now'))"
         ).bind(slug, parent_id || null, name.trim(), email_hash, message.trim()).run();
