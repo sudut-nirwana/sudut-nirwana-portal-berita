@@ -1,3 +1,5 @@
+import crypto from 'node:crypto';
+
 export async function onRequestGet(context) {
     const url = new URL(context.request.url);
     const slug = url.searchParams.get('slug');
@@ -5,7 +7,7 @@ export async function onRequestGet(context) {
 
     try {
         const { results } = await context.env.DB.prepare(
-            "SELECT * FROM comments WHERE article_slug = ? ORDER BY created_at ASC"
+            "SELECT id, article_slug, parent_id, name, email_hash, message, likes, created_at FROM comments WHERE article_slug = ? ORDER BY created_at ASC"
         ).bind(slug).all();
         
         return new Response(JSON.stringify(results), { headers: { 'Content-Type': 'application/json' } });
@@ -21,19 +23,22 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ success: false, error: 'Data tidak lengkap' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
         }
 
-        // Simpan komentar baru
-        await context.env.DB.prepare(
-            "INSERT INTO comments (article_slug, parent_id, name, email, message, likes, created_at) VALUES (?, ?, ?, ?, ?, 0, datetime('now'))"
-        ).bind(slug, parent_id || null, name, email, message).run();
+        const cleanEmail = email.trim().toLowerCase();
+        const email_hash = crypto.createHash('md5').update(cleanEmail).digest('hex');
 
-        // Jika opsi subscribe dicentang, masukkan email ke tabel subscribers (aman dari duplikat)
+        // Menyimpan data aman menggunakan email_hash ke tabel comments
+        await context.env.DB.prepare(
+            "INSERT INTO comments (article_slug, parent_id, name, email_hash, message, likes, created_at) VALUES (?, ?, ?, ?, ?, 0, datetime('now'))"
+        ).bind(slug, parent_id || null, name, email_hash, message).run();
+
+        // Jika opsi newsletter dicentang, simpan email mentah ke tabel subscribers secara aman
         if (subscribe) {
             try {
                 await context.env.DB.prepare(
                     "INSERT OR IGNORE INTO subscribers (email, created_at) VALUES (?, datetime('now'))"
-                ).bind(email).run();
+                ).bind(cleanEmail).run();
             } catch (subErr) {
-                // Biarkan gagal senyap agar proses komentar utama tetap sukses
+                // Gagal senyap agar proses komentar utama tetap sukses
             }
         }
 

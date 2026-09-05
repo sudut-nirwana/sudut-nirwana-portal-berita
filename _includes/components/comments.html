@@ -1,7 +1,6 @@
 <section class="post-comments" data-slug="{{ page.slug }}">
   <h3 class="comments-title">Komentar</h3>
 
-  <!-- Form Komentar -->
   <div id="formWrapper">
     <form id="commentForm" class="comment-form">
       <input type="hidden" id="replyParentId" value="">
@@ -15,7 +14,6 @@
         <textarea id="commentMessage" rows="3" placeholder="Tulis komentar Anda..." required></textarea>
       </div>
       
-      <!-- Checkbox opsional otomatis daftar newsletter tanpa teks berlebihan -->
       <div class="form-group-checkbox" style="margin-bottom: 12px; font-size: 14px;">
         <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
           <input type="checkbox" id="newsletterCheckbox" checked> Kirimkan juga update artikel terbaru via email ini
@@ -29,30 +27,26 @@
     </form>
   </div>
 
-  <!-- Wadah Tempat Komentar Ditampilkan -->
   <div id="commentList" class="comment-list" style="margin-top: 20px;"></div>
 </section>
 
 <script>
-// Fungsi pembuat URL Gravatar otomatis berbasis SHA-256 email
-async function getGravatarUrl(email) {
-    if (!email) return 'https://www.gravatar.com/avatar/?d=mp';
-    const trimmed = email.trim().toLowerCase();
-    const encoder = new TextEncoder();
-    const data = encoder.encode(trimmed);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    return `https://www.gravatar.com/avatar/${hashHex}?s=80&d=identicon`;
+function getGravatarUrl(hash) {
+    if (!hash) return 'https://www.gravatar.com/avatar/?d=mp';
+    return `https://www.gravatar.com/avatar/${hash}?s=80&d=identicon`;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
     const section = document.querySelector('.post-comments');
-    const slug = section ? section.getAttribute('data-slug') : window.location.pathname.split('/').filter(Boolean).pop();
+    let slug = section ? section.getAttribute('data-slug') : '';
+    
+    if (!slug || slug.includes('{{')) {
+        const segments = window.location.pathname.split('/').filter(Boolean);
+        slug = segments.length > 0 ? segments[segments.length - 1] : 'home';
+    }
     
     if (slug) loadComments(slug);
 
-    // Handler Kirim Komentar
     const commentForm = document.getElementById('commentForm');
     if (commentForm) {
         commentForm.addEventListener('submit', async (e) => {
@@ -106,7 +100,7 @@ async function loadComments(slug) {
 
         let html = '';
         for (const c of parents) {
-            html += await renderCommentItem(c, replies);
+            html += renderCommentItem(c, replies);
         }
         listEl.innerHTML = html;
     } catch (err) {
@@ -114,13 +108,13 @@ async function loadComments(slug) {
     }
 }
 
-async function renderCommentItem(c, allReplies) {
-    const avatarUrl = await getGravatarUrl(c.email);
+function renderCommentItem(c, allReplies) {
+    const avatarUrl = getGravatarUrl(c.email_hash);
     const childReplies = allReplies.filter(r => r.parent_id == c.id);
 
     let repliesHtml = '';
     for (const r of childReplies) {
-        const rAvatar = await getGravatarUrl(r.email);
+        const rAvatar = getGravatarUrl(r.email_hash);
         repliesHtml += `
             <div class="comment-item reply-item" style="margin-left: 30px; margin-top: 12px; border-left: 2px solid #e2e8f0; padding-left: 12px;">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
@@ -179,7 +173,11 @@ async function likeComment(id) {
         });
         const data = await res.json();
         if (data.success) {
-            const slug = document.querySelector('.post-comments').getAttribute('data-slug') || window.location.pathname.split('/').filter(Boolean).pop();
+            let slug = document.querySelector('.post-comments').getAttribute('data-slug');
+            if (!slug || slug.includes('{{')) {
+                const segments = window.location.pathname.split('/').filter(Boolean);
+                slug = segments.length > 0 ? segments[segments.length - 1] : 'home';
+            }
             loadComments(slug);
         }
     } catch (err) {
@@ -191,4 +189,4 @@ function escapeHtml(text) {
     if (!text) return '';
     return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
-</script>
+  </script>
