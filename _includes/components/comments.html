@@ -62,21 +62,32 @@ document.addEventListener('DOMContentLoaded', async () => {
             btn.innerText = 'Mengirim...';
 
             try {
+                // 1. Kirim data utama ke API Comments
                 const res = await fetch('/api/comments', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ slug, name, email, message, parent_id, subscribe })
+                    body: JSON.stringify({ slug, name, email, message, parent_id })
                 });
                 const data = await res.json();
-                if (data.success) {
-                    commentForm.reset();
-                    cancelReply();
-                    loadComments(slug);
-                } else {
-                    alert('Gagal mengirim komentar: ' + (data.error || 'Terjadi kesalahan'));
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Gagal mengirim komentar');
                 }
+
+                // 2. Jika checkbox newsletter dicentang, kirim otomatis ke API Subscribe
+                if (subscribe) {
+                    await fetch('/api/subscribe', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    }).catch(() => {}); // Gagal senyap agar proses komentar utama tidak terganggu
+                }
+
+                commentForm.reset();
+                cancelReply();
+                loadComments(slug);
             } catch (err) {
-                alert('Terjadi kesalahan jaringan.');
+                alert('Terjadi kesalahan: ' + err.message);
             }
             btn.disabled = false;
             btn.innerText = 'Kirim Komentar';
@@ -189,4 +200,4 @@ function escapeHtml(text) {
     if (!text) return '';
     return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
-  </script>
+</script>
