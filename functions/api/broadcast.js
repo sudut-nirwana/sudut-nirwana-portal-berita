@@ -82,7 +82,7 @@ export async function onRequestPost(context) {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        from: 'Sudut Nirwana <onboarding@resend.dev>',
+                        from: 'Sudut Nirwana <newsletter@sudutnirwana.com>',
                         to: [recipientEmail],
                         subject: `Update: ${title}`,
                         html: htmlContent
