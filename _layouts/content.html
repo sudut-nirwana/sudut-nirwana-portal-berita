@@ -49,7 +49,7 @@ layout: default
           <div class="post-meta">
             {% if page.author %}
               {% assign author_profile = site.authors | where: "slug", page.author | first %}
-              <span class="meta-author" data-icon="author">
+              <span class="meta-author" {% unless author_profile.avatar %}data-icon="author"{% endunless %}>
                 {% if author_profile %}
                   <a href="{{ author_profile.url | relative_url }}" class="meta-author-link">
                     {% if author_profile.avatar %}
