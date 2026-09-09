@@ -12,22 +12,20 @@
   padding-bottom: 60px;
 }
 
-/* 2 Kolom Aktif Mulai 768px (Sidebar 320px) */
 @media (min-width: 768px) {
   .post-layout {
     grid-template-columns: minmax(0, 1fr) 320px;
     align-items: start;
     gap: 24px;
   }
-  .wrapper-search-input{
+  .wrapper-search-input {
     display: none;
   }
-  .post-header{
+  .post-header {
     margin-top: 10px;
   }
 }
 
-/* Desktop Monitor Screen (Sidebar 360px) */
 @media (min-width: 1024px) {
   .post-layout {
     grid-template-columns: minmax(0, 1fr) 360px;
@@ -69,9 +67,29 @@
   font-weight: 500;
 }
 
-.meta-author {
-  font-weight: 700;
+/* Author Avatar Link Styles */
+.meta-author-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 700;
+  transition: opacity 0.2s ease;
+}
+
+.meta-author-link:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+}
+
+.meta-author-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
 }
 
 .meta-category {
@@ -82,14 +100,6 @@
   font-size: 12px;
   font-weight: 500;
   text-transform: capitalize;
-}
-
-.post-meta-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--text-muted);
-  margin-right: 12px;
 }
 
 .post-image { 
@@ -222,10 +232,7 @@
   height: 1em;
 }
 
-/* ==========================================
-   Alert Components (Warm Yellow & Green Tint)
-   ========================================== */
-
+/* Alert Components */
 .alert {
   margin: 28px 0;
   padding: 18px 20px;
@@ -233,99 +240,40 @@
   box-shadow: var(--shadow-sm);
   font-family: inherit;
   color: var(--text-main);
+}
 
-  .alert-label {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 6px;
-  }
+.alert .alert-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
 
-  .alert-heading {
-    display: block;
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
+.alert .alert-heading {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
 
-  .alert-title {
-    margin: 0 0 6px 0;
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 1.4;
+.alert.alert-single {
+  background-color: rgba(184, 134, 11, 0.08); 
+  border: 1px solid rgba(184, 134, 11, 0.22);
+  border-left: 4px solid #B8860B;
+}
 
-    a {
-      color: var(--color-primary);
-      transition: color 0.2s ease;
-    }
-  }
+.alert.alert-single .alert-label {
+  color: #946904;
+}
 
-  .alert-excerpt {
-    margin: 0;
-    font-size: 13.5px;
-    color: var(--text-muted);
-    line-height: 1.5;
-  }
+.alert.alert-group {
+  background-color: rgba(93, 101, 48, 0.1); 
+  border: 1px solid rgba(93, 101, 48, 0.25);
+  border-left: 4px solid var(--green-primary);
+}
 
-  .alert-list {
-    margin: 0 0 0 18px;
-    padding: 0;
-    list-style-type: disc;
-
-    li {
-      margin-bottom: 8px;
-      font-size: 14.5px;
-      color: var(--text-muted);
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-
-      a {
-        color: var(--text-main);
-        font-weight: 500;
-        transition: color 0.2s ease;
-      }
-    }
-  }
-
-  /* Variant Single: Warm Mustard Yellow Tint */
-  &.alert-single {
-    /* Opacity 8% dari warna kuning mustard hangat */
-    background-color: rgba(184, 134, 11, 0.08); 
-    border: 1px solid rgba(184, 134, 11, 0.22);
-    border-left: 4px solid #B8860B;
-
-    .alert-label {
-      color: #946904;
-    }
-
-    .alert-title a:hover {
-      color: #B8860B;
-      text-decoration: underline;
-    }
-  }
-
-  /* Variant Group: Olive Green Tint */
-  &.alert-group {
-    /* Opacity 10% dari hijau zaitun (#5D6530) */
-    background-color: rgba(93, 101, 48, 0.1); 
-    border: 1px solid rgba(93, 101, 48, 0.25);
-    border-left: 4px solid var(--green-primary);
-
-    .alert-heading {
-      color: var(--green-primary);
-    }
-
-    .alert-list li::marker {
-      color: var(--green-primary);
-    }
-
-    .alert-list li a:hover {
-      color: var(--green-accent);
-      text-decoration: underline;
-    }
-  }
+.alert.alert-group .alert-heading {
+  color: var(--green-primary);
 }

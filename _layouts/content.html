@@ -2,46 +2,95 @@
 layout: default
 ---
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ page.url | absolute_url }}"
+  },
+  "headline": {{ page.title | jsonify }},
+  {% if page.image %}
+  "image": [
+    "{{ page.image | absolute_url }}"
+  ],
+  {% endif %}
+  "datePublished": "{{ page.date | date_to_xmlschema }}",
+  "dateModified": "{{ page.last_modified_at | default: page.date | date_to_xmlschema }}",
+  "author": {
+    "@type": "Person",
+    "name": {{ page.author | default: site.author | jsonify }}
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": {{ site.title | jsonify }},
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ site.logo | default: '/assets/images/logo.png' | absolute_url }}"
+    }
+  },
+  "description": {{ page.description | default: page.excerpt | strip_html | strip_newlines | truncate: 160 | jsonify }}
+}
+</script>
+
 <main class="layout-content">
-  <div class="container" style="max-width: 800px; padding: 40px 20px;">
-    
-    <!-- Profil Header -->
-    <div style="text-align: center; margin-bottom: 40px;">
-      {% if page.avatar %}
-        <img src="{{ page.avatar | relative_url }}" alt="{{ page.name }}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-      {% endif %}
-      <h1 style="margin-bottom: 10px;">{{ page.name }}</h1>
-      <p style="color: #718096; text-transform: uppercase; font-size: 13px; font-weight: bold; letter-spacing: 1px;">{{ page.role }}</p>
-      {% if page.bio %}
-        <p style="margin-top: 15px; color: #4a5568; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto;">{{ page.bio }}</p>
-      {% endif %}
+  {% include category-chips.html %}
+  <div class="container">
+    <div class="wrapper-search-input">
+      {% include components/search-input.html %}
     </div>
-
-    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 40px 0;">
-
-    <!-- Daftar Artikel oleh Penulis Ini -->
-    <div>
-      <h3 style="margin-bottom: 20px;">Artikel oleh {{ page.name }}</h3>
-      
-      {% assign author_posts = site.posts | where: "author", page.slug %}
-      {% if author_posts.size > 0 %}
-        <div class="author-articles-list">
-          {% for post in author_posts %}
-            <article style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #edf2f7;">
-              <h4 style="margin-bottom: 5px;">
-                <a href="{{ post.url | relative_url }}" style="text-decoration: none; color: #2d3748; transition: color 0.2s;">{{ post.title }}</a>
-              </h4>
-              <p style="font-size: 13px; color: #718096; margin-bottom: 8px;">{{ post.date | date: "%d %B %Y" }} • <span style="text-transform: capitalize;">{{ post.categories | join: ', ' }}</span></p>
-              {% if post.description %}
-                <p style="font-size: 14px; color: #4a5568; line-height: 1.5;">{{ post.description | truncate: 150 }}</p>
-              {% endif %}
-            </article>
-          {% endfor %}
+  
+    <div class="post-layout">
+      <article>
+        <header class="post-header">
+          <h1 class="post-title">{{ page.title }}</h1>
+          
+          <div class="post-meta">
+            {% if page.author %}
+              {% assign author_profile = site.authors | where: "slug", page.author | first %}
+              <span class="meta-author" data-icon="author">
+                {% if author_profile %}
+                  <a href="{{ author_profile.url | relative_url }}" class="meta-author-link">
+                    {% if author_profile.avatar %}
+                      <img src="{{ author_profile.avatar | relative_url }}" alt="{{ author_profile.name }}" class="meta-author-avatar">
+                    {% endif %}
+                    <span>{{ author_profile.name }}</span>
+                  </a>
+                {% else %}
+                  <span>{{ page.author }}</span>
+                {% endif %}
+              </span>
+            {% endif %}
+            
+            {% if page.date %}
+              <span class="meta-date" data-icon="calendar">{{ page.date | date: "%d %B %Y" }}</span>
+            {% endif %}
+            
+            {% include components/views.html %}
+          </div>
+          
+          {% if page.image %}
+            <img 
+              src="{{ page.image | relative_url }}" 
+              alt="{{ page.image_alt | default: page.title }}" 
+              class="post-image"
+              loading="lazy"
+            >
+          {% endif %}
+        </header>
+  
+        <div class="post-body">
+          {{ content }}
+          {% include components/comments.html %}
         </div>
-      {% else %}
-        <p style="color: #718096; font-style: italic;">Belum ada artikel yang dipublikasikan oleh penulis ini.</p>
-      {% endif %}
+      </article>
+  
+      <aside class="post-sidebar">
+        {% include widget/newsletter.html %}
+        {% include widget/toc.html %}
+        {% include widget/populer-post.html %}
+      </aside>
     </div>
-
   </div>
 </main>
