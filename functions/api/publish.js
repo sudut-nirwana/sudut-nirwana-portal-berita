@@ -23,7 +23,7 @@ export async function onRequestPost(context) {
             categoryId = insertRes.id;
         }
 
-        const user = await db.prepare("SELECT id, name FROM users WHERE email = ?").bind(author_email).first();
+        const user = await db.prepare("SELECT id, name, slug FROM users WHERE email = ?").bind(author_email).first();
         if (!user) return new Response(JSON.stringify({ success: false, error: 'Penulis tidak ditemukan' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
 
         const now = new Date();
@@ -40,7 +40,7 @@ export async function onRequestPost(context) {
         const markdownContent = `---
 layout: content
 title: "${title.replace(/"/g, '\\"')}"
-author: "${user.name}"
+author: "${user.slug}"
 date: ${dateStr}
 categories: [${category}]
 ${tagsFrontmatter}image: ${image || ''}
