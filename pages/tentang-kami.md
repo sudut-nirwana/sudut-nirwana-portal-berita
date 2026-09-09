@@ -15,20 +15,19 @@ Situs ini dibangun sebagai wadah kreatif dan portofolio konten kreator untuk men
 
 ## Tim Redaksi (Author)
 
-Portal dokumentasi ini dikelola secara mandiri oleh kreator dan didukung oleh rekanan penulis (*author biasa*) yang berdedikasi menghasilkan tulisan kreatif yang segar:
+Portal dokumentasi ini dikelola secara mandiri oleh kreator dan didukung oleh rekanan penulis (*author*) yang berdedikasi menghasilkan tulisan kreatif yang segar:
 
 <div class="team-grid">
-  {% if site.data.authors %}
-    {% for author_hash in site.data.authors %}
-      {% assign author = author_hash[1] %}
-      <div class="team-card">
-        <img src="{{ author.avatar | default: '/assets/images/default-avatar.jpg' }}" alt="{{ author.name }}" class="team-avatar">
+  {% if site.authors %}
+    {% for author in site.authors %}
+      <a href="{{ author.url | relative_url }}" class="team-card" style="text-decoration: none; color: inherit;">
+        <img src="{{ author.avatar | default: '/assets/images/authors/default.webp' }}" alt="{{ author.name }}" class="team-avatar">
         <div class="team-info">
           <h3 class="team-name">{{ author.name }}</h3>
           <span class="team-role">{{ author.role }}</span>
           <p class="team-bio">{{ author.bio }}</p>
         </div>
-      </div>
+      </a>
     {% endfor %}
   {% else %}
     <p>Data penulis sedang diperbarui.</p>

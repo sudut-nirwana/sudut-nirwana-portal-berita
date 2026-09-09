@@ -1,0 +1,32 @@
+---
+layout: default
+---
+
+<main class="layout-content">
+  <div class="container container-narrow">
+    <header class="page-header" style="text-align: center; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--color-border);">
+      <img src="{{ page.avatar }}" alt="{{ page.name }}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; background-color: var(--color-section);">
+      <h1 class="page-title" style="font-family: 'Poppins-Bold', sans-serif; font-size: 2rem; color: var(--text-main); margin-bottom: 10px;">{{ page.name }}</h1>
+      <span class="team-role" style="display: inline-block; font-size: 0.85rem; color: var(--color-primary); font-weight: 700; margin-bottom: 10px;">{{ page.role }}</span>
+      <p style="color: var(--text-muted); font-size: 0.975rem; line-height: 1.6; max-width: 600px; margin: 0 auto;">{{ page.bio }}</p>
+    </header>
+
+    <section class="author-articles">
+      <h2 style="font-family: 'Poppins-Bold', sans-serif; font-size: 1.35rem; color: var(--text-main); margin-top: 2rem; margin-bottom: 1.5rem; padding-bottom: 6px; border-bottom: 1px solid var(--color-border);">Artikel oleh {{ page.name }}</h2>
+      
+      {% assign author_posts = site.posts | where: "author", page.slug %}
+      {% if author_posts.size > 0 %}
+        <ul style="list-style: none; padding: 0;">
+          {% for post in author_posts %}
+            <li style="margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 15px;">
+              <a href="{{ post.url | relative_url }}" style="font-family: 'Poppins-Bold', sans-serif; font-size: 1.1rem; color: var(--text-main); text-decoration: none; display: block; margin-bottom: 4px;">{{ post.title }}</a>
+              <span style="font-size: 0.85rem; color: var(--text-muted);">{{ post.date | date: "%d %B %Y" }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p style="color: var(--text-muted); font-style: italic;">Belum ada artikel yang dipublikasikan oleh penulis ini.</p>
+      {% endif %}
+    </section>
+  </div>
+</main>

@@ -156,16 +156,29 @@
                 <form id="author-form">
                     <label>Nama Lengkap</label>
                     <input type="text" id="new-name" required>
+                    
+                    <label>Slug URL (Contoh: yossi-oktavia)</label>
+                    <input type="text" id="new-slug" required>
+                    
                     <label>Email (@sudutnirwana.com)</label>
                     <input type="email" id="new-email" required placeholder="nama@sudutnirwana.com">
+                    
                     <label>Password Sementara</label>
                     <input type="password" id="new-password" required>
+                    
                     <label>Role</label>
                     <select id="new-role">
                         <option value="author">Author</option>
                         <option value="admin">Admin</option>
                     </select>
-                    <button type="submit">Daftarkan Penulis</button>
+
+                    <label>Path Avatar Gambar</label>
+                    <input type="text" id="new-avatar" value="/assets/images/authors/default.webp" placeholder="/assets/images/authors/nama.webp">
+
+                    <label>Bio Singkat</label>
+                    <textarea id="new-bio" rows="2" placeholder="Deskripsi singkat latar belakang penulis..."></textarea>
+
+                    <button type="submit">Daftarkan Penulis & Buat File Markdown</button>
                 </form>
             </div>
 

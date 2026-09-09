@@ -415,20 +415,33 @@ async function deleteComment(commentId) {
 
 document.getElementById('author-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/register-author', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            admin_email: currentUser.email,
-            name: document.getElementById('new-name').value,
-            email: document.getElementById('new-email').value,
-            password: document.getElementById('new-password').value,
-            role: document.getElementById('new-role').value
-        })
-    });
-    const data = await res.json();
-    if (data.success) { alert('Penulis berhasil ditambahkan.'); e.target.reset(); loadAdminData(); }
-    else { alert('Gagal: ' + data.error); }
+    try {
+        const res = await fetch('/api/register-author', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                admin_email: currentUser.email,
+                name: document.getElementById('new-name').value,
+                slug: document.getElementById('new-slug').value,
+                email: document.getElementById('new-email').value,
+                password: document.getElementById('new-password').value,
+                role: document.getElementById('new-role').value,
+                avatar: document.getElementById('new-avatar').value,
+                bio: document.getElementById('new-bio').value
+            })
+        });
+        const data = await res.json();
+        if (data.success) { 
+            alert('Penulis berhasil ditambahkan dan file profil tersinkron ke GitHub!'); 
+            e.target.reset(); 
+            document.getElementById('new-avatar').value = '/assets/images/authors/default.webp';
+            loadAdminData(); 
+        } else { 
+            alert('Gagal: ' + (data.error || 'Terjadi kesalahan')); 
+        }
+    } catch (err) {
+        alert('Terjadi kesalahan jaringan.');
+    }
 });
 
 document.getElementById('account-form').addEventListener('submit', async (e) => {

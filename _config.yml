@@ -16,6 +16,12 @@ sass:
   sass_dir: _sass
   style: compressed
 
+# Collections Settings
+collections:
+  authors:
+    output: true
+    permalink: /author/:slug/
+
 # Active Plugins
 plugins:
   - jekyll-feed
