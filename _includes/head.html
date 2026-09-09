@@ -5,6 +5,9 @@
   <!-- Meta SEO Tag -->
   {% seo %}
 
+  <!-- RSS / Atom Feed Link -->
+  <link type="application/atom+xml" rel="alternate" href="{{ '/feed.xml' | relative_url }}" title="{{ site.title }}">
+
   <!-- Open Graph / Social Media Preview (WhatsApp, Telegram, Facebook) -->
   <meta property="og:title" content="{% if page.title %}{{ page.title }} | {{ site.title }}{% else %}{{ site.title }}{% endif %}">
   <meta property="og:description" content="{% if page.description %}{{ page.description }}{% elsif page.excerpt %}{{ page.excerpt | strip_html | truncate: 150 }}{% else %}{{ site.description }}{% endif %}">
