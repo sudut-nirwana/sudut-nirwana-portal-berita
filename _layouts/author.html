@@ -19,9 +19,9 @@ layout: default
       
       {% assign author_posts = site.posts | where: "author", page.slug %}
       {% if author_posts.size > 0 %}
-        <div class="author-articles-list">
+        <div class="author-articles-list" id="author-articles-list">
           {% for post in author_posts %}
-            <article class="author-article-card">
+            <article class="author-article-card" data-index="{{ forloop.index0 }}">
               <a href="{{ post.url | relative_url }}" class="author-article-link">
                 {% if post.image %}
                   <div class="author-article-img-wrap">
@@ -36,6 +36,14 @@ layout: default
             </article>
           {% endfor %}
         </div>
+
+        <!-- Navigasi Pagination -->
+        <div class="author-pagination" id="author-pagination" style="display: none;">
+          <button type="button" id="author-prev-btn" onclick="changeAuthorPage(-1)">Sebelumnya</button>
+          <span id="author-page-info">Halaman 1 dari 1</span>
+          <button type="button" id="author-next-btn" onclick="changeAuthorPage(1)">Selanjutnya</button>
+        </div>
+
       {% else %}
         <p class="author-no-articles">Belum ada artikel yang dipublikasikan oleh penulis ini.</p>
       {% endif %}
@@ -43,6 +51,49 @@ layout: default
 
   </div>
 </main>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const itemsPerPage = 12;
+    const cards = document.querySelectorAll('.author-article-card');
+    const totalItems = cards.length;
+    
+    if (totalItems <= itemsPerPage) return; // Tidak perlu paginasi jika kurang dari 12
+
+    let currentPage = 1;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const paginationContainer = document.getElementById('author-pagination');
+    paginationContainer.style.display = 'flex';
+
+    window.showAuthorPage = function(page) {
+      if (page < 1) page = 1;
+      if (page > totalPages) page = totalPages;
+      currentPage = page;
+
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+
+      cards.forEach((card, index) => {
+        if (index >= start && index < end) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      document.getElementById('author-page-info').innerText = `Halaman ${currentPage} dari ${totalPages}`;
+      document.getElementById('author-prev-btn').disabled = currentPage === 1;
+      document.getElementById('author-next-btn').disabled = currentPage === totalPages;
+    };
+
+    window.changeAuthorPage = function(direction) {
+      showAuthorPage(currentPage + direction);
+      window.scrollTo({ top: document.querySelector('.author-articles-section').offsetTop - 100, behavior: 'smooth' });
+    };
+
+    showAuthorPage(1);
+  });
+</script>
 
 <style>
   .author-page-container {
@@ -176,4 +227,37 @@ layout: default
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
   }
-    </style>
+
+  /* Styling Tombol Pagination */
+  .author-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .author-pagination button {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .author-pagination button:disabled {
+    background-color: var(--color-border);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  .author-pagination span {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+</style>
