@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "5 Kebiasaan Gaya Hidup Sehat yang Bisa Dimulai dari Rumah"
-author: "Tavisha C Neira"
+author: "yossi"
 date: 2026-08-22 07:25 +0700
 categories: [lifestyle]
 tags: [lifestyle, sehat, gaya hidup, tips kesehatan, keluarga, hidup pelan]

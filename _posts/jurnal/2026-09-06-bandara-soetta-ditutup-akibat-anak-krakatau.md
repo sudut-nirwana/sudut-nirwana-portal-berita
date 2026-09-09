@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Bandara Soetta Ditutup Akibat Anak Krakatau: Ini Dampak Abu Vulkanik dan Cara Lindungi Diri"
-author: "Yossi Oktavia"
+author: "tavisha"
 date: 2026-09-06 00:00:00 +0700
 categories: [jurnal]
 tags: ["anak krakatau", "erupsi krakatau", "abu vulkanik", "dampak abu vulkanik", "bandara soekarno hatta", "masker n95", "kesehatan pernapasan", "mitigasi bencana", "edukasi kesehatan"]

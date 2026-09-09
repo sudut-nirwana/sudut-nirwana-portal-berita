@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Dampak AI terhadap Dunia Kerja: Kreativitas dan Dilema Eksistensial Manusia"
-author: "Tavisha C Neira"
+author: "yossi"
 date: 2026-08-20 14:35 +0700
 categories: [jurnal]
 tags: [teknologi, artificial intelligence, masa depan, dunia kerja, analisis, gaya hidup]

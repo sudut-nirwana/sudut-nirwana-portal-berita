@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Bandara Soekarno-Hatta Kembali Beroperasi Pasca-Erupsi Anak Krakatau"
-author: "Yossi Oktavia"
+author: "tavisha"
 date: 2026-09-08 00:00:00 +0700
 categories: [jurnal]
 tags: ["soekarno hatta", "anak krakatau", "abu vulkanik", "penerbangan", "airnav", "bmkg"]

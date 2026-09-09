@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Menguak Kisah Siti Nurbaya: Lebih dari Sekadar Tragedi Cinta dan Kawin Paksa"
-author: "Yossi Oktavia"
+author: "tavisha"
 date: 2026-09-04 00:00:00 +0700
 categories: [seni & budaya]
 image: /assets/images/posts/kisah-siti-nurbaya.webp

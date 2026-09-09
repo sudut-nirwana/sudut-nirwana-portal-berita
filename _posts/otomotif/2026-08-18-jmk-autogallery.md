@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Mengintip Isi JMK Auto Gallery Sunter: Dari Ferrari Hingga Lamborghini Bekas"
-author: "Yossi Oktavia"
+author: "yossi"
 date: 2026-08-18 00:00:00 +0700
 categories: [otomotif, gaya hidup]
 tags: ["showroom mobil mewah", "jmk auto gallery", "ferrari bekas", "lamborghini bekas", "mobil sport", "sunter", "maikel wijaya"]

@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Menguak Sejarah Asli Kama Sutra: Kitab Kuno Hubungan dan Etika Sosial"
-author: "Tavisha C Neira"
+author: "yossi"
 date: 2026-08-25 18:30 +0700
 categories: [lifestyle]
 tags: [sejarah, filsafat, hubungan, kamasutra, fakta dunia, edukasi]

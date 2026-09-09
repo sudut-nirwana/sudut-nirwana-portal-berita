@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Menguak Kisah Wisanggeni: Ksatria Digdaya yang Ditakuti di Ranah Pewayangan"
-author: "Tavisha C Neira"
+author: "yossi"
 date: 2026-08-14 11:45 +0700
 categories: [seni & budaya]
 tags: [wayang, budaya jawa, wisanggeni, sastra, karakter, filosofi]

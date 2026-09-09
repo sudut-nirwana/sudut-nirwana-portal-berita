@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "8 Manfaat Bawang Putih dan Bawang Merah untuk Kesehatan Tubuh"
-author: "Tavisha C Neira"
+author: "yossi"
 date: 2026-08-30 11:36 +0700
 categories: [lifestyle, kesehatan]
 tags: [sehat, gaya hidup, tips kesehatan, bawang putih, bawang merah, herbal]

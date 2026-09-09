@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Tanya 6 Hal Ini, Dan Kamu Akan Mengetahui Sifat Asli Lawan Bicaramu [Part 1]"
-author: "Tavisha C Neira"
+author: "tavisha"
 date: 2026-08-27 21:11 +0700
 categories: [lifestyle]
 tags: [psikologi, pengembangan diri, komunikasi, cara membaca orang, tips sosial]

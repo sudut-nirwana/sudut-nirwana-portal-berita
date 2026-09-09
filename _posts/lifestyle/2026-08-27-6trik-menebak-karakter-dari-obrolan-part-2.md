@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Membaca Respons Bawah Sadar Lewan Bicara Melalui Pola Obrolan [Part 2]"
-author: "Tavisha C Neira"
+author: "tavisha"
 date: 2026-08-27 21:20 +0700
 categories: [lifestyle]
 tags: [psikologi, pengembangan diri, komunikasi, cara membaca orang, tips sosial]

@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Sains di Balik Lucid Dream: Seni Mengendalikan Mimpi Secara Sadar"
-author: "Tavisha"
+author: "tavisha"
 date: 2026-08-30 07:15 +0700
 categories: [gaya hidup, kesehatan]
 tags: [psikologi, neurosains, tidur, lucid dream, edukasi, kesehatan mental]

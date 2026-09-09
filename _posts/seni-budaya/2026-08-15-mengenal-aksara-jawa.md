@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Mengenal Aksara Jawa dan Sandangannya: Panduan Mudah Belajar Warisan Budaya Nusantara"
-author: "Tavisha C Neira"
+author: "yossi"
 date: 2026-08-15 13:36 +0700
 categories: [seni & budaya]
 tags: [budaya jawa, aksara jawa, edukasi anak, bahasa daerah, sastra, nusantara]

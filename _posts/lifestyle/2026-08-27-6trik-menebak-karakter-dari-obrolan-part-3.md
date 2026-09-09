@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "[Part-3] Bedah Tuntas: Arti 6 Jawaban Ini Ungkap Karakter Asli Lawan Bicaramu"
-author: "Tavisha C Neira"
+author: "tavisha"
 date: 2026-08-27 21:45 +0700
 categories: [lifestyle]
 tags: [psikologi, pengembangan diri, komunikasi, cara membaca orang, tips sosial]

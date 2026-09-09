@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Romantisasi Rasa: Mengapa Kuliner Tradisional Bertema Pedesaan Selalu Diburu"
-author: "Tavisha C Neira"
+author: "tavisha"
 date: 2026-08-22 20:23 +0700
 categories: [kuliner]
 tags: [kuliner jogja, makanan tradisional, gaya hidup, budaya jawa]
