@@ -77,6 +77,10 @@ layout: default
               loading="lazy"
             >
           {% endif %}
+          
+          <div class="toc-mobile">
+            {% include widget/toc.html %}
+          </div>
         </header>
   
         <div class="post-body">
@@ -87,7 +91,9 @@ layout: default
   
       <aside class="post-sidebar">
         {% include widget/newsletter.html %}
-        {% include widget/toc.html %}
+        <div class="toc-desktop">
+          {% include widget/toc.html %}
+        </div>
         {% include widget/populer-post.html %}
       </aside>
     </div>

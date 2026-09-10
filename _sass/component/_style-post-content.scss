@@ -112,6 +112,27 @@
   box-shadow: var(--shadow-md);
 }
 
+/* Responsive TOC Controller */
+.toc-mobile {
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.toc-desktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .toc-mobile {
+    display: none;
+  }
+  
+  .toc-desktop {
+    display: block;
+  }
+}
+
 /* Post Body */
 .post-body {
   color: var(--text-main);
