@@ -532,7 +532,8 @@ async function triggerBroadcast(articleId) {
                 slug: article.slug,
                 title: article.title,
                 description: article.description,
-                image: article.image
+                image: article.image,
+                category: article.category
             })
         });
 
@@ -546,6 +547,7 @@ async function triggerBroadcast(articleId) {
         alert('Terjadi kesalahan jaringan saat mengirim broadcast.');
     }
 }
+
 
 function escapeHtml(text) {
     if (!text) return '';

@@ -1,6 +1,6 @@
 export async function onRequestPost(context) {
     try {
-        const { admin_email, slug, title, description, image } = await context.request.json();
+        const { admin_email, slug, title, description, image, category } = await context.request.json();
         const db = context.env.DB;
         const resendApiKey = context.env.RESEND_API_KEY;
 
@@ -24,6 +24,11 @@ export async function onRequestPost(context) {
             });
         }
 
+        // AMBIL DAN BERSIHKAN KATEGORI LANGSUNG DARI REQUEST
+        const rawCategory = (category || 'jurnal').split(',')[0].trim();
+        const catSlug = rawCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const articleUrl = `https://sudutnirwana.com/${catSlug}/${slug}/`;
+
         // Ambil seluruh daftar email subscriber
         const { results: subscribers } = await db.prepare("SELECT email FROM subscribers").all();
         if (!subscribers || subscribers.length === 0) {
@@ -32,7 +37,6 @@ export async function onRequestPost(context) {
             });
         }
 
-        const articleUrl = `https://sudutnirwana.com/${slug}`;
         const absImage = image && image.startsWith('http') ? image : `https://sudutnirwana.com${image || '/assets/images/posts/sample.webp'}`;
 
         let successCount = 0;
