@@ -17,7 +17,7 @@ Melanjutkan bagian sebelumnya, berikut adalah panduan taktis dan naratif untuk 7
 
 ---
 
-### 8. Surah Quraisy (Suku Quraisy)
+## 8. Surah Quraisy (Suku Quraisy)
 
 **Teks Arab:**  
 لِإِيلَٰفِ قُرَيْشٍ (١) إِيلَٰفِهِمْ رِحْلَةَ الشِّتَاءِ وَالصَّيْفِ (٢) فَلْيَعْبُدُوا رَبَّ هٰذَا الْبَيْتِ (٣) الَّذِي أَطْعَمَهُمْ مِنْ جُوعٍ وَآمَنَهُمْ مِنْ خَوْفٍ (٤)
@@ -45,7 +45,7 @@ Surah Quraisy mengajarkan konsep rasa syukur atas rasa aman dan rezeki makanan. 
 
 ---
 
-### 9. Surah Al-Lahab (Gejolak Api / Abu Lahab)
+## 9. Surah Al-Lahab (Gejolak Api / Abu Lahab)
 
 **Teks Arab:**  
 تَبَّتْ يَدَا أَبِي لَهَبٍ وَتَبَّ (١) مَا أَغْنَىٰ عَنْهُ مَالُهُ وَمَا كَسَبَ (٢) سَيَصْلَىٰ نَارًا ذَاتَ لَهَبٍ (٣) وَامْرَأَتُهُ حَمَّالَةَ الْحَطَبِ (٤) فِي جِيدِهَا حَبْلٌ مِنْ مَسَدٍ (٥)
@@ -73,7 +73,7 @@ Pelajaran utama dari Surah Al-Lahab adalah bahaya sifat sombong dan suka menggan
 
 ---
 
-### 10. Surah An-Nasr (Pertolongan)
+## 10. Surah An-Nasr (Pertolongan)
 
 **Teks Arab:**  
 إِذَا جَاءَ نَصْرُ اللَّهِ وَالْفَتْحُ (١) وَرَأَيْتَ النَّاسَ يَدْخُلُونَ فِي دِينِ اللَّهِ أَفْوَاجًا (٢) فَسَبِّحْ بِحَمْدِ رَبِّكَ وَاسْتَغْفِرْهُ ۚ إِنَّهُ كَانَ تَوَّابًا (٣)
@@ -99,7 +99,7 @@ Surah An-Nasr adalah surah kegembiraan atas pertolongan Allah. Ajak anak memaham
 
 ---
 
-### 11. Surah Al-Fiil (Gajah)
+## 11. Surah Al-Fiil (Gajah)
 
 **Teks Arab:**  
 أَلَمْ تَرَ كَيْفَ فَعَلَ رَبُّكَ بِأَصْحٰبِ الْفِيلِ (١) أَلَمْ يَجْعَلْ كَيْدَهُمْ فِي تَضْلِيلٍ (٢) وَأَرْسَلَ عَلَيْهِمْ طَيْرًا أَبَابِيلَ (٣) تَرْمِيهِمْ بِحِجَارَةٍ مِنْ سِجِّيلٍ (٤) فَجَعَلَهُمْ كَعَصْفٍ مَأْكُولٍ (٥)
@@ -127,7 +127,7 @@ Ini adalah salah satu surah favorit anak-anak karena memuat kisah aksi spektakul
 
 ---
 
-### 12. Surah Al-Humazah (Pengumpat)
+## 12. Surah Al-Humazah (Pengumpat)
 
 **Teks Arab:**  
 وَيْلٌ لِكُلِّ هُمَزَةٍ لُمَزَةٍ (١) الَّذِي جَمَعَ مَالًا وَعَدَّدَهُ (٢) يَحْسَبُ أَنَّ مَالَهُ أَخْلَدَهُ (٣) كَلَّا ۖ لَيُنْبَذَنَّ فِي الْحُطَمَةِ (٤) وَمَا أَدْرٰىكَ مَا الْحُطَمَةُ (٥) نَارُ اللَّهِ الْمُوقَدَةُ (٦) الَّتِي تَطَّلِعُ عَلَى الْأَفْئِدَةِ (٧) إِنَّهَا عَلَيْهِمْ مُؤْصَدَةٌ (٨) فِي عَمَدٍ مُمَدَّدَةٍ (٩)
@@ -163,7 +163,7 @@ Surah ini sangat relevan untuk membangun karakter sosial anak. Ajarkan anak untu
 
 ---
 
-### 13. Surah Al-'Asr (Demi Masa / Waktu)
+## 13. Surah Al-'Asr (Demi Masa / Waktu)
 
 **Teks Arab:**  
 وَالْعَصْرِ (١) إِنَّ الْإِنْسَانَ لَفِي خُسْرٍ (٢) إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَواصَوْا بِالْحَقِّ وَتَواصَوْا بِالصَّبْرِ (٣)
@@ -187,7 +187,7 @@ Surah pendek namun amat padat makna ini mengajarkan anak tentang pentingnya meng
 
 ---
 
-### 14. Surah At-Takatsur (Bermegah-megahan)
+## 14. Surah At-Takatsur (Bermegah-megahan)
 
 **Teks Arab:**  
 أَلْهٰكُمُ التَّكَاثُرُ (١) حَتَّىٰ زُرْتُمُ الْمَقَابِرَ (٢) كَلَّا سَوْفَ تَعْلَمُونَ (٣) ثُمَّ كَلَّا سَوْفَ تَعْلَمُونَ (٤) كَلَّا لَوْ تَعْلَمُونَ عِلْمَ الْيَقِينِ (٥) لَتَرَوُنَّ الْجَحِيمَ (٦) ثُمَّ لَتَرَوُنَّهَا عَيْنَ الْيَقِينِ (٧) ثُمَّ لَتُسْأَلُنَّ يَوْمَئِذٍ عَنِ النَّعِيمِ (٨)

@@ -17,7 +17,7 @@ Berikut adalah analisis komprehensif, transliterasi, terjemahan resmi Kementeria
 
 ---
 
-### 1. Surah Al-Fatihah (Pembuka)
+## 1. Surah Al-Fatihah (Pembuka)
 
 **Teks Arab:**  
 بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ (١) الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ (٢) الرَّحْمَٰنِ الرَّحِيمِ (٣) مَالِكِ يَوْمِ الدِّينِ (٤) إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ (٥) اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ (٦) صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ (٧)
@@ -51,7 +51,7 @@ Al-Fatihah adalah *Ummul Qur'an* (induk Al-Qur'an). Bagi anak usia dini, surah i
 
 ---
 
-### 2. Surah An-Nas (Manusia)
+## 2. Surah An-Nas (Manusia)
 
 **Teks Arab:**  
 قُلْ أَعُوذُ بِرَبِّ النَّاسِ (١) مَلِكِ النَّاسِ (٢) إِلَٰهِ النَّاسِ (٣) مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ (٤) الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ (٥) مِنَ الْجِنَّةِ وَالنَّاسِ (٦)
@@ -81,7 +81,7 @@ Anak-anak sering mengalami ketakutan imajiner—seperti takut gelap, mimpi buruk
 
 ---
 
-### 3. Surah Al-Falaq (Waktu Subuh)
+## 3. Surah Al-Falaq (Waktu Subuh)
 
 **Teks Arab:**  
 قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ (١) مِنْ شَرِّ مَا خَلَقَ (٢) وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ (٣) وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ (٤) وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ (٥)
@@ -111,7 +111,7 @@ Pasangan dari Surah An-Nas ini dikenal sebagai *Al-Mu'awwidzatayn* (dua surah pe
 
 ---
 
-### 4. Surah Al-Ikhlas (Memurnikan Keesaan Allah)
+## 4. Surah Al-Ikhlas (Memurnikan Keesaan Allah)
 
 **Teks Arab:**  
 قُلْ هُوَ اللَّهُ أَحَدٌ (١) اللَّهُ الصَّمَدُ (٢) لَمْ يَلِدْ وَلَمْ يُولَدْ (٣) وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ (٤)
@@ -137,7 +137,7 @@ Al-Ikhlas adalah pondasi akidah paling murni. Ketika anak mulai bertanya, "Allah
 
 ---
 
-### 5. Surah Al-Kafirun (Orang-orang Kafir)
+## 5. Surah Al-Kafirun (Orang-orang Kafir)
 
 **Teks Arab:**  
 قُلْ يَا أَيُّهَا الْكَافِرُونَ (١) لَا أَعْبُدُ مَا تَعْبُدُونَ (٢) وَلَا أَنْتُمْ عَابِدُونَ مَا أَعْبُدُ (٣) وَلَا أَنَا عَابِدٌ مَا عَبَدْتُمْ (٤) وَلَا أَنْتُمْ عَابِدُونَ مَا أَعْبُدُ (٥) لَكُمْ دِينُكُمْ وَلِيَ دِينِ (٦)
@@ -167,7 +167,7 @@ Surah ini mengajarkan toleransi sekaligus keteguhan dalam berkeyakinan (*prinsip
 
 ---
 
-### 6. Surah Al-Kautsar (Nikmat yang Banyak)
+## 6. Surah Al-Kautsar (Nikmat yang Banyak)
 
 **Teks Arab:**  
 إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ (١) فَصَلِّ لِرَبِّكَ وَانْحَرَ (٢) إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ (٣)
@@ -191,7 +191,7 @@ Sebagai surah terpendek dalam Al-Qur'an (3 ayat), Al-Kautsar adalah sarana eduka
 
 ---
 
-### 7. Surah Al-Ma'un (Barang-barang yang Berguna)
+## 7. Surah Al-Ma'un (Barang-barang yang Berguna)
 
 **Teks Arab:**  
 أَرَأَيْتَ الَّذِي يُكَذِّبُ بِالدِّينِ (١) فَذَٰلِكَ الَّذِي يَدُعُّ الْيَتِيمَ (٢) وَلَا يَحُضُّ عَلَىٰ طَعَامِ الْمِسْكِينِ (٣) فَوَيْلٌ لِلْمُصَلِّينَ (٤) الَّذِينَ هُمْ عَنْ صَلَاتِهِمْ سَاهُونَ (٥) الَّذِينَ هُمْ يُرَاءُونَ (٦) وَيَمْنَعُونَ الْمَاعُونَ (٧)
