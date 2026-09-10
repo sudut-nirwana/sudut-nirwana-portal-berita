@@ -66,6 +66,9 @@ layout: default
             {% if page.date %}
               <span class="meta-date" data-icon="calendar">{{ page.date | date: "%d %B %Y" }}</span>
             {% endif %}
+
+            <!-- Pemanggil komponen views -->
+            {% include components/views.html %}
             
           </div>
           
@@ -78,7 +81,7 @@ layout: default
             >
           {% endif %}
           
-          <div class="toc-mobile">
+          <div class="toc-view-mobile">
             {% include widget/toc.html %}
           </div>
         </header>
@@ -91,7 +94,7 @@ layout: default
   
       <aside class="post-sidebar">
         {% include widget/newsletter.html %}
-        <div class="toc-desktop">
+        <div class="toc-view-desktop">
           {% include widget/toc.html %}
         </div>
         {% include widget/populer-post.html %}

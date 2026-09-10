@@ -60,7 +60,8 @@
 
 .meta-author,
 .meta-date,
-.meta-category {
+.meta-category,
+.post-meta-item {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -113,22 +114,22 @@
 }
 
 /* Responsive TOC Controller */
-.toc-mobile {
+.toc-view-mobile {
   display: block;
   margin-top: 20px;
   margin-bottom: 20px;
 }
 
-.toc-desktop {
+.toc-view-desktop {
   display: none;
 }
 
 @media (min-width: 768px) {
-  .toc-mobile {
+  .toc-view-mobile {
     display: none;
   }
   
-  .toc-desktop {
+  .toc-view-desktop {
     display: block;
   }
 }
