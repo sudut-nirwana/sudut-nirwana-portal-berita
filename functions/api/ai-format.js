@@ -23,7 +23,7 @@ export async function onRequestPost(context) {
 {
   "title": "Judul artikel yang menarik dan SEO-friendly (tambahkan [Part X] jika artikel berseri)",
   "slug": "slug-url-singkat-maksimal-6-kata",
-  "category": "pilih salah satu yang valid dari daftar ini: jurnal, kuliner, lifestyle, musik, olahraga, otomotif, seni-budaya, wisata, sosial",
+  "category": "pilih salah satu yang valid dari daftar ini: jurnal, kuliner, lifestyle, musik, olahraga, otomotif, seni-budaya, wisata, sosial, religi",
   "popular": "true jika ini artikel tunggal atau Part 1 dari artikel berseri; isi 'false' jika ini Part 2, Part 3, atau seterusnya",
   "description": "Ringkasan pendek (meta description) yang memikat pembaca",
   "imageName": "nama-file-pendek-relevan.webp",
