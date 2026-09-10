@@ -219,4 +219,4 @@ Surah At-Takatsur mendidik anak agar tidak suka memamerkan mainan atau barang mi
 - **Sistem Pasangan Pengulangan:** Ayat 3 & 4 memiliki struktur yang identik dengan tambahan kata *thumma*. Ajarkan kedua ayat ini secara berpasangan.
 - **Pola Rima Ganda:** Arahkan fokus anak pada dua pola akhiran: kelompok akhiran *-ūn* (ayat 3-5) dan kelompok akhiran *-īm* (ayat 6-8).
 
-**[<u>Kembali ke Part 1: Cara Mudah Anak Hafal Surah Al-fatihah hingga Al-Ma'un</u>]({{ '/metode-hafalan-surah-pendek-anak-part-1' | relative_url }})**
+**[<u>Kembali ke Part 1: Cara Mudah Anak Hafal Surah Al-fatihah hingga Al-Ma'un</u>]({{ '/religi/metode-hafalan-surah-pendek-anak-part-1' | relative_url }})**

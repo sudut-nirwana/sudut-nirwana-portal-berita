@@ -221,4 +221,4 @@ Al-Ma'un adalah pilar pendidikan kepedulian sosial dalam Islam. Anak-anak diajar
 * **Roleplay & Storytelling:** Dampingi hafalan surah ini dengan kegiatan sosial nyata, seperti memberikan santunan atau berbagi kotak makan siang kepada sesama.  
 * **Pemintalan Irama (Melodic Memorization):** Surah ini memiliki intonasi tanya-jawab di awal (*A-ra'aita...*). Gunakan nada bertanya saat mengajarkan ayat pertama untuk menarik perhatian fokus anak.
 
-**[<u>Klik di Sini untuk Melanjutkan ke Part 2: Cara Mudah Anak Hafal Surah Quraisy hingga At-Takatsur</u>]({{ '/metode-hafalan-alquran-anak-part-2' | relatif_url }})**
+**[<u>Klik di Sini untuk Melanjutkan ke Part 2: Cara Mudah Anak Hafal Surah Quraisy hingga At-Takatsur</u>]({{ '/religi/metode-hafalan-alquran-anak-part-2' | relative_url }})**
