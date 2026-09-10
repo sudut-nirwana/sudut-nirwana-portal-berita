@@ -1,8 +1,8 @@
 ---
 layout: content
 title: "Melawan Senyap: Perjuangan Lula Memecah Pembungkaman Kekerasan Seksual di Tanah Madura"
-author: "tavisha"
-date: 2026-09-10 06:04:20 +0700
+author: "Yossi Oktavia"
+date: 2026-09-10 00:00:00 +0700
 categories: [sosial]
 tags: ["kekerasan seksual", "kesehatan mental", "trauma", "madura", "isu sosial", "psikoedukasi"]
 image: /assets/images/posts/lulu-story.webp
@@ -11,6 +11,7 @@ slug: "melawan-senyap-kekerasan-seksual-madura"
 popular: "true"
 ---
 
+## Cerita ini di ambil dari kisah nyata (True Story).
 Bagi banyak orang, rumah dan tanah kelahiran adalah suaka paling aman untuk melabuhkan kelelahan. Namun, bagi Lula (21, bukan nama sebenarnya), kepulangan ke tanah Madura justru menjadi labirin ketakutan yang mengurungnya selama bertahun-tahun. Ini adalah sebuah catatan kritis dan narasi keberanian seorang perempuan muda yang berjuang memecah dinding kesunyian di tengah kultur kekerabatan yang ketat.
 
 ## Babak Pertama: Trauma di Tengah Jalan yang Sepi
