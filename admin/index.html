@@ -103,8 +103,13 @@
 
                 <label>Ringkasan (Description)</label>
                 <textarea id="description" rows="2"></textarea>
+
+                <label>Unggah Gambar dari Galeri / Kamera</label>
+                <input type="file" id="image-file-input" accept="image/*" onchange="uploadImageToGithub(this)" style="background: #fff; padding: 6px; margin-bottom: 12px;">
+
                 <label>Path Gambar</label>
                 <input type="text" id="image" placeholder="/assets/images/posts/sample.webp">
+
                 <label>Tags (pisahkan dengan koma)</label>
                 <input type="text" id="tags" placeholder="sastra, sitti nurbaya, sejarah">
                 

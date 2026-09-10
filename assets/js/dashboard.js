@@ -548,6 +548,44 @@ async function triggerBroadcast(articleId) {
     }
 }
 
+async function uploadImageToGithub(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    if (!currentUser) {
+        alert('Sesi login tidak valid.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        const base64Data = e.target.result.split(',')[1];
+        alert('Mengunggah gambar ke GitHub...');
+        
+        try {
+            const res = await fetch('/api/upload-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    admin_email: currentUser.email,
+                    filename: file.name,
+                    imageBase64: base64Data
+                })
+            });
+            
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('image').value = data.path;
+                alert('Gambar berhasil diunggah! Path otomatis terisi.');
+            } else {
+                alert('Gagal upload gambar: ' + (data.error || 'Terjadi kesalahan'));
+            }
+        } catch (err) {
+            alert('Terjadi kesalahan jaringan saat mengunggah gambar.');
+        }
+    };
+    reader.readAsDataURL(file);
+}
 
 function escapeHtml(text) {
     if (!text) return '';
