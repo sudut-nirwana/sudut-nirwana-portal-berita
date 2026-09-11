@@ -277,7 +277,8 @@ function renderArticlesTable() {
                 <td>${escapeHtml(art.title)}</td>
                 <td>${escapeHtml(art.category || '-')}</td>
                 <td>
-                    <button type="button" onclick="triggerBroadcast('${art.id}')" style="background: #d69e2e; width: auto; padding: 5px 10px; font-size: 13px; margin-right: 5px; margin-bottom: 5px;">📢 Broadcast</button>
+                    <button type="button" onclick="triggerGoogleIndex('${art.id}')" style="background: #319795; width: auto; padding: 5px 10px; font-size: 13px; margin-right: 5px; margin-bottom: 5px;">🚀 Google Index</button>
+                    <button type="button" onclick="triggerBroadcast('${art.id}')" style="background: #dd6b20; width: auto; padding: 5px 10px; font-size: 13px; margin-right: 5px; margin-bottom: 5px;">📢 Broadcast</button>
                     <button type="button" onclick="editArticle('${art.id}')" style="background: #319795; width: auto; padding: 5px 10px; font-size: 13px; margin-right: 5px; margin-bottom: 5px;">Edit</button>
                     <button type="button" class="btn-danger" onclick="deleteArticle('${art.id}')">Hapus</button>
                 </td>
@@ -299,6 +300,39 @@ function renderArticlesTable() {
 function changePage(direction) {
     currentPage += direction;
     renderArticlesTable();
+}
+
+async function triggerGoogleIndex(articleId) {
+    const article = allArticles.find(a => a.id == articleId);
+    if (!article) {
+        alert('Artikel tidak ditemukan.');
+        return;
+    }
+
+    if (!confirm(`Kirim URL artikel "${article.title}" ke Google Indexing API?`)) {
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/google-index', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                admin_email: currentUser.email,
+                slug: article.slug,
+                category: article.category
+            })
+        });
+
+        const result = await res.json();
+        if (result.success) {
+            alert('Sukses! ' + result.message);
+        } else {
+            alert('Gagal Indexing: ' + (result.error || 'Terjadi kesalahan'));
+        }
+    } catch (err) {
+        alert('Terjadi kesalahan jaringan saat menghubungi server.');
+    }
 }
 
 function editArticle(articleId) {
