@@ -4,12 +4,21 @@ function base64url(source) {
     return encoded.replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
 }
 
-// Konversi PEM Private Key ke CryptoKey Cloudflare
+// Konversi PEM Private Key ke CryptoKey Cloudflare secara aman
 async function importPrivateKey(pem) {
-    const pemHeader = "-----BEGIN PRIVATE KEY-----";
-    const pemFooter = "-----END PRIVATE KEY-----";
-    const pemContents = pem.substring(pemHeader.length, pem.length - pemFooter.length).replace(/\s/g, "");
-    const binaryDerString = atob(pemContents);
+    const cleanPem = pem
+        .replace(/\\n/g, '')
+        .replace(/-----BEGIN PRIVATE KEY-----/g, '')
+        .replace(/-----END PRIVATE KEY-----/g, '')
+        .replace(/\s/g, '');
+    
+    let binaryDerString;
+    try {
+        binaryDerString = atob(cleanPem);
+    } catch (e) {
+        throw new Error("Format Google Private Key tidak valid atau rusak: " + e.message);
+    }
+
     const binaryDer = new Uint8Array(binaryDerString.length);
     for (let i = 0; i < binaryDerString.length; i++) {
         binaryDer[i] = binaryDerString.charCodeAt(i);
@@ -29,7 +38,7 @@ export async function onRequestPost(context) {
         const db = context.env.DB;
         
         const clientEmail = context.env.GOOGLE_CLIENT_EMAIL;
-        const privateKeyPEM = context.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
+        const privateKeyPEM = context.env.GOOGLE_PRIVATE_KEY;
 
         // Validasi Hak Akses Admin
         const admin = await db.prepare("SELECT role FROM users WHERE email = ?").bind(admin_email).first();
