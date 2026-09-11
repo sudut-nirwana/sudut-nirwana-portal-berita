@@ -4,25 +4,39 @@ function base64url(source) {
     return encoded.replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
 }
 
-// Konversi PEM Private Key ke CryptoKey Cloudflare secara aman
+// Konversi PEM Private Key yang diperkuat agar aman dari tanda kutip dan baris baru
 async function importPrivateKey(pem) {
-    const cleanPem = pem
+    if (!pem) {
+        throw new Error("Variabel GOOGLE_PRIVATE_KEY kosong atau belum diset di Cloudflare.");
+    }
+    
+    let cleanPem = pem.trim();
+    
+    // Menghapus tanda kutip di awal dan akhir jika tidak sengaja ikut tersalin
+    if ((cleanPem.startsWith('"') && cleanPem.endsWith('"')) || (cleanPem.startsWith("'") && cleanPem.endsWith("'"))) {
+        cleanPem = cleanPem.slice(1, -1);
+    }
+
+    // Membersihkan header, footer, literal \n, enter asli (\r\n), dan spasi
+    cleanPem = cleanPem
         .replace(/\\n/g, '')
+        .replace(/[\r\n]+/g, '')
         .replace(/-----BEGIN PRIVATE KEY-----/g, '')
         .replace(/-----END PRIVATE KEY-----/g, '')
         .replace(/\s/g, '');
-    
+
     let binaryDerString;
     try {
         binaryDerString = atob(cleanPem);
     } catch (e) {
-        throw new Error("Format Google Private Key tidak valid atau rusak: " + e.message);
+        throw new Error("Gagal memproses Base64 kunci privat. Periksa kembali apakah ada bagian yang terpotong di Cloudflare.");
     }
 
     const binaryDer = new Uint8Array(binaryDerString.length);
     for (let i = 0; i < binaryDerString.length; i++) {
         binaryDer[i] = binaryDerString.charCodeAt(i);
     }
+    
     return crypto.subtle.importKey(
         "pkcs8",
         binaryDer.buffer,
