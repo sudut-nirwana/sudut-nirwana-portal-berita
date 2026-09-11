@@ -98,9 +98,6 @@
         align-items: center;
         gap: 6px;
       }
-      .post-views{
-        margin-left: 8px;
-      }
     }
   }
 
@@ -124,6 +121,10 @@
 
       &:hover .sub-thumb img {
         transform: scale(1.05);
+      }
+
+      .sub-meta{
+        gap: 12px;
       }
     }
 
