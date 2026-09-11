@@ -1,23 +1,31 @@
-// Fungsi bantuan untuk encode Base64URL
+// Konversi string biasa ke Base64URL (untuk Header & Payload)
 function base64url(source) {
     let encoded = btoa(source);
     return encoded.replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
 }
 
-// Konversi PEM Private Key yang diperkuat agar aman dari tanda kutip dan baris baru
+// Konversi ArrayBuffer Signature langsung ke Base64URL secara aman
+function bufferToBase64Url(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    let base64 = btoa(binary);
+    return base64.replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+}
+
+// Konversi PEM Private Key ke CryptoKey Cloudflare
 async function importPrivateKey(pem) {
     if (!pem) {
         throw new Error("Variabel GOOGLE_PRIVATE_KEY kosong atau belum diset di Cloudflare.");
     }
     
     let cleanPem = pem.trim();
-    
-    // Menghapus tanda kutip di awal dan akhir jika tidak sengaja ikut tersalin
     if ((cleanPem.startsWith('"') && cleanPem.endsWith('"')) || (cleanPem.startsWith("'") && cleanPem.endsWith("'"))) {
         cleanPem = cleanPem.slice(1, -1);
     }
 
-    // Membersihkan header, footer, literal \n, enter asli (\r\n), dan spasi
     cleanPem = cleanPem
         .replace(/\\n/g, '')
         .replace(/[\r\n]+/g, '')
@@ -29,7 +37,7 @@ async function importPrivateKey(pem) {
     try {
         binaryDerString = atob(cleanPem);
     } catch (e) {
-        throw new Error("Gagal memproses Base64 kunci privat. Periksa kembali apakah ada bagian yang terpotong di Cloudflare.");
+        throw new Error("Gagal memproses Base64 kunci privat. Periksa kembali isi key di Cloudflare.");
     }
 
     const binaryDer = new Uint8Array(binaryDerString.length);
@@ -89,8 +97,7 @@ export async function onRequestPost(context) {
             encoder.encode(stringToSign)
         );
         
-        const signatureBase64 = btoa(String.fromCharCode(...new Uint8Array(signatureBuffer)));
-        const jwtToken = stringToSign + "." + base64url(signatureBase64);
+        const jwtToken = stringToSign + "." + bufferToBase64Url(signatureBuffer);
 
         // Tukar JWT dengan Access Token
         const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
