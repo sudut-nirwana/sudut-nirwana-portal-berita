@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sbForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Panggil push notification di baris pertama agar interaksi sentuhan valid memunculkan popup di HP
+            // Panggil fungsi push notification di awal klik tombol
             const publicKey = 'BABbAwx9bihj77MmLQbrpj4hKha6NU6vtTyhkTUiNfzV-An8a3KZ1MEnXKYdohRZEGu--Qj6Os8mzGt-ur7ETjM';
             initPushNotification(publicKey);
 
@@ -82,10 +82,11 @@ async function initPushNotification(vapidPublicKey) {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
 
     try {
-        const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+        // PERBAIKAN UTAMA: Minta izin SEKETIKA di baris paling atas sebelum proses await apa pun
         const permission = await Notification.requestPermission();
-        
         if (permission !== 'granted') return;
+
+        const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
 
         const convertedKey = urlBase64ToUint8Array(vapidPublicKey);
         const subscription = await registration.pushManager.subscribe({
@@ -93,7 +94,6 @@ async function initPushNotification(vapidPublicKey) {
             applicationServerKey: convertedKey
         });
 
-        // Menggunakan .toJSON() agar data subscription terbaca utuh di perangkat mobile
         await fetch('/api/save-subscription', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
