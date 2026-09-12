@@ -19,10 +19,7 @@ Selain bernilai ibadah spiritual, penelitian medis modern juga mencatat bahwa wu
 
 Berikut adalah panduan tata cara wudhu yang sistematis dan sesuai dengan sunnah Rasulullah SAW.
 
----
-
 ## Syarat dan Rukun Wudhu
-
 Sebelum memulai, penting untuk membedakan antara **rukun** (hal wajib yang jika ditinggalkan membuat wudhu tidak sah) dan **sunnah** (penyempurna pahala wudhu).
 
 ### Rukun Wudhu (Wajib):
@@ -34,8 +31,6 @@ Sebelum memulai, penting untuk membedakan antara **rukun** (hal wajib yang jika 
 6. Tertib (berurutan).
 
 {% include alert-single.html category='religi' %}
-
----
 
 ## Urutan dan Tata Cara Wudhu Sesuai Sunnah
 
