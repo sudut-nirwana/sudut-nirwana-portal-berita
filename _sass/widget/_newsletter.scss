@@ -40,10 +40,10 @@
   outline: none;
   box-sizing: border-box;
   font-family: inherit;
+}
 
-  &:focus {
-    border-color: var(--color-primary);
-  }
+.newsletter-input:focus {
+  border-color: var(--color-primary);
 }
 
 .newsletter-btn {
@@ -57,10 +57,10 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.2s ease;
+}
 
-  &:hover {
-    background: var(--color-primary);
-  }
+.newsletter-btn:hover {
+  background: var(--color-primary);
 }
 
 .newsletter-btn-danger {
@@ -74,8 +74,8 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.2s ease;
+}
 
-  &:hover {
-    background: #c53030;
-  }
+.newsletter-btn-danger:hover {
+  background: #c53030;
 }
