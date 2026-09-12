@@ -197,6 +197,9 @@
 /* Sidebar */
 .post-sidebar {
   background: var(--color-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 @media (max-width: 767px) {
