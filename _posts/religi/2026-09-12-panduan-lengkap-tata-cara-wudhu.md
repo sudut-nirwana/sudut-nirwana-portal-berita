@@ -1,8 +1,8 @@
 ---
 layout: content
 title: "Panduan Lengkap Tata Cara Wudhu Sesuai Sunnah: Syarat, Rukun, dan Doa Lengkap"
-author: "yossi"
-date: 2026-09-12 18:36:40 +0700
+author: "Yossi Oktavia"
+date: 2026-09-12 00:00:00 +0700
 categories: [religi]
 tags: ["wudhu", "tata cara wudhu", "panduan ibadah", "fiqih bersuci", "doa wudhu", "thaharah"]
 image: /assets/images/posts/1000586074.webp
@@ -38,9 +38,11 @@ Sebelum memulai, penting untuk membedakan antara **rukun** (hal wajib yang jika 
 ---
 
 ## Urutan dan Tata Cara Wudhu Sesuai Sunnah
-<img class="img-content" src="{{ '/assets/images/posts/img-wudhu-1.webp' | relative_url }}" alt="membasuh tangan berwudhu dan membaca niat wudhu" loading="lazy">
 
 ### 1. Niat dan Membaca Basmalah
+
+<img class="img-content" src="{{ '/assets/images/posts/img-wudhu-1.webp' | relative_url }}" alt="membasuh tangan berwudhu dan membaca niat wudhu" loading="lazy">
+
 Mulailah dengan membaca *Basmalah* (*Bismillahirrahmanirrahim*) dan memantapkan niat di dalam hati untuk menghilangkan hadats kecil semata-mata karena Allah Ta'ala.
 
 **Teks Arab Niat Wudhu:**
