@@ -68,6 +68,14 @@
         <div class="card">
             <h2 id="form-title">Tulis Artikel Baru</h2>
             
+            <!-- Kotak Asisten AI Draft Mentah -->
+            <div style="background: #f7fafc; border: 2px dashed #cbd5e0; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <label style="font-weight: bold; color: #2d3748; display: block; margin-bottom: 5px;">✨ Asisten AI (Draft Mentah)</label>
+                <p style="font-size: 13px; color: #718096; margin-bottom: 10px;">Tempel draf mentah Anda di sini. AI akan merapikan format, melengkapi fakta, memilih kategori, dan mengisi form otomatis.</p>
+                <textarea id="ai-raw-input" rows="5" placeholder="Tulis atau tempel draf mentah di sini..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; margin-bottom: 10px;"></textarea>
+                <button type="button" onclick="processWithAI()" style="background: #6b46c1; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; width: auto;">✨ Format & Isi Otomatis dengan AI</button>
+            </div>
+
             <form id="publish-form">
                 <input type="hidden" id="edit-article-id" value="">
                 <label>Judul Artikel</label>
