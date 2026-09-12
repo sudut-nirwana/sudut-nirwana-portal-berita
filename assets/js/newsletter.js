@@ -23,6 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sbForm) {
         sbForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Panggil push notification di baris pertama agar interaksi sentuhan valid memunculkan popup di HP
+            const publicKey = 'BABbAwx9bihj77MmLQbrpj4hKha6NU6vtTyhkTUiNfzV-An8a3KZ1MEnXKYdohRZEGu--Qj6Os8mzGt-ur7ETjM';
+            initPushNotification(publicKey);
+
             const email = document.getElementById('sidebarEmail').value;
             try {
                 const res = await fetch('/api/subscribe', {
@@ -36,9 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     msgEl.style.color = 'green';
                     msgEl.innerText = 'Berhasil berlangganan email & notifikasi!';
                     sbForm.reset();
-                    
-                    const publicKey = 'BABbAwx9bihj77MmLQbrpj4hKha6NU6vtTyhkTUiNfzV-An8a3KZ1MEnXKYdohRZEGu--Qj6Os8mzGt-ur7ETjM';
-                    initPushNotification(publicKey);
                 } else {
                     msgEl.style.color = 'red';
                     msgEl.innerText = data.error || 'Gagal mendaftar.';
@@ -91,10 +93,11 @@ async function initPushNotification(vapidPublicKey) {
             applicationServerKey: convertedKey
         });
 
+        // Menggunakan .toJSON() agar data subscription terbaca utuh di perangkat mobile
         await fetch('/api/save-subscription', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(subscription)
+            body: JSON.stringify(subscription.toJSON())
         });
     } catch (err) {
         console.error('Gagal mendaftarkan push:', err);
