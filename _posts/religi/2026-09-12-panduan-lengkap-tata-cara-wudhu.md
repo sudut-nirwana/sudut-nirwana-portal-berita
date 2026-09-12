@@ -56,11 +56,15 @@ Mulailah dengan membaca *Basmalah* (*Bismillahirrahmanirrahim*) dan memantapkan 
 
 Sembari berniat, basuhlah kedua telapak tangan hingga pergelangan sebanyak 3 kali dan selapasi jari-jemari.
 
+---
+
 ### 2. Berkumur-kumur (*Madhmadhah*)
 
 <img class="img-content" src="{{ '/assets/images/posts/img-wudhu-2.webp' | relative_url }}" alt="berkumur 3 kali saat wudhu" loading="lazy">
 
 Ambil air secukupnya ke dalam mulut, lalu berkumur-kumurlah untuk membersihkan sisa makanan di mulut sebanyak 3 kali.
+
+---
 
 ### 3. Membersihkan Hidung (*Istinsyaq* & *Istintsar*)
 
