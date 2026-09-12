@@ -302,3 +302,36 @@
 .alert.alert-group .alert-heading {
   color: var(--green-primary);
 }
+
+/* Gambar Float di Post Body - Selalu di Kiri */
+.post-body .img-content {
+  float: left;
+  width: 120px;
+  height: auto;
+  margin: 6px 16px 16px 0;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  object-fit: cover;
+}
+
+/* Tablet ke atas: gambar lebih besar */
+@media (min-width: 768px) {
+  .post-body .img-content {
+    width: 240px;
+    margin: 8px 20px 18px 0;
+  }
+}
+
+/* Desktop besar: boleh 280px kalau mau */
+@media (min-width: 1024px) {
+  .post-body .img-content {
+    width: 280px;
+  }
+}
+
+/* Kunci: Tiap H2/H3 baru, clear biar gak numpuk */
+.post-body h2,
+.post-body h3 {
+  clear: both;
+  padding-top: 4px;
+}
