@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Panduan Lengkap Tuntunan Shalat Fardhu 5 Waktu: Niat, Bacaan Arab, Latin, dan Artinya"
-author: "yosi"
+author: "yossi"
 date: 2026-09-11 00:00:00 +0700
 categories: [religi]
 tags: ["tuntunan shalat", "panduan ibadah", "rukun shalat", "bacaan shalat", "shalat 5 waktu"]

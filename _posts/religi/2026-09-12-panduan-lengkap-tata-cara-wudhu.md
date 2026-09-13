@@ -1,7 +1,7 @@
 ---
 layout: content
 title: "Panduan Lengkap Tata Cara Wudhu Sesuai Sunnah: Syarat, Rukun, dan Doa Lengkap"
-author: "yosi"
+author: "yossi"
 date: 2026-09-12 00:00:00 +0700
 categories: [religi]
 tags: ["wudhu", "tata cara wudhu", "panduan ibadah", "fiqih bersuci", "doa wudhu", "thaharah"]
