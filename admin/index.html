@@ -40,6 +40,7 @@
         .preview-box h1, .preview-box h2, .preview-box h3 { margin-top: 0; }
         .info-text { font-size: 12px; color: #666; margin-top: -12px; margin-bottom: 16px; }
         .form-actions { display: flex; gap: 10px; }
+        .profile-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; border: 2px solid #cbd5e0; }
     </style>
 </head>
 <body>
@@ -107,10 +108,10 @@
                 <label>Ringkasan (Description)</label>
                 <textarea id="description" rows="2"></textarea>
 
-                <label>Unggah Gambar dari Galeri / Kamera</label>
+                <label>Unggah Gambar Sampul (Otomatis Convert ke WebP)</label>
                 <input type="file" id="image-file-input" accept="image/*" onchange="uploadImageToGithub(this)" style="background: #fff; padding: 6px; margin-bottom: 12px;">
 
-                <label>Path Gambar</label>
+                <label>Path Gambar Sampul</label>
                 <input type="text" id="image" placeholder="/assets/images/posts/sample.webp">
 
                 <label>Tags (pisahkan dengan koma)</label>
@@ -137,29 +138,31 @@
             </form>
         </div>
 
-        <div id="admin-panel" class="hidden">
-            <div class="card">
-                <h2>Kelola Artikel</h2>
-                <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center;">
-                    <input type="text" id="article-search" placeholder="Cari judul atau kategori artikel..." style="margin: 0; flex: 1;">
-                    <button type="button" onclick="syncGithubArticles()" style="background: #d69e2e; width: auto; padding: 10px 12px; font-size: 14px; margin: 0; white-space: nowrap;">🔄 Sinkron</button>
-                </div>
-                <table>
-                    <thead>
-                        <tr><th>Judul</th><th>Kategori</th><th>Aksi</th></tr>
-                    </thead>
-                    <tbody id="articles-table-body">
-                        <tr><td colspan="3" style="text-align:center;">Memuat artikel...</td></tr>
-                    </tbody>
-                </table>
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 14px;">
-                    <button type="button" id="prev-page-btn" onclick="changePage(-1)" style="width: auto; padding: 6px 12px; background: #718096;" disabled>Sebelumnya</button>
-                    <span id="page-info" style="color: #555; font-size: 13px;">Halaman 1 dari 1</span>
-                    <button type="button" id="next-page-btn" onclick="changePage(1)" style="width: auto; padding: 6px 12px; background: #0070f3;" disabled>Selanjutnya</button>
-                </div>
+        <!-- Kelola Artikel (Terbuka untuk Admin & Author) -->
+        <div class="card">
+            <h2 id="manage-articles-title">Kelola Artikel</h2>
+            <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center;">
+                <input type="text" id="article-search" placeholder="Cari judul atau kategori artikel..." style="margin: 0; flex: 1;">
+                <button type="button" id="sync-github-btn" onclick="syncGithubArticles()" style="background: #d69e2e; width: auto; padding: 10px 12px; font-size: 14px; margin: 0; white-space: nowrap;">🔄 Sinkron</button>
             </div>
+            <table>
+                <thead>
+                    <tr><th>Judul</th><th>Kategori</th><th>Aksi</th></tr>
+                </thead>
+                <tbody id="articles-table-body">
+                    <tr><td colspan="3" style="text-align:center;">Memuat artikel...</td></tr>
+                </tbody>
+            </table>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 14px;">
+                <button type="button" id="prev-page-btn" onclick="changePage(-1)" style="width: auto; padding: 6px 12px; background: #718096;" disabled>Sebelumnya</button>
+                <span id="page-info" style="color: #555; font-size: 13px;">Halaman 1 dari 1</span>
+                <button type="button" id="next-page-btn" onclick="changePage(1)" style="width: auto; padding: 6px 12px; background: #0070f3;" disabled>Selanjutnya</button>
+            </div>
+        </div>
 
+        <!-- Fitur Khusus Admin -->
+        <div id="admin-panel" class="hidden">
             <div class="card">
                 <h2>Tambah Penulis Baru</h2>
                 <form id="author-form">
@@ -237,13 +240,26 @@
             <form id="account-form">
                 <label>Nama Lengkap</label>
                 <input type="text" id="settings-name" required>
+                
                 <label>Email</label>
                 <input type="email" id="settings-email" required>
+
+                <label>Foto Profil Saat Ini</label>
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                    <img id="settings-avatar-preview" src="/assets/images/authors/default.webp" class="profile-preview" alt="Avatar">
+                    <input type="text" id="settings-avatar" readonly style="flex: 1; margin: 0;">
+                </div>
+
+                <label>Ganti Foto Profil dari Galeri (Otomatis Convert ke WebP & Hapus Foto Lama)</label>
+                <input type="file" id="settings-avatar-file" accept="image/*" onchange="uploadAvatarToGithub(this)" style="background: #fff; padding: 6px; margin-bottom: 12px;">
+                
                 <label>Password Lama <small>(Wajib jika ganti sandi / email)</small></label>
                 <input type="password" id="settings-old-password">
+                
                 <label>Password Baru <small>(Opsional)</small></label>
                 <input type="password" id="settings-new-password">
-                <button type="submit" style="background: #319795;">Simpan Perubahan</button>
+                
+                <button type="submit" style="background: #319795;">Simpan Perubahan Akun</button>
             </form>
         </div>
     </div>

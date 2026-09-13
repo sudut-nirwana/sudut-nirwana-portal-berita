@@ -1,9 +1,10 @@
 export async function onRequestPost(context) {
     try {
-        const { admin_email, target_user_id, new_name, new_email, new_password, old_password } = await context.request.json();
+        const { admin_email, user_email, target_user_id, new_name, new_email, new_password, old_password, new_avatar } = await context.request.json();
+        const activeEmail = user_email || admin_email;
         const db = context.env.DB;
 
-        const requester = await db.prepare("SELECT * FROM users WHERE email = ?").bind(admin_email).first();
+        const requester = await db.prepare("SELECT * FROM users WHERE email = ?").bind(activeEmail).first();
         if (!requester) {
             return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), { 
                 status: 401, 
@@ -77,6 +78,10 @@ export async function onRequestPost(context) {
 
         if (new_email) {
             await db.prepare("UPDATE users SET email = ? WHERE id = ?").bind(new_email, targetId).run();
+        }
+
+        if (new_avatar) {
+            await db.prepare("UPDATE users SET avatar = ? WHERE id = ?").bind(new_avatar, targetId).run();
         }
 
         return new Response(JSON.stringify({ success: true, message: 'Akun berhasil diperbarui.' }), {

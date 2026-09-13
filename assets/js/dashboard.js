@@ -1,125 +1,366 @@
-'use strict';
 let currentUser = null;
 let allArticles = [];
-let allSubscribers = [];
+let filteredArticles = [];
 let currentPage = 1;
-const rowsPerPage = 10;
-let searchQuery = '';
+const itemsPerPage = 7;
 
 document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('article-search');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            searchQuery = e.target.value.toLowerCase();
-            currentPage = 1; 
-            renderArticlesTable();
-        });
-    }
+    checkSession();
+    setupEventListeners();
 });
 
-document.getElementById('title').addEventListener('input', (e) => {
-    const editId = document.getElementById('edit-article-id').value;
-    if (editId) return;
-    let slug = e.target.value.toLowerCase()
-        .replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-')
-        .replace(/^-+/, '').replace(/-+$/, '');
-    const words = slug.split('-');
-    if (words.length > 6) slug = words.slice(0, 6).join('-');
-    if (slug.length > 80) slug = slug.substring(0, 80);
-    document.getElementById('slug').value = slug;
-});
-
-function switchEditorTab(mode) {
-    const editorPane = document.getElementById('editor-pane');
-    const previewPane = document.getElementById('preview-pane');
-    const btnEdit = document.getElementById('btn-tab-edit');
-    const btnPreview = document.getElementById('btn-tab-preview');
-    const contentVal = document.getElementById('content').value;
-
-    if (mode === 'edit') {
-        editorPane.classList.remove('hidden'); previewPane.classList.add('hidden');
-        btnEdit.classList.add('active'); btnPreview.classList.remove('active');
+function checkSession() {
+    const savedUser = localStorage.getItem('sn_user');
+    if (savedUser) {
+        try {
+            currentUser = JSON.parse(savedUser);
+            showDashboard();
+        } catch (e) {
+            logout();
+        }
     } else {
-        editorPane.classList.add('hidden'); previewPane.classList.remove('hidden');
-        btnPreview.classList.add('active'); btnEdit.classList.remove('active');
-        renderPreviewContent(contentVal, previewPane);
+        showLogin();
     }
 }
 
-function renderPreviewContent(text, pane) {
-    if (!text.trim()) {
-        pane.innerHTML = '<p style="color: #888; font-style: italic;">Belum ada konten untuk dipratinjau.</p>';
-    } else {
-        pane.innerHTML = marked.parse(text);
-    }
+function showLogin() {
+    document.getElementById('login-section').classList.remove('hidden');
+    document.getElementById('dashboard-section').classList.add('hidden');
 }
 
+function showDashboard() {
+    document.getElementById('login-section').classList.add('hidden');
+    document.getElementById('dashboard-section').classList.remove('hidden');
+    document.getElementById('welcome-user').textContent = `Halo, ${currentUser.name} (${currentUser.role.toUpperCase()})`;
+    
+    // Admin Panel khusus untuk role admin
+    if (currentUser.role === 'admin') {
+        document.getElementById('admin-panel').classList.remove('hidden');
+    } else {
+        document.getElementById('admin-panel').classList.add('hidden');
+    }
+
+    loadAdminData();
+}
+
+// Login Form Handler
 document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+
     try {
         const res = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: document.getElementById('login-email').value,
-                password: document.getElementById('login-password').value
-            })
+            body: JSON.stringify({ email, password })
         });
         const data = await res.json();
-
         if (data.success) {
             currentUser = data.user;
-            document.getElementById('welcome-user').innerText = `Halo, ${currentUser.name} (${currentUser.role})`;
-            document.getElementById('settings-name').value = currentUser.name;
-            document.getElementById('settings-email').value = currentUser.email;
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('dashboard-section').classList.remove('hidden');
-
-            if (currentUser.role === 'admin') {
-                document.getElementById('admin-panel').classList.remove('hidden');
-                loadAdminData();
-                loadSubscribers();
-            } else {
-                document.getElementById('settings-email').disabled = true;
-            }
+            localStorage.setItem('sn_user', JSON.stringify(currentUser));
+            showDashboard();
         } else {
-            alert('Login Gagal: ' + (data.error || 'Periksa kembali email dan password.'));
+            alert('Login Gagal: ' + (data.error || 'Email atau password salah'));
         }
     } catch (err) {
-        alert('Terjadi kesalahan jaringan saat login.');
+        alert('Kesalahan jaringan: ' + err.message);
     }
 });
 
-document.getElementById('publish-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!currentUser) {
-        alert('Sesi login tidak valid. Silakan login ulang.');
+function logout() {
+    localStorage.removeItem('sn_user');
+    currentUser = null;
+    window.location.reload();
+}
+
+// Konversi File Gambar Apapun ke WebP (Client-Side Canvas)
+function convertToWebP(file, quality = 0.85) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                
+                const webpDataUrl = canvas.toDataURL('image/webp', quality);
+                const base64Data = webpDataUrl.split(',')[1];
+                
+                let cleanFileName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                cleanFileName = cleanFileName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.webp';
+                
+                resolve({ base64: base64Data, filename: cleanFileName });
+            };
+            img.onerror = () => reject('Gagal memuat file gambar.');
+            img.src = event.target.result;
+        };
+        reader.onerror = () => reject('Gagal membaca file.');
+        reader.readAsDataURL(file);
+    });
+}
+
+// Upload Gambar Sampul Artikel ke GitHub (Otomatis Hapus Sampul Lama)
+async function uploadImageToGithub(input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const oldPath = document.getElementById('image').value.trim();
+
+    try {
+        document.getElementById('image').value = 'Mengonversi ke WebP & Mengunggah...';
+        const converted = await convertToWebP(file);
+        
+        const res = await fetch('/api/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_email: currentUser.email,
+                filename: converted.filename,
+                imageBase64: converted.base64,
+                targetFolder: 'assets/images/posts',
+                oldImagePath: oldPath
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('image').value = data.path;
+            alert('Gambar sampul berhasil diunggah dan dikonversi ke .webp');
+        } else {
+            alert('Gagal unggah gambar: ' + data.error);
+            document.getElementById('image').value = oldPath;
+        }
+    } catch (err) {
+        alert('Error konversi/unggah gambar: ' + err);
+        document.getElementById('image').value = oldPath;
+    }
+}
+
+// Upload Foto Profil Avatar ke GitHub (Otomatis Hapus Avatar Lama)
+async function uploadAvatarToGithub(input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const oldAvatarPath = document.getElementById('settings-avatar').value.trim();
+
+    try {
+        const converted = await convertToWebP(file);
+        const avatarFilename = `avatar-${currentUser.slug || Date.now()}.webp`;
+
+        const res = await fetch('/api/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_email: currentUser.email,
+                filename: avatarFilename,
+                imageBase64: converted.base64,
+                targetFolder: 'assets/images/authors',
+                oldImagePath: oldAvatarPath
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('settings-avatar').value = data.path;
+            document.getElementById('settings-avatar-preview').src = data.path;
+            alert('Foto profil baru berhasil diunggah ke GitHub!');
+        } else {
+            alert('Gagal unggah foto profil: ' + data.error);
+        }
+    } catch (err) {
+        alert('Error unggah profil: ' + err);
+    }
+}
+
+// Auto Slug Generator dari Judul Artikel
+document.getElementById('title').addEventListener('input', function() {
+    if (!document.getElementById('edit-article-id').value) {
+        const titleVal = this.value;
+        const slugVal = titleVal.toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '-')
+            .split('-').slice(0, 6).join('-');
+        document.getElementById('slug').value = slugVal;
+    }
+});
+
+// Tab Switcher Editor Markdown vs Preview
+function switchEditorTab(tab) {
+    const editBtn = document.getElementById('btn-tab-edit');
+    const previewBtn = document.getElementById('btn-tab-preview');
+    const editorPane = document.getElementById('editor-pane');
+    const previewPane = document.getElementById('preview-pane');
+
+    if (tab === 'edit') {
+        editBtn.classList.add('active');
+        previewBtn.classList.remove('active');
+        editorPane.classList.remove('hidden');
+        previewPane.classList.add('hidden');
+    } else {
+        previewBtn.classList.add('active');
+        editBtn.classList.remove('active');
+        editorPane.classList.add('hidden');
+        previewPane.classList.remove('hidden');
+
+        const markdownText = document.getElementById('content').value;
+        if (window.marked) {
+            previewPane.innerHTML = marked.parse(markdownText || '*Tidak ada konten untuk dipratinjau.*');
+        } else {
+            previewPane.textContent = markdownText;
+        }
+    }
+}
+
+// Fitur Asisten AI Draft Mentah
+async function processWithAI() {
+    const rawText = document.getElementById('ai-raw-input').value.trim();
+    if (!rawText) {
+        alert('Silakan isi draf mentah terlebih dahulu.');
         return;
     }
 
-    const editId = document.getElementById('edit-article-id').value;
-    const endpoint = editId ? '/api/update-article' : '/api/publish';
+    try {
+        const res = await fetch('/api/ai-assistant', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: rawText })
+        });
+        const data = await res.json();
+        if (data.success && data.result) {
+            const resObj = data.result;
+            if (resObj.title) document.getElementById('title').value = resObj.title;
+            if (resObj.slug) document.getElementById('slug').value = resObj.slug;
+            if (resObj.category) document.getElementById('category').value = resObj.category;
+            if (resObj.description) document.getElementById('description').value = resObj.description;
+            if (resObj.tags) document.getElementById('tags').value = resObj.tags;
+            if (resObj.content) document.getElementById('content').value = resObj.content;
+            alert('Format berhasil dirapikan otomatis oleh AI!');
+        } else {
+            alert('AI Gagal memproses draf: ' + (data.error || 'Respon tidak valid'));
+        }
+    } catch (err) {
+        alert('Gagal menghubungi layanan AI: ' + err.message);
+    }
+}
 
+async function loadAdminData() {
+    try {
+        const res = await fetch('/api/admin-data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_email: currentUser.email })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+            alert('Gagal memuat data dashboard: ' + data.error);
+            return;
+        }
+
+        // Populasi form Pengaturan Akun
+        if (data.user_profile) {
+            document.getElementById('settings-name').value = data.user_profile.name || '';
+            document.getElementById('settings-email').value = data.user_profile.email || '';
+            const avatarPath = data.user_profile.avatar || '/assets/images/authors/default.webp';
+            document.getElementById('settings-avatar').value = avatarPath;
+            document.getElementById('settings-avatar-preview').src = avatarPath;
+        }
+
+        // Render Artikel (Terkunci per Author atau Seluruhnya untuk Admin)
+        allArticles = data.articles || [];
+        filteredArticles = [...allArticles];
+        currentPage = 1;
+        renderArticlesTable();
+
+        // Render Khusus Admin
+        if (currentUser.role === 'admin') {
+            renderUsersTable(data.users || []);
+            renderCommentsTable(data.comments || []);
+            loadSubscribers();
+        }
+    } catch (err) {
+        console.error('Error loadAdminData:', err);
+    }
+}
+
+// Render Tabel Artikel & Kontrol Halaman (Pagination)
+function renderArticlesTable() {
+    const tbody = document.getElementById('articles-table-body');
+    tbody.innerHTML = '';
+
+    if (filteredArticles.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Tidak ada artikel ditemukan.</td></tr>';
+        document.getElementById('page-info').textContent = 'Halaman 0 dari 0';
+        document.getElementById('prev-page-btn').disabled = true;
+        document.getElementById('next-page-btn').disabled = true;
+        return;
+    }
+
+    const totalPages = Math.ceil(filteredArticles.length / itemsPerPage);
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    const startIdx = (currentPage - 1) * itemsPerPage;
+    const pageItems = filteredArticles.slice(startIdx, startIdx + itemsPerPage);
+
+    pageItems.forEach(art => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><strong>${escapeHtml(art.title)}</strong><br><small style="color:#666;">/posts/${art.slug}</small></td>
+            <td><span style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-size:12px;">${art.category || '-'}</span></td>
+            <td>
+                <button type="button" onclick="editArticle(${art.id})" style="width:auto; padding:4px 8px; font-size:12px; background:#3182ce; margin-right:4px;">Edit</button>
+                <button type="button" onclick="deleteArticle(${art.id}, '${art.slug}')" class="btn-danger">Hapus</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById('page-info').textContent = `Halaman ${currentPage} dari ${totalPages}`;
+    document.getElementById('prev-page-btn').disabled = (currentPage === 1);
+    document.getElementById('next-page-btn').disabled = (currentPage === totalPages);
+}
+
+function changePage(delta) {
+    currentPage += delta;
+    renderArticlesTable();
+}
+
+// Pencarian Artikel Sederhana
+document.getElementById('article-search').addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    filteredArticles = allArticles.filter(a => 
+        (a.title && a.title.toLowerCase().includes(q)) || 
+        (a.category && a.category.toLowerCase().includes(q)) ||
+        (a.slug && a.slug.toLowerCase().includes(q))
+    );
+    currentPage = 1;
+    renderArticlesTable();
+});
+
+// Form Publish & Edit Artikel
+document.getElementById('publish-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const articleId = document.getElementById('edit-article-id').value;
+    const title = document.getElementById('title').value.trim();
+    const slug = document.getElementById('slug').value.trim();
+    const category = document.getElementById('category').value;
+    const popular = document.getElementById('popular').value;
+    const description = document.getElementById('description').value.trim();
+    const image = document.getElementById('image').value.trim();
+    const tags = document.getElementById('tags').value.trim();
+    const content = document.getElementById('content').value;
+
+    const endpoint = articleId ? '/api/update-article' : '/api/publish';
     const payload = {
-        title: document.getElementById('title').value,
-        slug: document.getElementById('slug').value,
-        category: document.getElementById('category').value,
-        popular: document.getElementById('popular').value,
-        description: document.getElementById('description').value,
-        image: document.getElementById('image').value,
-        tags: document.getElementById('tags').value,
-        content: document.getElementById('content').value,
-        admin_email: currentUser.email,
-        author_email: currentUser.email
+        user_email: currentUser.email,
+        article_id: articleId ? parseInt(articleId) : undefined,
+        title, slug, category, popular, description, image, tags, content
     };
 
-    if (editId) {
-        payload.article_id = editId;
-    }
-    
-    const btn = document.getElementById('submit-btn');
-    btn.disabled = true; 
-    btn.innerText = editId ? 'Menyimpan Perubahan...' : 'Mempublikasikan...';
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Memproses ke GitHub...';
 
     try {
         const res = await fetch(endpoint, {
@@ -128,264 +369,212 @@ document.getElementById('publish-form').addEventListener('submit', async (e) => 
             body: JSON.stringify(payload)
         });
         const data = await res.json();
+
         if (data.success) {
-            alert(editId ? 'Artikel berhasil diperbarui!' : 'Artikel berhasil dipublikasikan!');
+            alert(data.message || 'Berhasil disimpan!');
             cancelEdit();
-            if (currentUser.role === 'admin') {
-                loadAdminData();
-                loadSubscribers();
-            }
+            loadAdminData();
         } else {
-            alert('Gagal: ' + (data.error || 'Terjadi kesalahan.'));
+            alert('Gagal menyimpan: ' + data.error);
         }
     } catch (err) {
-        alert('Terjadi kesalahan jaringan saat mengirim data.');
+        alert('Kesalahan koneksi: ' + err.message);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = articleId ? 'Simpan Perubahan Artikel' : 'Publikasikan Artikel';
     }
-    btn.disabled = false; 
-    btn.innerText = editId ? 'Simpan Perubahan Artikel' : 'Publikasikan Artikel';
 });
 
-async function loadAdminData() {
-    try {
-        const res = await fetch('/api/admin-data', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ admin_email: currentUser.email })
-        });
-        const data = await res.json();
-        
-        if (!data.success) return;
+function editArticle(id) {
+    const art = allArticles.find(a => a.id === id);
+    if (!art) return;
 
-        allArticles = data.articles || [];
-        renderArticlesTable();
+    document.getElementById('edit-article-id').value = art.id;
+    document.getElementById('form-title').textContent = 'Edit Artikel: ' + art.title;
+    document.getElementById('title').value = art.title || '';
+    document.getElementById('slug').value = art.slug || '';
+    if (art.category) document.getElementById('category').value = art.category;
+    document.getElementById('popular').value = art.popular || 'true';
+    document.getElementById('description').value = art.description || '';
+    document.getElementById('image').value = art.image || '';
+    document.getElementById('tags').value = art.tags || '';
+    document.getElementById('content').value = art.content || '';
 
-        const userTableBody = document.getElementById('users-table-body');
-        if (data.users && data.users.length > 0) {
-            userTableBody.innerHTML = data.users.map(u => `
-                <tr>
-                    <td>${escapeHtml(u.name)}</td>
-                    <td>${escapeHtml(u.email)}</td>
-                    <td>${escapeHtml(u.role)}</td>
-                    <td>
-                        ${u.email !== currentUser.email ? `
-                            <button type="button" class="btn-danger" onclick="deleteUser(${u.id})" style="margin-right: 5px; margin-bottom: 5px;">Hapus</button>
-                            <button type="button" onclick="resetUserPassword(${u.id}, '${escapeHtml(u.name)}')" style="background: #d69e2e; width: auto; padding: 5px 10px; font-size: 13px;">Reset Sandi</button>
-                        ` : '<strong>(Akun Anda)</strong>'}
-                    </td>
-                </tr>
-            `).join('');
-        } else {
-            userTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Tidak ada anggota terdaftar.</td></tr>';
-        }
-
-        const commentTableBody = document.getElementById('comments-table-body');
-        if (data.comments && data.comments.length > 0) {
-            commentTableBody.innerHTML = data.comments.map(c => `
-                <tr>
-                    <td>${escapeHtml(c.article_slug)}</td>
-                    <td>
-                        <strong>${escapeHtml(c.author_name || 'Anonim')}</strong><br>
-                        <small style="color:#718096;">❤️ ${c.likes || 0} Suka • ${escapeHtml(c.created_at || '')}</small>
-                    </td>
-                    <td>${escapeHtml(c.content || '')}</td>
-                    <td><button type="button" class="btn-danger" onclick="deleteComment(${c.id})">Hapus</button></td>
-                </tr>
-            `).join('');
-        } else {
-            commentTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Tidak ada komentar.</td></tr>';
-        }
-    } catch (err) {
-        console.error('Error loading admin data:', err);
-    }
-}
-
-async function loadSubscribers() {
-    const tbody = document.getElementById('subscribers-table-body');
-    try {
-        const res = await fetch('/api/subscribers');
-        const subscribers = await res.json();
-        allSubscribers = subscribers || [];
-        
-        if (allSubscribers.length > 0) {
-            tbody.innerHTML = allSubscribers.map(s => `
-                <tr>
-                    <td>${escapeHtml(s.email)}</td>
-                    <td>${s.created_at || '-'}</td>
-                    <td><button type="button" class="btn-danger" onclick="deleteSubscriber(${s.id})">Hapus</button></td>
-                </tr>
-            `).join('');
-        } else {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Belum ada subscriber.</td></tr>';
-        }
-    } catch (err) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Gagal memuat subscriber.</td></tr>';
-    }
-}
-
-async function deleteSubscriber(id) {
-    if (!confirm('Yakin ingin menghapus email ini dari daftar subscriber?')) return;
-    try {
-        const res = await fetch(`/api/subscribers?id=${id}`, { method: 'DELETE' });
-        const data = await res.json();
-        if (data.success) {
-            loadSubscribers();
-        } else {
-            alert('Gagal menghapus: ' + (data.error || 'Terjadi kesalahan'));
-        }
-    } catch (err) {
-        alert('Terjadi kesalahan jaringan.');
-    }
-}
-
-function exportSubscribersCSV() {
-    if (!allSubscribers || allSubscribers.length === 0) {
-        alert('Tidak ada data subscriber untuk diekspor.');
-        return;
-    }
-    let csvContent = "data:text/csv;charset=utf-8,Email,Tanggal Bergabung\n";
-    allSubscribers.forEach(s => {
-        csvContent += `"${s.email}","${s.created_at || ''}"\n`;
-    });
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "subscribers_sudutnirwana.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-function renderArticlesTable() {
-    const articlesTableBody = document.getElementById('articles-table-body');
-    if (!articlesTableBody) return;
-
-    const filtered = allArticles.filter(art => 
-        (art.title && art.title.toLowerCase().includes(searchQuery)) ||
-        (art.category && art.category.toLowerCase().includes(searchQuery))
-    );
-
-    const totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
-    if (currentPage > totalPages) currentPage = totalPages;
-    if (currentPage < 1) currentPage = 1;
-
-    const start = (currentPage - 1) * rowsPerPage;
-    const paginated = filtered.slice(start, start + rowsPerPage);
-
-    if (paginated.length > 0) {
-        articlesTableBody.innerHTML = paginated.map(art => `
-            <tr>
-                <td>${escapeHtml(art.title)}</td>
-                <td>${escapeHtml(art.category || '-')}</td>
-                <td>
-                    <button type="button" onclick="triggerGoogleIndex('${art.id}')" style="background: #319795; width: auto; padding: 5px 10px; font-size: 13px; margin-right: 5px; margin-bottom: 5px;">🚀 Google Index</button>
-                    <button type="button" onclick="triggerBroadcast('${art.id}')" style="background: #dd6b20; width: auto; padding: 5px 10px; font-size: 13px; margin-right: 5px; margin-bottom: 5px;">📢 Broadcast</button>
-                    <button type="button" onclick="editArticle('${art.id}')" style="background: #319795; width: auto; padding: 5px 10px; font-size: 13px; margin-right: 5px; margin-bottom: 5px;">Edit</button>
-                    <button type="button" class="btn-danger" onclick="deleteArticle('${art.id}')">Hapus</button>
-                </td>
-            </tr>
-        `).join('');
-    } else {
-        articlesTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Tidak ada artikel ditemukan.</td></tr>';
-    }
-
-    const pageInfo = document.getElementById('page-info');
-    const prevBtn = document.getElementById('prev-page-btn');
-    const nextBtn = document.getElementById('next-page-btn');
-
-    if (pageInfo) pageInfo.innerText = `Hal ${currentPage} dari ${totalPages} (Total: ${filtered.length})`;
-    if (prevBtn) prevBtn.disabled = currentPage === 1;
-    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
-}
-
-function changePage(direction) {
-    currentPage += direction;
-    renderArticlesTable();
-}
-
-async function triggerGoogleIndex(articleId) {
-    const article = allArticles.find(a => a.id == articleId);
-    if (!article) {
-        alert('Artikel tidak ditemukan.');
-        return;
-    }
-
-    if (!confirm(`Kirim URL artikel "${article.title}" ke Google Indexing API?`)) {
-        return;
-    }
-
-    try {
-        const res = await fetch('/api/google-index', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                admin_email: currentUser.email,
-                slug: article.slug,
-                category: article.category
-            })
-        });
-
-        const result = await res.json();
-        if (result.success) {
-            alert('Sukses! ' + result.message);
-        } else {
-            alert('Gagal Indexing: ' + (result.error || 'Terjadi kesalahan'));
-        }
-    } catch (err) {
-        alert('Terjadi kesalahan jaringan saat menghubungi server.');
-    }
-}
-
-function editArticle(articleId) {
-    const article = allArticles.find(a => a.id == articleId);
-    if (!article) {
-        alert('Artikel tidak ditemukan.');
-        return;
-    }
-
-    document.getElementById('edit-article-id').value = article.id;
-    document.getElementById('title').value = article.title || '';
-    document.getElementById('slug').value = article.slug || '';
-    document.getElementById('category').value = article.category || '';
-    document.getElementById('popular').value = article.popular || 'true';
-    document.getElementById('description').value = article.description || '';
-    document.getElementById('image').value = article.image || '';
-    document.getElementById('tags').value = article.tags || '';
-    document.getElementById('content').value = article.content || '';
-
-    document.getElementById('form-title').innerText = 'Edit Artikel';
-    document.getElementById('submit-btn').innerText = 'Simpan Perubahan Artikel';
+    document.getElementById('submit-btn').textContent = 'Simpan Perubahan Artikel';
     document.getElementById('cancel-edit-btn').classList.remove('hidden');
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function cancelEdit() {
     document.getElementById('edit-article-id').value = '';
+    document.getElementById('form-title').textContent = 'Tulis Artikel Baru';
     document.getElementById('publish-form').reset();
-    document.getElementById('form-title').innerText = 'Tulis Artikel Baru';
-    document.getElementById('submit-btn').innerText = 'Publikasikan Artikel';
+    document.getElementById('submit-btn').textContent = 'Publikasikan Artikel';
     document.getElementById('cancel-edit-btn').classList.add('hidden');
-    switchEditorTab('edit');
 }
 
-async function deleteArticle(articleId) {
-    if (!confirm('Yakin ingin menghapus artikel ini?')) return;
+async function deleteArticle(id, slug) {
+    if (!confirm(`Apakah Anda yakin ingin menghapus artikel "${slug}"?`)) return;
+
     try {
         const res = await fetch('/api/delete-article', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ admin_email: currentUser.email, article_id: articleId })
+            body: JSON.stringify({ user_email: currentUser.email, article_id: id, slug })
         });
         const data = await res.json();
-        if (data.success) { alert('Artikel berhasil dihapus.'); loadAdminData(); }
-        else { alert('Gagal menghapus: ' + (data.error || 'Terjadi kesalahan')); }
+        if (data.success) {
+            alert('Artikel berhasil dihapus!');
+            loadAdminData();
+        } else {
+            alert('Gagal menghapus: ' + data.error);
+        }
     } catch (err) {
-        alert('Terjadi kesalahan jaringan.');
+        alert('Error hapus artikel: ' + err.message);
     }
 }
 
+// Form Update Pengaturan Akun (Nama, Email, Password, Foto)
+document.getElementById('account-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const new_name = document.getElementById('settings-name').value.trim();
+    const new_email = document.getElementById('settings-email').value.trim();
+    const old_password = document.getElementById('settings-old-password').value;
+    const new_password = document.getElementById('settings-new-password').value;
+    const new_avatar = document.getElementById('settings-avatar').value.trim();
+
+    try {
+        const res = await fetch('/api/update-account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_email: currentUser.email,
+                new_name, new_email, old_password, new_password, new_avatar
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('Akun berhasil diperbarui!');
+            if (new_name) currentUser.name = new_name;
+            if (new_email) currentUser.email = new_email;
+            if (new_avatar) currentUser.avatar = new_avatar;
+            localStorage.setItem('sn_user', JSON.stringify(currentUser));
+            document.getElementById('settings-old-password').value = '';
+            document.getElementById('settings-new-password').value = '';
+            showDashboard();
+        } else {
+            alert('Gagal memperbarui akun: ' + data.error);
+        }
+    } catch (err) {
+        alert('Error update akun: ' + err.message);
+    }
+});
+
+// Aksi Tambah Penulis Baru (Khusus Admin)
+const authorForm = document.getElementById('author-form');
+if (authorForm) {
+    authorForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('new-name').value.trim();
+        const slug = document.getElementById('new-slug').value.trim();
+        const email = document.getElementById('new-email').value.trim();
+        const password = document.getElementById('new-password').value;
+        const role = document.getElementById('new-role').value;
+        const avatar = document.getElementById('new-avatar').value.trim();
+        const bio = document.getElementById('new-bio').value.trim();
+
+        try {
+            const res = await fetch('/api/register-author', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ admin_email: currentUser.email, name, slug, email, password, role, avatar, bio })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('Penulis baru berhasil didaftarkan!');
+                authorForm.reset();
+                loadAdminData();
+            } else {
+                alert('Gagal mendaftarkan penulis: ' + data.error);
+            }
+        } catch (err) {
+            alert('Error tambah penulis: ' + err.message);
+        }
+    });
+}
+
+// Render Tabel User & Moderasi Komentar (Khusus Admin)
+function renderUsersTable(users) {
+    const tbody = document.getElementById('users-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    users.forEach(u => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><strong>${escapeHtml(u.name)}</strong></td>
+            <td>${escapeHtml(u.email)}</td>
+            <td>${u.role}</td>
+            <td><button type="button" onclick="deleteUser(${u.id})" class="btn-danger">Hapus</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function renderCommentsTable(comments) {
+    const tbody = document.getElementById('comments-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    if (comments.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Belum ada komentar.</td></tr>';
+        return;
+    }
+    comments.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><small>${escapeHtml(c.article_slug)}</small></td>
+            <td>${escapeHtml(c.author_name)}</td>
+            <td>${escapeHtml(c.content)}</td>
+            <td><button type="button" onclick="deleteComment(${c.id})" class="btn-danger">Hapus</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+async function loadSubscribers() {
+    const tbody = document.getElementById('subscribers-table-body');
+    if (!tbody) return;
+    try {
+        const res = await fetch('/api/get-subscribers', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ admin_email: currentUser.email })
+        });
+        const data = await res.json();
+        tbody.innerHTML = '';
+        if (data.success && data.subscribers) {
+            data.subscribers.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${escapeHtml(s.email)}</td>
+                    <td>${s.created_at || '-'}</td>
+                    <td><button type="button" onclick="deleteSubscriber('${s.email}')" class="btn-danger">Hapus</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } catch (e) {
+        console.error('Error loadSubscribers:', e);
+    }
+}
+
+function exportSubscribersCSV() {
+    window.open(`/api/export-subscribers?admin_email=${encodeURIComponent(currentUser.email)}`, '_blank');
+}
+
 async function syncGithubArticles() {
-    if (!confirm('Tarik dan sinkronkan semua artikel dari folder _posts GitHub ke database?')) return;
+    const btn = document.getElementById('sync-github-btn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Menyinkronkan...';
     try {
         const res = await fetch('/api/sync-github', {
             method: 'POST',
@@ -394,236 +583,22 @@ async function syncGithubArticles() {
         });
         const data = await res.json();
         if (data.success) {
-            alert(data.message);
+            alert('Sinkronisasi selesai!');
             loadAdminData();
         } else {
-            alert('Gagal sinkronisasi: ' + (data.error || 'Terjadi kesalahan'));
+            alert('Gagal sinkronisasi: ' + data.error);
         }
     } catch (err) {
-        alert('Terjadi kesalahan jaringan saat sinkronisasi.');
-    }
-}
-
-async function deleteUser(userId) {
-    if (!confirm('Yakin ingin menghapus keanggotaan penulis ini?')) return;
-    try {
-        const res = await fetch('/api/delete-user', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ admin_email: currentUser.email, user_id: userId })
-        });
-        const data = await res.json();
-        if (data.success) { alert('Penulis berhasil dihapus.'); loadAdminData(); }
-        else { alert('Gagal menghapus: ' + data.error); }
-    } catch (err) { alert('Terjadi kesalahan jaringan.'); }
-}
-
-async function resetUserPassword(userId, userName) {
-    const newPassword = prompt(`Masukkan kata sandi baru untuk ${userName}:`);
-    if (!newPassword) return;
-    try {
-        const res = await fetch('/api/update-account', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ admin_email: currentUser.email, target_user_id: userId, new_password: newPassword })
-        });
-        const data = await res.json();
-        if (data.success) { alert(`Kata sandi untuk ${userName} berhasil diubah.`); }
-        else { alert('Gagal mereset sandi: ' + data.error); }
-    } catch (err) { alert('Terjadi kesalahan jaringan.'); }
-}
-
-async function deleteComment(commentId) {
-    if (!confirm('Hapus komentar ini?')) return;
-    try {
-        const res = await fetch('/api/delete-comment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ admin_email: currentUser.email, comment_id: commentId })
-        });
-        const data = await res.json();
-        if (data.success) { loadAdminData(); }
-        else { alert('Gagal menghapus komentar: ' + data.error); }
-    } catch (err) { alert('Terjadi kesalahan jaringan.'); }
-}
-
-document.getElementById('author-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    try {
-        const res = await fetch('/api/register-author', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                admin_email: currentUser.email,
-                name: document.getElementById('new-name').value,
-                slug: document.getElementById('new-slug').value,
-                email: document.getElementById('new-email').value,
-                password: document.getElementById('new-password').value,
-                role: document.getElementById('new-role').value,
-                avatar: document.getElementById('new-avatar').value,
-                bio: document.getElementById('new-bio').value
-            })
-        });
-        const data = await res.json();
-        if (data.success) { 
-            alert('Penulis berhasil ditambahkan dan file profil tersinkron ke GitHub!'); 
-            e.target.reset(); 
-            document.getElementById('new-avatar').value = '/assets/images/authors/default.webp';
-            loadAdminData(); 
-        } else { 
-            alert('Gagal: ' + (data.error || 'Terjadi kesalahan')); 
-        }
-    } catch (err) {
-        alert('Terjadi kesalahan jaringan.');
-    }
-});
-
-document.getElementById('account-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    try {
-        const res = await fetch('/api/update-account', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                admin_email: currentUser.email,
-                new_name: document.getElementById('settings-name').value,
-                new_email: document.getElementById('settings-email').value,
-                old_password: document.getElementById('settings-old-password').value,
-                new_password: document.getElementById('settings-new-password').value
-            })
-        });
-        const data = await res.json();
-        if (data.success) { alert('Perubahan berhasil disimpan.'); location.reload(); }
-        else { alert('Gagal menyimpan: ' + data.error); }
-    } catch (err) { alert('Terjadi kesalahan jaringan saat menyimpan akun.'); }
-});
-
-async function processWithAI() {
-    const rawText = document.getElementById('ai-raw-input').value.trim();
-    if (!rawText) {
-        alert('Silakan masukkan draf mentah terlebih dahulu.');
-        return;
-    }
-
-    const btn = event.target;
-    btn.disabled = true;
-    btn.innerText = '🤖 AI sedang memproses & memperkaya data...';
-
-    try {
-        const response = await fetch('/api/ai-format', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ rawText })
-        });
-
-        const result = await response.json();
-        if (!result.success) {
-            throw new Error(result.error || 'Gagal memproses AI dari server.');
-        }
-
-        const parsedData = result.data;
-        document.getElementById('title').value = parsedData.title || '';
-        document.getElementById('slug').value = parsedData.slug || '';
-        document.getElementById('category').value = parsedData.category || 'lifestyle';
-        document.getElementById('popular').value = parsedData.popular || 'true';
-        document.getElementById('description').value = parsedData.description || '';
-        
-        let imgName = (parsedData.imageName || 'default.webp').trim().replace(/^\/+/, '');
-        document.getElementById('image').value = `/assets/images/posts/${imgName}`;
-        
-        document.getElementById('tags').value = parsedData.tags || '';
-        document.getElementById('content').value = parsedData.content || '';
-
-        alert('Berhasil! AI telah merapikan teks, melengkapi fakta, dan mengisi form.');
-    } catch (err) {
-        console.error(err);
-        alert('Gagal memproses AI: ' + err.message);
+        alert('Error sinkronisasi: ' + err.message);
     } finally {
         btn.disabled = false;
-        btn.innerText = '✨ Format & Isi Otomatis dengan AI';
+        btn.textContent = '🔄 Sinkron';
     }
 }
 
-async function triggerBroadcast(articleId) {
-    const article = allArticles.find(a => a.id == articleId);
-    if (!article) {
-        alert('Artikel tidak ditemukan.');
-        return;
-    }
+function setupEventListeners() {}
 
-    if (!confirm(`Kirim broadcast email untuk artikel "${article.title}" ke seluruh subscriber?`)) {
-        return;
-    }
-
-    alert('Proses broadcast sedang berjalan di background...');
-
-    try {
-        const res = await fetch('/api/broadcast', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                admin_email: currentUser.email,
-                slug: article.slug,
-                title: article.title,
-                description: article.description,
-                image: article.image,
-                category: article.category
-            })
-        });
-
-        const result = await res.json();
-        if (result.success) {
-            alert(`Berhasil! Email terkirim ke ${result.sent} dari ${result.total} subscriber.`);
-        } else {
-            alert('Gagal broadcast: ' + (result.error || 'Terjadi kesalahan'));
-        }
-    } catch (err) {
-        alert('Terjadi kesalahan jaringan saat mengirim broadcast.');
-    }
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
-
-async function uploadImageToGithub(input) {
-    const file = input.files[0];
-    if (!file) return;
-
-    if (!currentUser) {
-        alert('Sesi login tidak valid.');
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        const base64Data = e.target.result.split(',')[1];
-        alert('Mengunggah gambar ke GitHub...');
-        
-        try {
-            const res = await fetch('/api/upload-image', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    admin_email: currentUser.email,
-                    filename: file.name,
-                    imageBase64: base64Data
-                })
-            });
-            
-            const data = await res.json();
-            if (data.success) {
-                document.getElementById('image').value = data.path;
-                alert('Gambar berhasil diunggah! Path otomatis terisi.');
-            } else {
-                alert('Gagal upload gambar: ' + (data.error || 'Terjadi kesalahan'));
-            }
-        } catch (err) {
-            alert('Terjadi kesalahan jaringan saat mengunggah gambar.');
-        }
-    };
-    reader.readAsDataURL(file);
-}
-
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
-
-function logout() { location.reload(); }

@@ -19,19 +19,34 @@ async function getMarkdownFilesFromGithub(url, headers) {
 
 export async function onRequestPost(context) {
     try {
-        const { admin_email, article_id, title, slug, category, popular, description, image, tags, content } = await context.request.json();
+        const { admin_email, user_email, article_id, title, slug, category, popular, description, image, tags, content } = await context.request.json();
+        const activeEmail = user_email || admin_email;
         const db = context.env.DB;
         const githubToken = context.env.GITHUB_TOKEN;
         const githubRepo = context.env.GITHUB_REPO;
 
-        const admin = await db.prepare("SELECT role, name FROM users WHERE email = ?").bind(admin_email).first();
-        if (!admin || admin.role !== 'admin') {
+        const user = await db.prepare("SELECT id, role, name, slug FROM users WHERE email = ?").bind(activeEmail).first();
+        if (!user) {
             return new Response(JSON.stringify({ success: false, error: 'Akses ditolak' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
         }
 
         const oldArticle = await db.prepare("SELECT * FROM articles WHERE id = ?").bind(article_id).first();
         if (!oldArticle) {
             return new Response(JSON.stringify({ success: false, error: 'Artikel tidak ditemukan di database' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+        }
+
+        // Proteksi hak akses Author
+        if (user.role !== 'admin' && oldArticle.author_id !== user.id) {
+            return new Response(JSON.stringify({ success: false, error: 'Akses ditolak. Anda hanya dapat mengedit artikel milik sendiri.' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+        }
+
+        // Mengambil slug asli dari penulis artikel (bukan nama lengkap & bukan slug admin yang mengedit)
+        let authorSlug = user.slug;
+        if (oldArticle.author_id) {
+            const originalAuthor = await db.prepare("SELECT slug FROM users WHERE id = ?").bind(oldArticle.author_id).first();
+            if (originalAuthor && originalAuthor.slug) {
+                authorSlug = originalAuthor.slug;
+            }
         }
 
         const headers = { 'Authorization': `Bearer ${githubToken}`, 'User-Agent': 'Cloudflare-Pages-Function' };
@@ -62,10 +77,11 @@ export async function onRequestPost(context) {
         const fileDatePrefix = dateMatch ? dateMatch[1] : new Date().toISOString().substring(0, 10);
         const dateStr = fileDatePrefix + ' 00:00:00 +0700';
 
+        // Format Frontmatter mempertahankan slug penulis asli
         const markdownContent = `---
 layout: content
 title: "${title.replace(/"/g, '\\"')}"
-author: "${admin.name || 'Admin'}"
+author: "${authorSlug}"
 date: ${dateStr}
 categories: [${category}]
 ${tagsFrontmatter}image: ${image || ''}
@@ -92,6 +108,28 @@ ${content}`;
         if (!githubResponse.ok) {
             const errText = await githubResponse.text();
             return new Response(JSON.stringify({ success: false, error: `GitHub API Error: ${errText}` }), { status: 502, headers: { 'Content-Type': 'application/json' } });
+        }
+
+        // Hapus gambar sampul lama jika diganti file baru
+        if (oldArticle.image && image && oldArticle.image !== image && !oldArticle.image.includes('sample.webp')) {
+            const cleanOldImgPath = oldArticle.image.replace(/^\/+/, '');
+            try {
+                const getOldImg = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${cleanOldImgPath}`, { headers });
+                if (getOldImg.ok) {
+                    const oldImgData = await getOldImg.json();
+                    await fetch(`https://api.github.com/repos/${githubRepo}/contents/${cleanOldImgPath}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${githubToken}`, 'User-Agent': 'Cloudflare-Pages-Function', 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: `Delete old cover image: ${cleanOldImgPath}`,
+                            sha: oldImgData.sha,
+                            branch: 'main'
+                        })
+                    });
+                }
+            } catch (e) {
+                console.error('Gagal menghapus gambar sampul lama:', e);
+            }
         }
 
         await db.prepare("UPDATE articles SET title = ?, slug = ?, category_id = ?, popular = ?, description = ?, image = ?, content = ? WHERE id = ?")

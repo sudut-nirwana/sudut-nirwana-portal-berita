@@ -1,41 +1,60 @@
 export async function onRequestPost(context) {
     try {
-        const { admin_email } = await context.request.json();
+        const { admin_email, user_email } = await context.request.json();
+        const activeEmail = user_email || admin_email;
         const db = context.env.DB;
 
-        if (!admin_email) {
+        if (!activeEmail) {
             return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
                 status: 401, headers: { 'Content-Type': 'application/json' }
             });
         }
 
-        // Validasi hak akses admin
-        const admin = await db.prepare("SELECT role FROM users WHERE email = ?").bind(admin_email).first();
-        if (!admin || admin.role !== 'admin') {
-            return new Response(JSON.stringify({ success: false, error: 'Akses ditolak. Bukan admin.' }), {
+        // Validasi identitas dan role pengguna
+        const user = await db.prepare("SELECT id, name, email, role, slug, avatar, bio FROM users WHERE email = ?").bind(activeEmail).first();
+        if (!user) {
+            return new Response(JSON.stringify({ success: false, error: 'Pengguna tidak ditemukan.' }), {
                 status: 403, headers: { 'Content-Type': 'application/json' }
             });
         }
 
-        // Ambil data artikel beserta kategori
-        const articlesQuery = await db.prepare(`
-            SELECT articles.*, categories.name as category, categories.slug as cat_slug 
-            FROM articles 
-            LEFT JOIN categories ON articles.category_id = categories.id 
-            ORDER BY articles.created_at DESC
-        `).all();
+        let articlesQuery;
+        if (user.role === 'admin') {
+            // Admin melihat seluruh artikel
+            articlesQuery = await db.prepare(`
+                SELECT articles.*, categories.name as category, categories.slug as cat_slug 
+                FROM articles 
+                LEFT JOIN categories ON articles.category_id = categories.id 
+                ORDER BY articles.created_at DESC
+            `).all();
+        } else {
+            // Author HANYA melihat artikel miliknya sendiri
+            articlesQuery = await db.prepare(`
+                SELECT articles.*, categories.name as category, categories.slug as cat_slug 
+                FROM articles 
+                LEFT JOIN categories ON articles.category_id = categories.id 
+                WHERE articles.author_id = ?
+                ORDER BY articles.created_at DESC
+            `).bind(user.id).all();
+        }
 
-        // Ambil data users dengan lengkap termasuk id
-        const usersQuery = await db.prepare("SELECT id, name, email, role FROM users").all();
-        
-        // Ambil data comments dengan menyertakan kolom likes dan created_at
-        const commentsQuery = await db.prepare("SELECT id, article_slug, name AS author_name, message AS content, likes, created_at FROM comments").all();
+        let usersList = [];
+        let commentsList = [];
+
+        // Data sensitif hanya dimuat jika role adalah Admin
+        if (user.role === 'admin') {
+            const usersQuery = await db.prepare("SELECT id, name, email, role, slug, avatar FROM users").all();
+            const commentsQuery = await db.prepare("SELECT id, article_slug, name AS author_name, message AS content, likes, created_at FROM comments").all();
+            usersList = usersQuery.results || [];
+            commentsList = commentsQuery.results || [];
+        }
 
         return new Response(JSON.stringify({
             success: true,
+            user_profile: user,
             articles: articlesQuery.results || [],
-            users: usersQuery.results || [],
-            comments: commentsQuery.results || []
+            users: usersList,
+            comments: commentsList
         }), {
             headers: { 'Content-Type': 'application/json' }
         });

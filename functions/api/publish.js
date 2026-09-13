@@ -1,15 +1,15 @@
 export async function onRequestPost(context) {
     try {
-        const { title, slug, description, category, popular, content, image, tags, author_email } = await context.request.json();
+        const { title, slug, description, category, popular, content, image, tags, author_email, user_email } = await context.request.json();
+        const activeEmail = author_email || user_email;
         const db = context.env.DB;
         const githubToken = context.env.GITHUB_TOKEN;
-        const githubRepo = context.env.GITHUB_REPO; // format: user/repo
+        const githubRepo = context.env.GITHUB_REPO;
 
-        if (!title || !slug || !content || !category || !author_email) {
+        if (!title || !slug || !content || !category || !activeEmail) {
             return new Response(JSON.stringify({ success: false, error: 'Data tidak lengkap' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
         }
 
-        // AMBIL KATEGORI PERTAMA SAJA UNTUK FOLDER FISIK GITHUB
         const rawCategory = category.split(',')[0].trim();
         const catSlug = rawCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
         const categoryName = rawCategory;
@@ -23,20 +23,20 @@ export async function onRequestPost(context) {
             categoryId = insertRes.id;
         }
 
-        const user = await db.prepare("SELECT id, name, slug FROM users WHERE email = ?").bind(author_email).first();
+        const user = await db.prepare("SELECT id, name, slug FROM users WHERE email = ?").bind(activeEmail).first();
         if (!user) return new Response(JSON.stringify({ success: false, error: 'Penulis tidak ditemukan' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
 
         const now = new Date();
         const dateStr = now.toISOString().replace('T', ' ').substring(0, 19) + ' +0700';
         const fileDatePrefix = now.toISOString().substring(0, 10);
         
-        // Jalur folder fisik GitHub menggunakan kategori utama yang bersih
         const filePath = `_posts/${catSlug}/${fileDatePrefix}-${slug}.md`;
         
         const tagsArray = tags ? tags.split(',').map(t => `"${t.trim()}"`).filter(Boolean) : [];
         const tagsFrontmatter = tagsArray.length > 0 ? `tags: [${tagsArray.join(', ')}]\n` : '';
         const tagsStr = tags ? tags.split(',').map(t => t.trim()).filter(Boolean).join(', ') : '';
 
+        // Menggunakan user.slug untuk Frontmatter Author
         const markdownContent = `---
 layout: content
 title: "${title.replace(/"/g, '\\"')}"
@@ -51,7 +51,6 @@ popular: "${popular || 'true'}"
 
 ${content}`;
 
-        // 1. CEK DUPLIKAT DI GITHUB BERDASARKAN SUBFOLDER
         const checkRes = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${filePath}`, {
             headers: { 'Authorization': `Bearer ${githubToken}`, 'User-Agent': 'Cloudflare-Pages-Function' }
         });
@@ -59,10 +58,8 @@ ${content}`;
             return new Response(JSON.stringify({ success: false, error: `Slug "${slug}" sudah ada untuk kategori ini.` }), { status: 409, headers: { 'Content-Type': 'application/json' } });
         }
 
-        // 2. ENCODE BASE64
         const contentBase64 = btoa(Array.from(new TextEncoder().encode(markdownContent)).map(b => String.fromCharCode(b)).join(''));
 
-        // 3. PUSH KE GITHUB KE DALAM SUBFOLDER KATEGORI
         const githubResponse = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${filePath}`, {
             method: 'PUT',
             headers: { 'Authorization': `Bearer ${githubToken}`, 'User-Agent': 'Cloudflare-Pages-Function', 'Content-Type': 'application/json' },
@@ -74,7 +71,6 @@ ${content}`;
             return new Response(JSON.stringify({ success: false, error: `GitHub API Error: ${errText}` }), { status: 502, headers: { 'Content-Type': 'application/json' } });
         }
 
-        // 4. SIMPAN KE DATABASE D1 BESERTA TAGS DAN KONTROL KONTENNYA
         await db.prepare(`
             INSERT INTO articles (slug, title, description, image, popular, tags, category_id, author_id, content) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) 
