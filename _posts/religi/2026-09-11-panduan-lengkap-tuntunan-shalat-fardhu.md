@@ -1,8 +1,8 @@
 ---
 layout: content
 title: "Panduan Lengkap Tuntunan Shalat Fardhu 5 Waktu: Niat, Bacaan Arab, Latin, dan Artinya"
-author: "yossi"
-date: 2026-09-11 12:52:38 +0700
+author: "Yossi Oktavia"
+date: 2026-09-11 00:00:00 +0700
 categories: [religi]
 tags: ["tuntunan shalat", "panduan ibadah", "rukun shalat", "bacaan shalat", "shalat 5 waktu"]
 image: /assets/images/posts/1000585470.webp
@@ -155,6 +155,20 @@ Dilanjutkan saat berdiri tegak (I'tidal):
 
 **Terjemahan:**
 > "Ya Tuhan kami, bagi-Mu lah segala puji sepenuh langit dan bumi, dan sepenuh apa yang Engkau kehendaki dari sesuatu setelah itu."
+
+### 5b. Membaca Doa Qunut - Khusus Shalat Subuh Rakaat Kedua
+*Setelah I'tidal pada rakaat kedua shalat Subuh, disunnahkan membaca doa Qunut. Qunut merupakan bentuk munajat seorang hamba kepada Allah SWT untuk memohon petunjuk, perlindungan, dan keberkahan.*
+
+**Teks Arab:**
+اَللّهُمَّ اهْدِنِيْ فِيْمَنْ هَدَيْتَ، وَعَافِنِيْ فِيْمَنْ عَافَيْتَ، وَتَوَلَّنِيْ فِيْمَنْ تَوَلَّيْتَ، وَبَارِكْ لِيْ فِيْمَا أَعْطَيْتَ، وَقِنِيْ شَرَّ مَا قَضَيْتَ، فَإِنَّكَ تَقْضِيْ وَلاَ يُقْضَى عَلَيْكَ، وَإِنَّهُ لاَ يَذِلُّ مَنْ وَالَيْتَ، وَلاَ يَعِزُّ مَنْ عَادَيْتَ، تَبَارَكْتَ رَبَّنَا وَتَعَالَيْتَ، فَلَكَ الْحَمْدُ عَلَى مَا قَضَيْتَ، أَسْتَغْفِرُكَ وَأَتُوْبُ إِلَيْكَ
+
+**Transliterasi:**
+*Allahummahdinii fiiman hadait, wa 'aafinii fiiman 'aafait, wa tawallanii fiiman tawallait, wa baariklii fiimaa a'thait, wa qinii syarra maa qadhait. Fa innaka taqdhi wa laa yuqdha 'alaik, wa innahu laa yadzillu man waalait, wa laa ya'izzu man 'aadait. Tabaarakta rabbanaa wa ta'aalait, falakal hamdu 'alaa maa qadhait. Astaghfiruka wa atuubu ilaik.*
+
+**Terjemahan:**
+> "Ya Allah, berilah aku petunjuk sebagaimana orang-orang yang telah Engkau beri petunjuk. Berilah aku kesehatan sebagaimana orang-orang yang telah Engkau beri kesehatan. Peliharalah aku sebagaimana orang-orang yang telah Engkau pelihara. Berkahilah untukku apa yang telah Engkau berikan. Lindungilah aku dari keburukan yang telah Engkau tetapkan. Sesungguhnya Engkaulah yang menetapkan hukum dan tidak ada yang dapat menghukum-Mu. Sesungguhnya tidak akan hina orang yang Engkau tolong, dan tidak akan mulia orang yang Engkau musuhi. Maha Suci Engkau wahai Rabb kami dan Maha Tinggi. Segala puji hanya bagi-Mu atas apa yang telah Engkau tetapkan. Aku memohon ampun kepada-Mu dan bertaubat kepada-Mu."
+
+***Catatan Fiqih:** Menurut Mazhab Syafi'i, membaca Qunut pada shalat Subuh termasuk sunnah ab'adh. Sementara menurut Mazhab Hanafi, Maliki, dan Hambali tidak disyariatkan Qunut khusus pada shalat Subuh. Perbedaan ini adalah khilafiyah yang mu'tabar dalam Islam. Hendaknya kita saling menghormati dan mengikuti sesuai dengan tuntunan guru dan keyakinan masing-masing.*
 
 ### 6. Sujud
 Menempelkan dahi, hidung, kedua telapak tangan, kedua lutut, dan ujung jari kaki ke lantai.
