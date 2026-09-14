@@ -306,16 +306,21 @@ function renderArticlesTable() {
     pageItems.forEach(art => {
         const tr = document.createElement('tr');
         
-        // Tombol aksi bertingkat berdasarkan Role
-        let actionButtonsHtml = `<button type="button" onclick="editArticle(${art.id})" style="width:auto; padding:4px 8px; font-size:12px; background:#3182ce; margin-right:4px;">Edit</button>`;
+        // Tombol aksi bertingkat berdasarkan Role (Dengan jarak rapi gap: 6px)
+        let actionButtonsHtml = `
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+                <button type="button" onclick="editArticle(${art.id})" style="width:auto; padding:6px 10px; font-size:12px; background:#3182ce; margin:0;">Edit</button>
+        `;
 
         if (currentUser.role === 'admin') {
             actionButtonsHtml += `
-                <button type="button" onclick="requestGoogleIndex('${art.slug}', '${art.category}')" style="width:auto; padding:4px 8px; font-size:12px; background:#38a169; margin-right:4px;">Index</button>
-                <button type="button" onclick="broadcastArticle(${art.id})" style="width:auto; padding:4px 8px; font-size:12px; background:#805ad5; margin-right:4px;">Broadcast</button>
-                <button type="button" onclick="deleteArticle(${art.id}, '${art.slug}')" class="btn-danger">Hapus</button>
+                <button type="button" onclick="requestGoogleIndex('${art.slug}', '${art.category}')" style="width:auto; padding:6px 10px; font-size:12px; background:#38a169; margin:0;">Index</button>
+                <button type="button" onclick="broadcastArticle(${art.id})" style="width:auto; padding:6px 10px; font-size:12px; background:#805ad5; margin:0;">Broadcast</button>
+                <button type="button" onclick="deleteArticle(${art.id}, '${art.slug}')" class="btn-danger" style="margin:0; padding:6px 10px; font-size:12px;">Hapus</button>
             `;
         }
+
+        actionButtonsHtml += `</div>`;
 
         tr.innerHTML = `
             <td><strong>${escapeHtml(art.title)}</strong><br><small style="color:#666;">/posts/${art.slug}</small></td>
