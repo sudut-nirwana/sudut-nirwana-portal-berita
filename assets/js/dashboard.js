@@ -267,7 +267,7 @@ async function loadAdminData() {
             document.getElementById('settings-avatar-preview').src = avatarPath;
         }
 
-        // Render Artikel (Terkunci per Author atau Seluruhnya untuk Admin)
+        // Render Artikel
         allArticles = data.articles || [];
         filteredArticles = [...allArticles];
         currentPage = 1;
@@ -284,7 +284,7 @@ async function loadAdminData() {
     }
 }
 
-// Render Tabel Artikel (Tombol Hapus Hanya Ditampilkan Jika Role Admin)
+// Render Tabel Artikel (Tombol Index Google, Broadcast, & Hapus Hanya Muncul Bagi Admin)
 function renderArticlesTable() {
     const tbody = document.getElementById('articles-table-body');
     tbody.innerHTML = '';
@@ -306,18 +306,21 @@ function renderArticlesTable() {
     pageItems.forEach(art => {
         const tr = document.createElement('tr');
         
-        // Tombol Hapus disembunyikan jika login sebagai Author
-        const deleteButtonHtml = (currentUser.role === 'admin') 
-            ? `<button type="button" onclick="deleteArticle(${art.id}, '${art.slug}')" class="btn-danger">Hapus</button>` 
-            : '';
+        // Tombol aksi bertingkat berdasarkan Role
+        let actionButtonsHtml = `<button type="button" onclick="editArticle(${art.id})" style="width:auto; padding:4px 8px; font-size:12px; background:#3182ce; margin-right:4px;">Edit</button>`;
+
+        if (currentUser.role === 'admin') {
+            actionButtonsHtml += `
+                <button type="button" onclick="requestGoogleIndex('${art.slug}', '${art.category}')" style="width:auto; padding:4px 8px; font-size:12px; background:#38a169; margin-right:4px;">Index</button>
+                <button type="button" onclick="broadcastArticle(${art.id})" style="width:auto; padding:4px 8px; font-size:12px; background:#805ad5; margin-right:4px;">Broadcast</button>
+                <button type="button" onclick="deleteArticle(${art.id}, '${art.slug}')" class="btn-danger">Hapus</button>
+            `;
+        }
 
         tr.innerHTML = `
             <td><strong>${escapeHtml(art.title)}</strong><br><small style="color:#666;">/posts/${art.slug}</small></td>
             <td><span style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-size:12px;">${art.category || '-'}</span></td>
-            <td>
-                <button type="button" onclick="editArticle(${art.id})" style="width:auto; padding:4px 8px; font-size:12px; background:#3182ce; margin-right:4px;">Edit</button>
-                ${deleteButtonHtml}
-            </td>
+            <td>${actionButtonsHtml}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -332,7 +335,7 @@ function changePage(delta) {
     renderArticlesTable();
 }
 
-// Pencarian Artikel Sederhana
+// Pencarian Artikel
 document.getElementById('article-search').addEventListener('input', function() {
     const q = this.value.toLowerCase().trim();
     filteredArticles = allArticles.filter(a => 
@@ -419,6 +422,7 @@ function cancelEdit() {
     document.getElementById('cancel-edit-btn').classList.add('hidden');
 }
 
+// Aksi Khusus Admin: Hapus Artikel
 async function deleteArticle(id, slug) {
     if (!confirm(`Apakah Anda yakin ingin menghapus artikel "${slug}"?`)) return;
 
@@ -426,7 +430,7 @@ async function deleteArticle(id, slug) {
         const res = await fetch('/api/delete-article', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_email: currentUser.email, article_id: id, slug })
+            body: JSON.stringify({ admin_email: currentUser.email, article_id: id, slug })
         });
         const data = await res.json();
         if (data.success) {
@@ -440,7 +444,59 @@ async function deleteArticle(id, slug) {
     }
 }
 
-// Form Update Pengaturan Akun (Nama, Email, Password, Foto)
+// Aksi Khusus Admin: Minta Pengindeksan Google Indexing API
+async function requestGoogleIndex(slug, category) {
+    if (!confirm(`Kirim sinyal pengindeksan Google untuk artikel: /${category}/${slug}?`)) return;
+
+    try {
+        const res = await fetch('/api/google-index', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ admin_email: currentUser.email, slug, category })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('Google Indexing: ' + data.message);
+        } else {
+            alert('Gagal Google Indexing: ' + data.error);
+        }
+    } catch (err) {
+        alert('Error Google Indexing: ' + err.message);
+    }
+}
+
+// Aksi Khusus Admin: Kirim Buletin Broadcast ke Subscriber Newsletter
+async function broadcastArticle(id) {
+    const art = allArticles.find(a => a.id === id);
+    if (!art) return;
+
+    if (!confirm(`Kirim email broadcast artikel "${art.title}" ke SEMUA subscriber newsletter?`)) return;
+
+    try {
+        const res = await fetch('/api/broadcast', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                admin_email: currentUser.email,
+                slug: art.slug,
+                title: art.title,
+                description: art.description,
+                image: art.image,
+                category: art.category
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert(`Broadcast Berhasil! Email terkirim ke ${data.sent} dari total ${data.total} subscriber.`);
+        } else {
+            alert('Gagal Broadcast: ' + data.error);
+        }
+    } catch (err) {
+        alert('Error Broadcast: ' + err.message);
+    }
+}
+
+// Form Update Pengaturan Akun
 document.getElementById('account-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const new_name = document.getElementById('settings-name').value.trim();
@@ -509,7 +565,7 @@ if (authorForm) {
     });
 }
 
-// Render Tabel User & Moderasi Komentar (Khusus Admin)
+// Render Tabel User & Komentar (Khusus Admin)
 function renderUsersTable(users) {
     const tbody = document.getElementById('users-table-body');
     if (!tbody) return;
@@ -546,30 +602,51 @@ function renderCommentsTable(comments) {
     });
 }
 
+// Memuat Subscriber Newsletter (GET /api/subscribers)
 async function loadSubscribers() {
     const tbody = document.getElementById('subscribers-table-body');
     if (!tbody) return;
     try {
-        const res = await fetch('/api/get-subscribers', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ admin_email: currentUser.email })
-        });
-        const data = await res.json();
+        const res = await fetch('/api/subscribers');
+        const subscribers = await res.json();
         tbody.innerHTML = '';
-        if (data.success && data.subscribers) {
-            data.subscribers.forEach(s => {
+
+        if (Array.isArray(subscribers) && subscribers.length > 0) {
+            subscribers.forEach(s => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${escapeHtml(s.email)}</td>
                     <td>${s.created_at || '-'}</td>
-                    <td><button type="button" onclick="deleteSubscriber('${s.email}')" class="btn-danger">Hapus</button></td>
+                    <td><button type="button" onclick="deleteSubscriber(${s.id})" class="btn-danger">Hapus</button></td>
                 `;
                 tbody.appendChild(tr);
             });
+        } else {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Belum ada subscriber newsletter.</td></tr>';
         }
     } catch (e) {
         console.error('Error loadSubscribers:', e);
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Gagal memuat daftar subscriber.</td></tr>';
+    }
+}
+
+// Menghapus Subscriber Newsletter (DELETE /api/subscribers?id=X)
+async function deleteSubscriber(id) {
+    if (!confirm('Apakah Anda yakin ingin menghapus subscriber ini?')) return;
+
+    try {
+        const res = await fetch(`/api/subscribers?id=${id}`, {
+            method: 'DELETE'
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('Subscriber berhasil dihapus.');
+            loadSubscribers();
+        } else {
+            alert('Gagal menghapus subscriber: ' + data.error);
+        }
+    } catch (err) {
+        alert('Error hapus subscriber: ' + err.message);
     }
 }
 
