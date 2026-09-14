@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sudut Nirwana</title>
-    
+
     <!-- PWA Configurations -->
     <link rel="manifest" href="/admin/manifest.json">
     <meta name="theme-color" content="#0f172a">
@@ -12,7 +12,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/admin/sw.js')
-                    .catch(err => console.error('SW registration failed:', err));
+                   .catch(err => console.error('SW registration failed:', err));
             });
         }
     </script>
@@ -20,27 +20,38 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         body { font-family: sans-serif, system-ui; max-width: 800px; margin: 30px auto; padding: 20px; background: #f9f9f9; color: #333; }
-        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+       .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
         input, textarea, select { width: 100%; padding: 10px; margin: 8px 0 16px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         button { background: #0070f3; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 15px; }
         button:hover { background: #0051a2; }
-        .hidden { display: none; }
-        .user-info { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-        .btn-danger { background: #e53e3e; width: auto; padding: 5px 10px; font-size: 13px; }
-        .btn-danger:hover { background: #c53030; }
-        .btn-secondary { background: #718096; width: auto; padding: 10px 15px; font-size: 15px; margin-top: 8px; }
-        .btn-secondary:hover { background: #4a5568; }
+       .hidden { display: none; }
+       .user-info { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+       .btn-danger { background: #e53e3e; width: auto; padding: 5px 10px; font-size: 13px; }
+       .btn-danger:hover { background: #c53030; }
+       .btn-secondary { background: #718096; width: auto; padding: 10px 15px; font-size: 15px; margin-top: 8px; }
+       .btn-secondary:hover { background: #4a5568; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background: #f1f1f1; }
-        .editor-tabs { display: flex; gap: 10px; margin-bottom: 8px; }
-        .tab-btn { background: #cbd5e0; color: #333; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; width: auto; }
-        .tab-btn.active { background: #0070f3; color: white; }
-        .preview-box { border: 1px solid #ccc; border-radius: 4px; padding: 15px; min-height: 180px; background: #fff; margin-bottom: 16px; box-sizing: border-box; }
-        .preview-box h1, .preview-box h2, .preview-box h3 { margin-top: 0; }
-        .info-text { font-size: 12px; color: #666; margin-top: -12px; margin-bottom: 16px; }
-        .form-actions { display: flex; gap: 10px; }
-        .profile-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; border: 2px solid #cbd5e0; }
+       .editor-tabs { display: flex; gap: 10px; margin-bottom: 8px; }
+       .tab-btn { background: #cbd5e0; color: #333; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; width: auto; }
+       .tab-btn.active { background: #0070f3; color: white; }
+       .preview-box { border: 1px solid #ccc; border-radius: 4px; padding: 15px; min-height: 180px; background: #fff; margin-bottom: 16px; box-sizing: border-box; }
+       .preview-box h1,.preview-box h2,.preview-box h3 { margin-top: 0; }
+       .info-text { font-size: 12px; color: #666; margin-top: -12px; margin-bottom: 16px; }
+       .form-actions { display: flex; gap: 10px; }
+       .profile-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; border: 2px solid #cbd5e0; }
+
+        /* CSS BARU UNTUK MIC */
+        @keyframes pulse {
+         0% { transform: scale(0.8); opacity: 0.7; }
+          70% { transform: scale(1.3); opacity: 0; }
+          100% { transform: scale(0.8); opacity: 0; }
+        }
+        #btn-mic.recording {
+            background: #e53e3e!important;
+            box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -68,12 +79,21 @@
 
         <div class="card">
             <h2 id="form-title">Tulis Artikel Baru</h2>
-            
-            <!-- Kotak Asisten AI Draft Mentah -->
+
+            <!-- Kotak Asisten AI Draft Mentah - VERSI BARU ADA MIC -->
             <div style="background: #f7fafc; border: 2px dashed #cbd5e0; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                 <label style="font-weight: bold; color: #2d3748; display: block; margin-bottom: 5px;">✨ Asisten AI (Draft Mentah)</label>
-                <p style="font-size: 13px; color: #718096; margin-bottom: 10px;">Tempel draf mentah Anda di sini. AI akan merapikan format, melengkapi fakta, memilih kategori, dan mengisi form otomatis.</p>
-                <textarea id="ai-raw-input" rows="5" placeholder="Tulis atau tempel draf mentah di sini..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 4px; margin-bottom: 10px;"></textarea>
+                <p style="font-size: 13px; color: #718096; margin-bottom: 10px;">Tempel draf mentah Anda di sini. Atau klik 🎤 untuk bicara. AI akan merapikan otomatis.</p>
+
+                <div style="position: relative;">
+                    <textarea id="ai-raw-input" rows="5" placeholder="Tulis atau bicara di sini..." style="width: 100%; padding: 12px 50px 12px 12px; border: 1px solid #cbd5e0; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; font-size: 14px;"></textarea>
+                    <button type="button" id="btn-mic" title="Klik untuk bicara"
+                        style="position: absolute; right: 10px; bottom: 20px; background: #6b46c1; color: white; border: none; border-radius: 50%; width: 38px; height: 38px; font-size: 18px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <span id="mic-icon">🎤</span>
+                    </button>
+                    <div id="mic-wave" class="hidden" style="position: absolute; right: 4px; bottom: 14px; width: 50px; height: 50px; border-radius: 50%; border: 2px solid #e53e3e; animation: pulse 1.5s infinite;"></div>
+                </div>
+
                 <button type="button" onclick="processWithAI()" style="background: #6b46c1; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; width: auto;">✨ Format & Isi Otomatis dengan AI</button>
             </div>
 
@@ -84,7 +104,7 @@
                 <label>Slug URL - Otomatis dari Judul</label>
                 <input type="text" id="slug" required>
                 <p class="info-text">Max 6 kata, 80 karakter. Boleh diedit manual.</p>
-                
+
                 <label>Kategori</label>
                 <select id="category" required>
                     <option value="jurnal">jurnal</option>
@@ -116,7 +136,7 @@
 
                 <label>Tags (pisahkan dengan koma)</label>
                 <input type="text" id="tags" placeholder="sastra, sitti nurbaya, sejarah">
-                
+
                 <label>Konten (Markdown)</label>
                 <div class="editor-tabs">
                     <button type="button" id="btn-tab-edit" class="tab-btn active" onclick="switchEditorTab('edit')">Editor Markdown</button>
@@ -153,7 +173,7 @@
                     <tr><td colspan="3" style="text-align:center;">Memuat artikel...</td></tr>
                 </tbody>
             </table>
-            
+
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 14px;">
                 <button type="button" id="prev-page-btn" onclick="changePage(-1)" style="width: auto; padding: 6px 12px; background: #718096;" disabled>Sebelumnya</button>
                 <span id="page-info" style="color: #555; font-size: 13px;">Halaman 1 dari 1</span>
@@ -168,16 +188,16 @@
                 <form id="author-form">
                     <label>Nama Lengkap</label>
                     <input type="text" id="new-name" required>
-                    
+
                     <label>Slug URL (Contoh: yossi-oktavia)</label>
                     <input type="text" id="new-slug" required>
-                    
+
                     <label>Email (@sudutnirwana.com)</label>
                     <input type="email" id="new-email" required placeholder="nama@sudutnirwana.com">
-                    
+
                     <label>Password Sementara</label>
                     <input type="password" id="new-password" required>
-                    
+
                     <label>Role</label>
                     <select id="new-role">
                         <option value="author">Author</option>
@@ -240,7 +260,7 @@
             <form id="account-form">
                 <label>Nama Lengkap</label>
                 <input type="text" id="settings-name" required>
-                
+
                 <label>Email</label>
                 <input type="email" id="settings-email" required>
 
@@ -252,18 +272,84 @@
 
                 <label>Ganti Foto Profil dari Galeri (Otomatis Convert ke WebP & Hapus Foto Lama)</label>
                 <input type="file" id="settings-avatar-file" accept="image/*" onchange="uploadAvatarToGithub(this)" style="background: #fff; padding: 6px; margin-bottom: 12px;">
-                
+
                 <label>Password Lama <small>(Wajib jika ganti sandi / email)</small></label>
                 <input type="password" id="settings-old-password">
-                
+
                 <label>Password Baru <small>(Opsional)</small></label>
                 <input type="password" id="settings-new-password">
-                
+
                 <button type="submit" style="background: #319795;">Simpan Perubahan Akun</button>
             </form>
         </div>
     </div>
 
     <script src="/assets/js/dashboard.js" defer></script>
+
+    <!-- SCRIPT BARU VOICE TO TEXT - TARUH PALING BAWAH SEBELUM </body> -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnMic = document.getElementById('btn-mic');
+        const aiInput = document.getElementById('ai-raw-input');
+        const micIcon = document.getElementById('mic-icon');
+        const micWave = document.getElementById('mic-wave');
+
+        if (btnMic && aiInput && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+
+            recognition.continuous = false; // AUTO STOP pas diem 1.5 detik
+            recognition.interimResults = true; // nampilin hasil sementara
+            recognition.lang = 'id-ID'; // Bahasa Indonesia
+
+            let finalTranscript = '';
+
+            recognition.onstart = () => {
+                btnMic.classList.add('recording');
+                micIcon.innerText = '🔴';
+                micWave.classList.remove('hidden');
+                btnMic.title = "Lagi dengerin... diem buat stop";
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript + ' ';
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                aiInput.value = finalTranscript + interimTranscript;
+            };
+
+            recognition.onend = () => {
+                btnMic.classList.remove('recording');
+                micIcon.innerText = '🎤';
+                micWave.classList.add('hidden');
+                btnMic.title = "Klik untuk bicara";
+                aiInput.focus();
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Error mic:', event.error);
+                if(event.error!== 'no-speech'){ // biar gak alert kalau cuma diem
+                    alert('Mic error: ' + event.error);
+                }
+                recognition.onend();
+            };
+
+            btnMic.addEventListener('click', () => {
+                finalTranscript = aiInput.value; // biar bisa lanjut ngetik
+                recognition.start();
+            });
+
+        } else if(btnMic) {
+            btnMic.style.display = 'none'; // sembunyiin kalau gak support
+            console.warn('Browser tidak support Speech Recognition. Pakai Chrome');
+        }
+    });
+    </script>
 </body>
 </html>
