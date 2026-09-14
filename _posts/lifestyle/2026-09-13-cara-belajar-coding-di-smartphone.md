@@ -1,8 +1,8 @@
 ---
 layout: content
-title: "Cara Belajar Coding di Smartphone: Panduan Termux dan Acode untuk Pemula"
+title: "Cara Belajar Coding di Smartphone: 2 Aplikasi ini wajib ada di Hp kamu"
 author: "yossi"
-date: 2026-09-13 22:05:54 +0700
+date: 2026-09-13 00:00:00 +0700
 categories: [lifestyle]
 tags: ["coding", "smartphone", "termux", "acode", "pemula", "pemrograman"]
 image: /assets/images/posts/1000586601.webp
@@ -27,6 +27,8 @@ Berikut adalah 2 aplikasi unggulan yang sangat direkomendasikan bagi pemula untu
 
 ### 1. Termux: Emulator Terminal Linux dan Server Lokal
 
+<a href="https://play.google.com/store/apps/details?id=com.termux" style="color: purple;">Download Aplikasi Termux: Emulator Terminal</a>
+
 Bagi Anda yang tertarik pada *backend development*, pengelolaan server, atau penggunaan *Command Line Interface* (CLI), **Termux** adalah aplikasi yang wajib diinstal. Termux bekerja sebagai emulator terminal untuk Android yang berjalan langsung pada tingkat sistem tanpa memerlukan akses *root*.
 
 * **Fungsi Utama:** Membangun server lokal (*localhost*), menjalankan bahasa pemrograman populer seperti Python, Node.js, PHP, Ruby, serta mengelola repositori dengan Git.
@@ -36,6 +38,8 @@ Bagi Anda yang tertarik pada *backend development*, pengelolaan server, atau pen
   * Memungkinkan Anda mengeksekusi skrip otomatisasi dan menguji aplikasi *backend* secara *real-time*.
 
 ### 2. Acode: Code Editor Andal untuk Web Development
+
+<a href="https://play.google.com/store/apps/details?id=com.foxdebug.acodefree" style="color: purple;">Download Aplikasi Acode: Code Editor</a>
 
 Jika Termux berfokus pada eksekusi perintah berbasis teks dan manajemen server, **Acode** adalah solusi ideal untuk pengembangan web (*frontend development*). Aplikasi penyunting kode sumber ini menyajikan antarmuka bersih, responsif, dan kaya fitur pendukung.
 
