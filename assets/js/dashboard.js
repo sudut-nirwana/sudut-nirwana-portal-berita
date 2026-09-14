@@ -212,7 +212,7 @@ function switchEditorTab(tab) {
     }
 }
 
-// Fitur Asisten AI Draft Mentah
+// Fitur Asisten AI Draft Mentah (Sinkron dengan /api/ai-format)
 async function processWithAI() {
     const rawText = document.getElementById('ai-raw-input').value.trim();
     if (!rawText) {
@@ -220,27 +220,51 @@ async function processWithAI() {
         return;
     }
 
+    const btn = document.querySelector("button[onclick='processWithAI()']");
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ AI Sedang Memproses...';
+    }
+
     try {
-        const res = await fetch('/api/ai-assistant', {
+        const res = await fetch('/api/ai-format', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: rawText })
+            body: JSON.stringify({ rawText: rawText })
         });
-        const data = await res.json();
-        if (data.success && data.result) {
-            const resObj = data.result;
+
+        const textRes = await res.text();
+        if (!textRes) {
+            throw new Error(`Server mengembalikan respon kosong (Status: ${res.status}).`);
+        }
+
+        let data;
+        try {
+            data = JSON.parse(textRes);
+        } catch (e) {
+            throw new Error(`Respon server bukan JSON valid: ${textRes.substring(0, 100)}...`);
+        }
+
+        if (data.success && data.data) {
+            const resObj = data.data;
             if (resObj.title) document.getElementById('title').value = resObj.title;
             if (resObj.slug) document.getElementById('slug').value = resObj.slug;
             if (resObj.category) document.getElementById('category').value = resObj.category;
+            if (resObj.popular) document.getElementById('popular').value = resObj.popular;
             if (resObj.description) document.getElementById('description').value = resObj.description;
             if (resObj.tags) document.getElementById('tags').value = resObj.tags;
             if (resObj.content) document.getElementById('content').value = resObj.content;
-            alert('Format berhasil dirapikan otomatis oleh AI!');
+            alert('✨ Format berhasil dirapikan otomatis oleh AI!');
         } else {
             alert('AI Gagal memproses draf: ' + (data.error || 'Respon tidak valid'));
         }
     } catch (err) {
         alert('Gagal menghubungi layanan AI: ' + err.message);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = '✨ Sempurnakan dengan AI';
+        }
     }
 }
 
