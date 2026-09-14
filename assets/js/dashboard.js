@@ -284,7 +284,7 @@ async function loadAdminData() {
     }
 }
 
-// Render Tabel Artikel & Kontrol Halaman (Pagination)
+// Render Tabel Artikel (Tombol Hapus Hanya Ditampilkan Jika Role Admin)
 function renderArticlesTable() {
     const tbody = document.getElementById('articles-table-body');
     tbody.innerHTML = '';
@@ -305,12 +305,18 @@ function renderArticlesTable() {
 
     pageItems.forEach(art => {
         const tr = document.createElement('tr');
+        
+        // Tombol Hapus disembunyikan jika login sebagai Author
+        const deleteButtonHtml = (currentUser.role === 'admin') 
+            ? `<button type="button" onclick="deleteArticle(${art.id}, '${art.slug}')" class="btn-danger">Hapus</button>` 
+            : '';
+
         tr.innerHTML = `
             <td><strong>${escapeHtml(art.title)}</strong><br><small style="color:#666;">/posts/${art.slug}</small></td>
             <td><span style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-size:12px;">${art.category || '-'}</span></td>
             <td>
                 <button type="button" onclick="editArticle(${art.id})" style="width:auto; padding:4px 8px; font-size:12px; background:#3182ce; margin-right:4px;">Edit</button>
-                <button type="button" onclick="deleteArticle(${art.id}, '${art.slug}')" class="btn-danger">Hapus</button>
+                ${deleteButtonHtml}
             </td>
         `;
         tbody.appendChild(tr);
