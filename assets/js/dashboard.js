@@ -33,7 +33,6 @@ function showDashboard() {
     document.getElementById('dashboard-section').classList.remove('hidden');
     document.getElementById('welcome-user').textContent = `Halo, ${currentUser.name} (${currentUser.role.toUpperCase()})`;
     
-    // Admin Panel khusus untuk role admin
     if (currentUser.role === 'admin') {
         document.getElementById('admin-panel').classList.remove('hidden');
     } else {
@@ -43,7 +42,6 @@ function showDashboard() {
     loadAdminData();
 }
 
-// Login Form Handler
 document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('login-email').value.trim();
@@ -74,7 +72,7 @@ function logout() {
     window.location.reload();
 }
 
-// Konversi File Gambar Apapun ke WebP (Client-Side Canvas)
+// Konversi File Gambar Apapun ke WebP (Client-Side Canvas) dengan Nama Asli File
 function convertToWebP(file, quality = 0.85) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -103,7 +101,6 @@ function convertToWebP(file, quality = 0.85) {
     });
 }
 
-// Upload Gambar Sampul Artikel ke GitHub (Otomatis Hapus Sampul Lama)
 async function uploadImageToGithub(input) {
     if (!input.files || !input.files[0]) return;
     const file = input.files[0];
@@ -138,7 +135,7 @@ async function uploadImageToGithub(input) {
     }
 }
 
-// Upload Foto Profil Avatar ke GitHub (Otomatis Hapus Avatar Lama)
+// Upload Foto Profil Avatar (Nama File Mengikuti File Asli & Otomatis ke WebP)
 async function uploadAvatarToGithub(input) {
     if (!input.files || !input.files[0]) return;
     const file = input.files[0];
@@ -146,14 +143,13 @@ async function uploadAvatarToGithub(input) {
 
     try {
         const converted = await convertToWebP(file);
-        const avatarFilename = `avatar-${currentUser.slug || Date.now()}.webp`;
 
         const res = await fetch('/api/upload-image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 user_email: currentUser.email,
-                filename: avatarFilename,
+                filename: converted.filename,
                 imageBase64: converted.base64,
                 targetFolder: 'assets/images/authors',
                 oldImagePath: oldAvatarPath
@@ -163,7 +159,7 @@ async function uploadAvatarToGithub(input) {
         if (data.success) {
             document.getElementById('settings-avatar').value = data.path;
             document.getElementById('settings-avatar-preview').src = data.path;
-            alert('Foto profil baru berhasil diunggah ke GitHub!');
+            alert('Foto profil baru berhasil diunggah dengan nama file asli berformat .webp!');
         } else {
             alert('Gagal unggah foto profil: ' + data.error);
         }
@@ -172,7 +168,6 @@ async function uploadAvatarToGithub(input) {
     }
 }
 
-// Auto Slug Generator dari Judul Artikel
 document.getElementById('title').addEventListener('input', function() {
     if (!document.getElementById('edit-article-id').value) {
         const titleVal = this.value;
@@ -185,7 +180,6 @@ document.getElementById('title').addEventListener('input', function() {
     }
 });
 
-// Tab Switcher Editor Markdown vs Preview
 function switchEditorTab(tab) {
     const editBtn = document.getElementById('btn-tab-edit');
     const previewBtn = document.getElementById('btn-tab-preview');
@@ -212,7 +206,6 @@ function switchEditorTab(tab) {
     }
 }
 
-// Fitur Asisten AI Draft Mentah (Sinkron dengan /api/ai-format)
 async function processWithAI() {
     const rawText = document.getElementById('ai-raw-input').value.trim();
     if (!rawText) {
@@ -234,17 +227,9 @@ async function processWithAI() {
         });
 
         const textRes = await res.text();
-        if (!textRes) {
-            throw new Error(`Server mengembalikan respon kosong (Status: ${res.status}).`);
-        }
+        if (!textRes) throw new Error('Respon kosong.');
 
-        let data;
-        try {
-            data = JSON.parse(textRes);
-        } catch (e) {
-            throw new Error(`Respon server bukan JSON valid: ${textRes.substring(0, 100)}...`);
-        }
-
+        const data = JSON.parse(textRes);
         if (data.success && data.data) {
             const resObj = data.data;
             if (resObj.title) document.getElementById('title').value = resObj.title;
@@ -282,22 +267,20 @@ async function loadAdminData() {
             return;
         }
 
-        // Populasi form Pengaturan Akun
         if (data.user_profile) {
             document.getElementById('settings-name').value = data.user_profile.name || '';
             document.getElementById('settings-email').value = data.user_profile.email || '';
-            const avatarPath = data.user_profile.avatar || '/assets/images/authors/default.webp';
+            const defaultSvgAvatar = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='100' height='100' fill='%23cbd5e0'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E";
+            const avatarPath = data.user_profile.avatar || defaultSvgAvatar;
             document.getElementById('settings-avatar').value = avatarPath;
             document.getElementById('settings-avatar-preview').src = avatarPath;
         }
 
-        // Render Artikel
         allArticles = data.articles || [];
         filteredArticles = [...allArticles];
         currentPage = 1;
         renderArticlesTable();
 
-        // Render Khusus Admin
         if (currentUser.role === 'admin') {
             renderUsersTable(data.users || []);
             renderCommentsTable(data.comments || []);
@@ -308,7 +291,6 @@ async function loadAdminData() {
     }
 }
 
-// Render Tabel Artikel (Tombol Index Google, Broadcast, & Hapus Hanya Muncul Bagi Admin)
 function renderArticlesTable() {
     const tbody = document.getElementById('articles-table-body');
     tbody.innerHTML = '';
@@ -329,8 +311,6 @@ function renderArticlesTable() {
 
     pageItems.forEach(art => {
         const tr = document.createElement('tr');
-        
-        // Tombol aksi bertingkat berdasarkan Role (Dengan jarak rapi gap: 6px)
         let actionButtonsHtml = `
             <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
                 <button type="button" onclick="editArticle(${art.id})" style="width:auto; padding:6px 10px; font-size:12px; background:#3182ce; margin:0;">Edit</button>
@@ -364,7 +344,6 @@ function changePage(delta) {
     renderArticlesTable();
 }
 
-// Pencarian Artikel
 document.getElementById('article-search').addEventListener('input', function() {
     const q = this.value.toLowerCase().trim();
     filteredArticles = allArticles.filter(a => 
@@ -376,7 +355,6 @@ document.getElementById('article-search').addEventListener('input', function() {
     renderArticlesTable();
 });
 
-// Form Publish & Edit Artikel
 document.getElementById('publish-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const articleId = document.getElementById('edit-article-id').value;
@@ -451,7 +429,6 @@ function cancelEdit() {
     document.getElementById('cancel-edit-btn').classList.add('hidden');
 }
 
-// Aksi Khusus Admin: Hapus Artikel
 async function deleteArticle(id, slug) {
     if (!confirm(`Apakah Anda yakin ingin menghapus artikel "${slug}"?`)) return;
 
@@ -473,7 +450,6 @@ async function deleteArticle(id, slug) {
     }
 }
 
-// Aksi Khusus Admin: Minta Pengindeksan Google Indexing API
 async function requestGoogleIndex(slug, category) {
     if (!confirm(`Kirim sinyal pengindeksan Google untuk artikel: /${category}/${slug}?`)) return;
 
@@ -494,7 +470,6 @@ async function requestGoogleIndex(slug, category) {
     }
 }
 
-// Aksi Khusus Admin: Kirim Buletin Broadcast ke Subscriber Newsletter
 async function broadcastArticle(id) {
     const art = allArticles.find(a => a.id === id);
     if (!art) return;
@@ -525,7 +500,6 @@ async function broadcastArticle(id) {
     }
 }
 
-// Form Update Pengaturan Akun
 document.getElementById('account-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const new_name = document.getElementById('settings-name').value.trim();
@@ -561,7 +535,6 @@ document.getElementById('account-form').addEventListener('submit', async (e) => 
     }
 });
 
-// Aksi Tambah Penulis Baru (Khusus Admin)
 const authorForm = document.getElementById('author-form');
 if (authorForm) {
     authorForm.addEventListener('submit', async (e) => {
@@ -594,7 +567,6 @@ if (authorForm) {
     });
 }
 
-// Render Tabel User & Komentar (Khusus Admin)
 function renderUsersTable(users) {
     const tbody = document.getElementById('users-table-body');
     if (!tbody) return;
@@ -609,6 +581,28 @@ function renderUsersTable(users) {
         `;
         tbody.appendChild(tr);
     });
+}
+
+// Fungsi Hapus User (Author) dari Sisi Frontend Dashboard
+async function deleteUser(userId) {
+    if (!confirm('Apakah Anda yakin ingin menghapus penulis ini? Artikel miliknya akan dialihkan ke Redaksi.')) return;
+
+    try {
+        const res = await fetch('/api/delete-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ admin_email: currentUser.email, user_id: userId })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert(data.message || 'Penulis berhasil dihapus.');
+            loadAdminData();
+        } else {
+            alert('Gagal menghapus penulis: ' + data.error);
+        }
+    } catch (err) {
+        alert('Error menghapus penulis: ' + err.message);
+    }
 }
 
 function renderCommentsTable(comments) {
@@ -631,7 +625,6 @@ function renderCommentsTable(comments) {
     });
 }
 
-// Memuat Subscriber Newsletter (GET /api/subscribers)
 async function loadSubscribers() {
     const tbody = document.getElementById('subscribers-table-body');
     if (!tbody) return;
@@ -659,7 +652,6 @@ async function loadSubscribers() {
     }
 }
 
-// Menghapus Subscriber Newsletter (DELETE /api/subscribers?id=X)
 async function deleteSubscriber(id) {
     if (!confirm('Apakah Anda yakin ingin menghapus subscriber ini?')) return;
 

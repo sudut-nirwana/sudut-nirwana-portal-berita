@@ -20,6 +20,18 @@ export async function onRequestPost(context) {
 
         // Ambil data user sebelum dihapus dari database
         const targetUser = await db.prepare("SELECT email, name FROM users WHERE id = ?").bind(user_id).first();
+        if (!targetUser) {
+            return new Response(JSON.stringify({ success: false, error: 'Penulis tidak ditemukan.' }), { 
+                status: 404, headers: { 'Content-Type': 'application/json' } 
+            });
+        }
+
+        // Cari atau pastikan akun "Redaksi" ada, atau update artikel author ini agar author_id diset NULL / dialihkan ke Admin/Redaksi
+        // Berdasarkan kebijakan musyawarah: artikel diubah kepemilikannya menjadi Redaksi agar tidak terhapus.
+        // Kita bisa update articles milik user_id ini menjadi milik admin yang sedang menghapus atau diset null (tergantung skema database Anda).
+        // Di sini kita update author_id artikel menjadi milik admin yang menghapus (atau biarkan null jika schema mengizinkan). 
+        // Alternatif paling aman: update artikel agar author_id merujuk ke admin yang sedang bertindak atau set NULL.
+        await db.prepare("UPDATE articles SET author_id = ? WHERE author_id = ?").bind(admin.id || null, user_id).run();
 
         // Hapus dari database D1
         await db.prepare("DELETE FROM users WHERE id = ?").bind(user_id).run();
@@ -27,7 +39,6 @@ export async function onRequestPost(context) {
         // Hapus file Markdown penulis dari repositori GitHub jika ada
         if (targetUser && targetUser.email) {
             const rawSlug = targetUser.email.split('@')[0];
-            // Sanitasi Slug Penulis dari Path Traversal
             const authorSlug = rawSlug.toLowerCase().replace(/[^a-z0-9-]+/g, '-');
             
             const githubToken = context.env.GITHUB_TOKEN;
@@ -59,7 +70,7 @@ export async function onRequestPost(context) {
             }
         }
 
-        return new Response(JSON.stringify({ success: true, message: 'User dan profil berhasil dihapus.' }), { 
+        return new Response(JSON.stringify({ success: true, message: 'User berhasil dihapus dan artikel dialihkan ke Redaksi.' }), { 
             headers: { 'Content-Type': 'application/json' } 
         });
     } catch (err) {

@@ -2,7 +2,6 @@ export async function onRequestPost(context) {
     try {
         const { admin_email, email, password, name, role, slug, avatar, bio } = await context.request.json();
         
-        // Deteksi Script Injection pada Pendaftaran Penulis
         const scriptPattern = /<script|javascript:|onerror\s*=|onload\s*=|onclick\s*=/gi;
         if (scriptPattern.test(name) || scriptPattern.test(bio) || scriptPattern.test(slug) || scriptPattern.test(email)) {
             return new Response(JSON.stringify({ 
@@ -41,13 +40,15 @@ export async function onRequestPost(context) {
             .map(b => b.toString(16).padStart(2, '0'))
             .join('');
 
-        await db.prepare("INSERT INTO users (email, password_hash, role, name) VALUES (?, ?, ?, ?)")
-            .bind(email, passwordHash, role || 'author', name)
+        // Default Avatar SVG inline jika kosong agar tidak broken image
+        const defaultSvgAvatar = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='100' height='100' fill='%23cbd5e0'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E";
+        const authorAvatar = avatar || defaultSvgAvatar;
+
+        await db.prepare("INSERT INTO users (email, password_hash, role, name, avatar) VALUES (?, ?, ?, ?, ?)")
+            .bind(email, passwordHash, role || 'author', name, authorAvatar)
             .run();
 
-        // Sanitasi Slug Penulis (Bebas Path Traversal)
         const authorSlug = (slug || email.split('@')[0]).toLowerCase().replace(/[^a-z0-9-]+/g, '-');
-        const authorAvatar = avatar || '/assets/images/authors/default.webp';
         const authorBio = bio || '';
 
         const markdownContent = `---
@@ -82,7 +83,7 @@ bio: ${JSON.stringify(authorBio)}
             console.error('GitHub API Error:', errData);
         }
 
-        return new Response(JSON.stringify({ success: true, message: 'Penulis baru berhasil ditambahkan dan disinkronkan ke GitHub.' }), {
+        return new Response(JSON.stringify({ success: true, message: 'Penulis baru berhasil ditambahkan.' }), {
             headers: { 'Content-Type': 'application/json' }
         });
     } catch (err) {
