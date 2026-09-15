@@ -10,7 +10,7 @@ export async function onRequestPost(context) {
         }
 
         // Verifikasi Otorisasi Admin
-        const admin = await db.prepare("SELECT role FROM users WHERE email = ?").bind(admin_email).first();
+        const admin = await db.prepare("SELECT id, role FROM users WHERE email = ?").bind(admin_email).first();
         if (!admin || admin.role !== 'admin') {
             return new Response(JSON.stringify({ 
                 success: false, 
@@ -18,7 +18,7 @@ export async function onRequestPost(context) {
             }), { status: 403, headers: { 'Content-Type': 'application/json' } });
         }
 
-        // Ambil data user sebelum dihapus dari database
+        // Ambil data user sebelum dihapus
         const targetUser = await db.prepare("SELECT email, name FROM users WHERE id = ?").bind(user_id).first();
         if (!targetUser) {
             return new Response(JSON.stringify({ success: false, error: 'Penulis tidak ditemukan.' }), { 
@@ -26,51 +26,63 @@ export async function onRequestPost(context) {
             });
         }
 
-        // Cari atau pastikan akun "Redaksi" ada, atau update artikel author ini agar author_id diset NULL / dialihkan ke Admin/Redaksi
-        // Berdasarkan kebijakan musyawarah: artikel diubah kepemilikannya menjadi Redaksi agar tidak terhapus.
-        // Kita bisa update articles milik user_id ini menjadi milik admin yang sedang menghapus atau diset null (tergantung skema database Anda).
-        // Di sini kita update author_id artikel menjadi milik admin yang menghapus (atau biarkan null jika schema mengizinkan). 
-        // Alternatif paling aman: update artikel agar author_id merujuk ke admin yang sedang bertindak atau set NULL.
-        await db.prepare("UPDATE articles SET author_id = ? WHERE author_id = ?").bind(admin.id || null, user_id).run();
+        // Alihkan artikel terikat ke admin (Redaksi) agar aman
+        await db.prepare("UPDATE articles SET author_id = ? WHERE author_id = ?").bind(admin.id, user_id).run();
 
         // Hapus dari database D1
         await db.prepare("DELETE FROM users WHERE id = ?").bind(user_id).run();
 
-        // Hapus file Markdown penulis dari repositori GitHub jika ada
+        // Bersihkan file Markdown penulis dari GitHub
         if (targetUser && targetUser.email) {
-            const rawSlug = targetUser.email.split('@')[0];
-            const authorSlug = rawSlug.toLowerCase().replace(/[^a-z0-9-]+/g, '-');
-            
             const githubToken = context.env.GITHUB_TOKEN;
             const repo = context.env.GITHUB_REPO;
-            const path = `_authors/${authorSlug}.md`;
+            
+            const emailPrefix = targetUser.email.split('@')[0].toLowerCase();
+            const nameSlug = targetUser.name ? targetUser.name.toLowerCase().replace(/[^a-z0-9-]+/g, '-') : '';
 
-            const getFileRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-                headers: {
-                    'Authorization': `Bearer ${githubToken}`,
-                    'User-Agent': 'Cloudflare-Worker'
-                }
-            });
+            // Daftar kemungkinan nama file .md di folder _authors/
+            const possibleSlugs = [
+                emailPrefix,
+                nameSlug,
+                // Tambahkan kombinasi jika dipisah strip atau digabung
+            ].filter(Boolean);
 
-            if (getFileRes.ok) {
-                const fileData = await getFileRes.json();
-                await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-                    method: 'DELETE',
+            // Hilangkan duplikat jika emailPrefix dan nameSlug bernilai sama
+            const uniqueSlugs = [...new Set(possibleSlugs)];
+
+            for (const slug of uniqueSlugs) {
+                const path = `_authors/${slug}.md`;
+                const getFileRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
                     headers: {
                         'Authorization': `Bearer ${githubToken}`,
-                        'User-Agent': 'Cloudflare-Worker',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `Delete author profile for ${targetUser.name}`,
-                        sha: fileData.sha,
-                        branch: 'main'
-                    })
+                        'User-Agent': 'Cloudflare-Worker'
+                    }
                 });
+
+                if (getFileRes.ok) {
+                    const fileData = await getFileRes.json();
+                    const deleteRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${githubToken}`,
+                            'User-Agent': 'Cloudflare-Worker',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: `Delete author profile for ${targetUser.name}`,
+                            sha: fileData.sha,
+                            branch: 'main'
+                        })
+                    });
+
+                    if (deleteRes.ok) {
+                        break; // Berhasil dihapus, keluar dari looping
+                    }
+                }
             }
         }
 
-        return new Response(JSON.stringify({ success: true, message: 'User berhasil dihapus dan artikel dialihkan ke Redaksi.' }), { 
+        return new Response(JSON.stringify({ success: true, message: 'User berhasil dihapus, artikel dialihkan ke Redaksi, dan file GitHub bersih.' }), { 
             headers: { 'Content-Type': 'application/json' } 
         });
     } catch (err) {
