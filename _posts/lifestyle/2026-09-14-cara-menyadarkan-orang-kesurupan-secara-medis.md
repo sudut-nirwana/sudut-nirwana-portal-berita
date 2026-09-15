@@ -2,7 +2,7 @@
 layout: content
 title: "Kesurupan dalam Kacamata Medis: Penyebab dan Cara Menyadarkannya Secara Ilmiah"
 author: "tavisha"
-date: 2026-09-14 14:50:09 +0700
+date: 2026-09-14 00:00:00 +0700
 categories: [lifestyle]
 tags: ["kesurupan", "psikologi", "kesehatan mental", "medis", "pertolongan pertama"]
 image: /assets/images/posts/1000586838.webp
@@ -11,6 +11,7 @@ slug: "cara-menyadarkan-orang-kesurupan-secara-medis"
 popular: "true"
 ---
 
+## Fenomena Kesurupan/Kerasukan
 Fenomena kesurupan atau kerasukan telah lama menjadi bagian dari cerita rakyat dan budaya mistis di Indonesia. Secara tradisional, kondisi ketika seseorang bertindak di luar kendali dan berbicara dengan suara asing ini sering kali dikaitkan dengan masuknya makhluk halus ke dalam tubuh manusia. Pandangan ini pun melahirkan penanganan spiritual seperti ritual ruqyah atau bantuan ahli supranatural.
 
 Namun, perkembangan ilmu kedokteran dan psikologi modern memberikan penjelasan yang rasional mengenai fenomena ini. Dalam *Diagnostic and Statistical Manual of Mental Disorders* (DSM-5) dan *International Classification of Diseases* (ICD-11) terbitan WHO, kondisi ini dikenal sebagai ***Trance and Possession Disorder*** atau bagian dari gangguan disosiatif.
