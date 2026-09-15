@@ -168,6 +168,8 @@
   right: 20px;
   width: 260px;
   height: fit-content;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
   background-color: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -295,6 +297,9 @@
     right: 0;
     width: 280px;
     height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 40px;
     border-radius: 0;
     border-top: none;
     border-bottom: none;
