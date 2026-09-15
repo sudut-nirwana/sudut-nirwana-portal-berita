@@ -24,18 +24,15 @@
   flex-direction: column;
   text-decoration: none;
   flex-shrink: 0;
-
   .brand-title {
     font-size: 20px;
     font-weight: 700;
     color: var(--text-main);
     line-height: 1.1;
-
     span {
       color: var(--color-primary);
     }
   }
-
   .brand-tagline {
     font-size: 12px;
     font-weight: 500;
@@ -61,7 +58,6 @@
 .weather-wrapper {
   position: relative;
 }
-
 .weather-trigger {
   display: flex;
   align-items: center;
@@ -75,17 +71,14 @@
   color: var(--text-main);
   cursor: pointer;
   transition: background-color 0.2s ease;
-
   .weather-icon {
     color: var(--color-primary);
     font-size: 1.2em;
   }
-
   &:hover {
     background-color: var(--color-border);
   }
 }
-
 .weather-card {
   display: none;
   position: absolute;
@@ -99,11 +92,9 @@
   padding: 16px;
   box-shadow: none;
   z-index: 1010;
-
   &.is-active {
     display: block;
   }
-
   .weather-card-header {
     display: flex;
     justify-content: space-between;
@@ -111,37 +102,31 @@
     margin-bottom: 12px;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--color-border);
-
     h4 {
       font-size: 14px;
       font-weight: 700;
       color: var(--text-main);
       margin: 0;
     }
-
     .weather-close-btn {
       cursor: pointer;
       color: var(--text-muted);
       display: none;
     }
   }
-
   .weather-info-box {
     display: flex;
     align-items: center;
     gap: 12px;
-
     .weather-big-icon {
       font-size: 28px;
       color: var(--color-primary);
     }
-
     .weather-deg {
       font-size: 18px;
       font-weight: 700;
       color: var(--text-main);
     }
-
     .weather-city {
       font-size: 11px;
       color: var(--text-muted);
@@ -177,11 +162,9 @@
   padding: 16px;
   display: none;
   z-index: 1020;
-
   &.is-active {
     display: block;
   }
-
   .drawer-header {
     display: flex;
     justify-content: space-between;
@@ -189,26 +172,22 @@
     margin-bottom: 12px;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--color-border);
-
     .drawer-title {
       font-size: 14px;
       font-weight: 700;
       color: var(--text-main);
     }
-
     .drawer-close-btn {
       cursor: pointer;
       color: var(--text-muted);
     }
   }
-
   .nav-list {
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: 6px;
   }
-
   .nav-link {
     width: 100%;
     display: flex;
@@ -219,36 +198,29 @@
     border-radius: var(--radius-sm);
     transition: background-color 0.2s ease;
     cursor: pointer;
-
     [data-icon] {
       color: var(--color-primary);
     }
-
     &:hover {
       background-color: var(--color-section);
     }
-
     .arrow-icon {
       margin-left: auto;
       transition: transform 0.2s ease;
     }
-
     .header-search-sidebar {
       margin-top: 40px;
       width: 100%;
     }
   }
-
   .has-submenu.is-open {
     .arrow-icon {
       transform: rotate(180deg);
     }
-
     .submenu-list {
       display: flex;
     }
   }
-
   .submenu-list {
     display: none;
     flex-direction: column;
@@ -256,13 +228,11 @@
     list-style: none;
     padding-left: 28px;
     margin-top: 4px;
-
     .submenu-link {
       display: block;
       padding: 6px 8px;
       color: var(--text-muted);
       border-radius: var(--radius-sm);
-
       &:hover {
         color: var(--color-primary);
         background-color: var(--color-section);
@@ -279,7 +249,6 @@
   inset: 0;
   background-color: rgba(62, 62, 59, 0.4);
   z-index: 990;
-
   &.is-active {
     display: block;
   }
@@ -290,28 +259,45 @@
   .header-search {
     display: none;
   }
-
+  
   .nav-drawer {
     position: fixed;
     top: 0;
     right: 0;
     width: 280px;
-    height: 100vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 40px;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Mencegah scroll ganda di luar */
     border-radius: 0;
-    border-top: none;
-    border-bottom: none;
-    border-right: none;
-    display: block;
+    border: none;
     transform: translateX(100%);
     transition: transform 0.3s ease;
     z-index: 1020;
-
     &.is-active {
       transform: translateX(0);
     }
+  }
+  
+  .nav-drawer .drawer-header {
+    flex-shrink: 0;
+    padding: 16px;
+  }
+  
+  /* Membuat area list menu pada sidebar bisa di-scroll dengan lancar */
+  .nav-drawer .nav-list {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 16px 80px 16px; 
+  }
+
+  /* Efek blur pada layar HP saat sidebar aktif, tanpa mem-blur header */
+  .nav-backdrop.is-active {
+    display: block;
+    backdrop-filter: blur(5px); /* Menambahkan efek blur */
+    -webkit-backdrop-filter: blur(5px); /* Dukungan untuk Safari/iOS */
+    background-color: rgba(0, 0, 0, 35%); /* Sedikit menggelapkan latar belakang agar blur lebih kontras */
   }
 
   .weather-card {
@@ -327,7 +313,6 @@
       animation: slideUp 0.3s forwards;
       z-index: 1030;
     }
-
     .weather-close-btn {
       display: block;
     }
