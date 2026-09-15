@@ -4,7 +4,7 @@ export async function onRequestPost(context) {
         const body = await request.json();
         const rawText = body.rawText;
 
-        if (!rawText) {
+        if (!rawText || typeof rawText !== 'string' || !rawText.trim()) {
             return new Response(JSON.stringify({ success: false, error: 'Draf mentah kosong' }), {
                 headers: { 'Content-Type': 'application/json' },
                 status: 400
@@ -34,7 +34,7 @@ export async function onRequestPost(context) {
 Draf Mentah dari Penulis:
 ${rawText}`;
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
@@ -51,7 +51,7 @@ ${rawText}`;
             throw new Error('Respons dari Google AI kosong atau diblokir filter keamanan.');
         }
 
-        const cleanedJson = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+        const cleanedJson = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
         const parsedData = JSON.parse(cleanedJson);
 
         return new Response(JSON.stringify({ success: true, data: parsedData }), {

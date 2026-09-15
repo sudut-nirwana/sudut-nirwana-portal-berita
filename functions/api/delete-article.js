@@ -6,6 +6,14 @@ export async function onRequestPost(context) {
         const githubToken = context.env.GITHUB_TOKEN;
         const githubRepo = context.env.GITHUB_REPO;
 
+        // Deteksi Manipulasi / Path Traversal pada Slug
+        if (slug && (slug.includes('..') || slug.includes('<script'))) {
+            return new Response(JSON.stringify({ 
+                success: false, 
+                error: 'Anda sepertinya salah jalan... Segera putar balik dan pulang! 🛑' 
+            }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+        }
+
         if (!article_id || !activeEmail) {
             return new Response(JSON.stringify({ success: false, error: 'Data tidak lengkap' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
         }
@@ -13,7 +21,10 @@ export async function onRequestPost(context) {
         // Validasi ketat: HANYA pengguna ber-role Admin yang diizinkan menghapus
         const user = await db.prepare("SELECT role FROM users WHERE email = ?").bind(activeEmail).first();
         if (!user || user.role !== 'admin') {
-            return new Response(JSON.stringify({ success: false, error: 'Akses ditolak. Hanya Admin yang dapat menghapus artikel.' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+            return new Response(JSON.stringify({ 
+                success: false, 
+                error: 'Anda sepertinya salah jalan... Segera putar balik dan pulang! 🛑' 
+            }), { status: 403, headers: { 'Content-Type': 'application/json' } });
         }
 
         const article = await db.prepare(`
@@ -28,8 +39,11 @@ export async function onRequestPost(context) {
         }
 
         const fileDatePrefix = article.created_at ? article.created_at.substring(0, 10) : '';
-        const targetSlug = slug || article.slug;
-        const filePath = `_posts/${article.cat_slug}/${fileDatePrefix}-${targetSlug}.md`;
+        const targetSlug = (slug || article.slug).toLowerCase().replace(/[^a-z0-9-]+/g, '-');
+        const catSlug = (article.cat_slug || '').toLowerCase().replace(/[^a-z0-9-]+/g, '-');
+        
+        // Amankan Jalur File dari Path Traversal
+        const filePath = `_posts/${catSlug}/${fileDatePrefix}-${targetSlug}.md`.replace(/\.\.\//g, '');
         const headers = { 'Authorization': `Bearer ${githubToken}`, 'User-Agent': 'Cloudflare-Pages-Function', 'Content-Type': 'application/json' };
 
         // Hapus file Markdown fisik di GitHub

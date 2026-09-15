@@ -1,7 +1,22 @@
+// Helper Deteksi Script Injection pada Email/Input
+function containsScriptPayload(str) {
+    if (!str || typeof str !== 'string') return false;
+    const pattern = /<script|javascript:|onerror\s*=|onload\s*=|onclick\s*=/gi;
+    return pattern.test(str);
+}
+
 export async function onRequestPost(context) {
     try {
         const { email, password } = await context.request.json();
         const db = context.env.DB;
+
+        // Deteksi Percobaan Injeksi Script
+        if (containsScriptPayload(email)) {
+            return new Response(JSON.stringify({ 
+                success: false, 
+                error: 'Anda sepertinya salah jalan... Segera putar balik dan pulang! 🛑' 
+            }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+        }
 
         if (!email || !password) {
             return new Response(JSON.stringify({ success: false, error: 'Email dan password wajib diisi' }), {
@@ -9,7 +24,8 @@ export async function onRequestPost(context) {
             });
         }
 
-        const user = await db.prepare("SELECT id, name, email, role, password_hash FROM users WHERE email = ?").bind(email).first();
+        const cleanEmail = email.trim().toLowerCase();
+        const user = await db.prepare("SELECT id, name, email, role, password_hash FROM users WHERE email = ?").bind(cleanEmail).first();
 
         if (!user) {
             return new Response(JSON.stringify({ success: false, error: 'Email atau password salah' }), {

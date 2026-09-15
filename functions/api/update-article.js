@@ -17,9 +17,37 @@ async function getMarkdownFilesFromGithub(url, headers) {
     return filesList;
 }
 
+// Helper Sanitasi Isi Artikel (content)
+function sanitizeArticleContent(rawContent) {
+    if (!rawContent) return '';
+    return rawContent
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+        .replace(/\son\w+\s*=\s*(["']).*?\1/gi, '')
+        .replace(/\son\w+\s*=\s*[^"\s>]+/gi, '')
+        .replace(/href\s*=\s*(["'])javascript:.*?\1/gi, 'href="#"')
+        .replace(/src\s*=\s*(["'])javascript:.*?\1/gi, '');
+}
+
+// Helper Deteksi Script Injection pada Metadata
+function containsScriptPayload(str) {
+    if (!str) return false;
+    const pattern = /<script|javascript:|onerror\s*=|onload\s*=|onclick\s*=/gi;
+    return pattern.test(str);
+}
+
 export async function onRequestPost(context) {
     try {
         const { admin_email, user_email, article_id, title, slug, category, popular, description, image, tags, content } = await context.request.json();
+        
+        // Deteksi Percobaan Injeksi Script di Metadata
+        if (containsScriptPayload(title) || containsScriptPayload(slug) || containsScriptPayload(description) || containsScriptPayload(tags)) {
+            return new Response(JSON.stringify({ 
+                success: false, 
+                error: 'Anda sepertinya salah jalan... Segera putar balik dan pulang! 🛑' 
+            }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+        }
+
         const activeEmail = user_email || admin_email;
         const db = context.env.DB;
         const githubToken = context.env.GITHUB_TOKEN;
@@ -37,10 +65,12 @@ export async function onRequestPost(context) {
 
         // Proteksi hak akses Author
         if (user.role !== 'admin' && oldArticle.author_id !== user.id) {
-            return new Response(JSON.stringify({ success: false, error: 'Akses ditolak. Anda hanya dapat mengedit artikel milik sendiri.' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+            return new Response(JSON.stringify({ 
+                success: false, 
+                error: 'Anda sepertinya salah jalan... Segera putar balik dan pulang! 🛑' 
+            }), { status: 403, headers: { 'Content-Type': 'application/json' } });
         }
 
-        // Mengambil slug asli dari penulis artikel (bukan nama lengkap & bukan slug admin yang mengedit)
         let authorSlug = user.slug;
         if (oldArticle.author_id) {
             const originalAuthor = await db.prepare("SELECT slug FROM users WHERE id = ?").bind(oldArticle.author_id).first();
@@ -58,7 +88,9 @@ export async function onRequestPost(context) {
             return new Response(JSON.stringify({ success: false, error: 'File Markdown fisik tidak ditemukan di repository GitHub' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
         }
 
-        const rawCategory = category.split(',')[0].trim();
+        // Sanitasi Slug & Kategori
+        const cleanSlug = (slug || '').toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
+        const rawCategory = (category || '').split(',')[0].trim();
         const catSlug = rawCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
         
         let catRecord = await db.prepare("SELECT id FROM categories WHERE slug = ? OR name = ?").bind(catSlug, rawCategory).first();
@@ -70,27 +102,29 @@ export async function onRequestPost(context) {
             categoryId = insertRes.id;
         }
 
-        const tagsArray = tags ? tags.split(',').map(t => `"${t.trim()}"`).filter(Boolean) : [];
+        const tagsArray = tags ? tags.split(',').map(t => JSON.stringify(t.trim())).filter(Boolean) : [];
         const tagsFrontmatter = tagsArray.length > 0 ? `tags: [${tagsArray.join(', ')}]\n` : '';
 
         const dateMatch = targetFile.name.match(/^(\d{4}-\d{2}-\d{2})/);
         const fileDatePrefix = dateMatch ? dateMatch[1] : new Date().toISOString().substring(0, 10);
         const dateStr = fileDatePrefix + ' 00:00:00 +0700';
 
-        // Format Frontmatter mempertahankan slug penulis asli
+        // Sanitasi isi artikel & amankan YAML Frontmatter
+        const safeContent = sanitizeArticleContent(content);
+
         const markdownContent = `---
 layout: content
-title: "${title.replace(/"/g, '\\"')}"
-author: "${authorSlug}"
+title: ${JSON.stringify(title || '')}
+author: ${JSON.stringify(authorSlug || '')}
 date: ${dateStr}
 categories: [${category}]
 ${tagsFrontmatter}image: ${image || ''}
-description: "${(description || '').replace(/"/g, '\\"')}"
-slug: "${slug}"
+description: ${JSON.stringify(description || '')}
+slug: ${JSON.stringify(cleanSlug)}
 popular: "${popular || 'true'}"
 ---
 
-${content}`;
+${safeContent}`;
 
         const contentBase64 = btoa(Array.from(new TextEncoder().encode(markdownContent)).map(b => String.fromCharCode(b)).join(''));
 
@@ -110,30 +144,32 @@ ${content}`;
             return new Response(JSON.stringify({ success: false, error: `GitHub API Error: ${errText}` }), { status: 502, headers: { 'Content-Type': 'application/json' } });
         }
 
-        // Hapus gambar sampul lama jika diganti file baru
+        // Hapus gambar sampul lama jika diganti (Mencegah Path Traversal)
         if (oldArticle.image && image && oldArticle.image !== image && !oldArticle.image.includes('sample.webp')) {
-            const cleanOldImgPath = oldArticle.image.replace(/^\/+/, '');
-            try {
-                const getOldImg = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${cleanOldImgPath}`, { headers });
-                if (getOldImg.ok) {
-                    const oldImgData = await getOldImg.json();
-                    await fetch(`https://api.github.com/repos/${githubRepo}/contents/${cleanOldImgPath}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${githubToken}`, 'User-Agent': 'Cloudflare-Pages-Function', 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            message: `Delete old cover image: ${cleanOldImgPath}`,
-                            sha: oldImgData.sha,
-                            branch: 'main'
-                        })
-                    });
+            const cleanOldImgPath = oldArticle.image.replace(/^\/+/, '').replace(/\.\.\//g, '');
+            if (cleanOldImgPath.startsWith('assets/images/')) {
+                try {
+                    const getOldImg = await fetch(`https://api.github.com/repos/${githubRepo}/contents/${cleanOldImgPath}`, { headers });
+                    if (getOldImg.ok) {
+                        const oldImgData = await getOldImg.json();
+                        await fetch(`https://api.github.com/repos/${githubRepo}/contents/${cleanOldImgPath}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${githubToken}`, 'User-Agent': 'Cloudflare-Pages-Function', 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                message: `Delete old cover image: ${cleanOldImgPath}`,
+                                sha: oldImgData.sha,
+                                branch: 'main'
+                            })
+                        });
+                    }
+                } catch (e) {
+                    console.error('Gagal menghapus gambar sampul lama:', e);
                 }
-            } catch (e) {
-                console.error('Gagal menghapus gambar sampul lama:', e);
             }
         }
 
         await db.prepare("UPDATE articles SET title = ?, slug = ?, category_id = ?, popular = ?, description = ?, image = ?, content = ? WHERE id = ?")
-            .bind(title, slug, categoryId, popular || 'true', description || '', image || '', content, article_id)
+            .bind(title, cleanSlug, categoryId, popular || 'true', description || '', image || '', safeContent, article_id)
             .run();
 
         return new Response(JSON.stringify({ success: true, message: 'Artikel berhasil diperbarui di GitHub dan Database' }), { headers: { 'Content-Type': 'application/json' } });

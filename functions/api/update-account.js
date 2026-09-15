@@ -1,10 +1,31 @@
+function containsScriptPayload(str) {
+    if (!str || typeof str !== 'string') return false;
+    const pattern = /<script|javascript:|onerror\s*=|onload\s*=|onclick\s*=/gi;
+    return pattern.test(str);
+}
+
 export async function onRequestPost(context) {
     try {
         const { admin_email, user_email, target_user_id, new_name, new_email, new_password, old_password, new_avatar } = await context.request.json();
         const activeEmail = user_email || admin_email;
         const db = context.env.DB;
 
-        const requester = await db.prepare("SELECT * FROM users WHERE email = ?").bind(activeEmail).first();
+        if (containsScriptPayload(activeEmail) || containsScriptPayload(new_name) || containsScriptPayload(new_email) || containsScriptPayload(new_avatar)) {
+            return new Response(JSON.stringify({ 
+                success: false, 
+                error: 'Anda sepertinya salah jalan... Segera putar balik dan pulang! 🛑' 
+            }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+        }
+
+        if (!activeEmail) {
+            return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), { 
+                status: 401, 
+                headers: { 'Content-Type': 'application/json' } 
+            });
+        }
+
+        const cleanActiveEmail = activeEmail.trim().toLowerCase();
+        const requester = await db.prepare("SELECT * FROM users WHERE email = ?").bind(cleanActiveEmail).first();
         if (!requester) {
             return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), { 
                 status: 401, 
@@ -27,13 +48,14 @@ export async function onRequestPost(context) {
         }
 
         if (new_email && new_email !== targetUser.email) {
+            const cleanNewEmail = new_email.trim().toLowerCase();
             if (requester.role !== 'admin') {
                 return new Response(JSON.stringify({ success: false, error: 'Hanya admin yang dapat mengubah alamat email.' }), { 
                     status: 403, 
                     headers: { 'Content-Type': 'application/json' } 
                 });
             }
-            if (!new_email.endsWith('@sudutnirwana.com')) {
+            if (!cleanNewEmail.endsWith('@sudutnirwana.com')) {
                 return new Response(JSON.stringify({ success: false, error: 'Email baru wajib menggunakan domain @sudutnirwana.com' }), { 
                     status: 400, 
                     headers: { 'Content-Type': 'application/json' } 
@@ -73,15 +95,16 @@ export async function onRequestPost(context) {
         }
 
         if (new_name) {
-            await db.prepare("UPDATE users SET name = ? WHERE id = ?").bind(new_name, targetId).run();
+            await db.prepare("UPDATE users SET name = ? WHERE id = ?").bind(new_name.trim(), targetId).run();
         }
 
         if (new_email) {
-            await db.prepare("UPDATE users SET email = ? WHERE id = ?").bind(new_email, targetId).run();
+            const cleanNewEmail = new_email.trim().toLowerCase();
+            await db.prepare("UPDATE users SET email = ? WHERE id = ?").bind(cleanNewEmail, targetId).run();
         }
 
         if (new_avatar) {
-            await db.prepare("UPDATE users SET avatar = ? WHERE id = ?").bind(new_avatar, targetId).run();
+            await db.prepare("UPDATE users SET avatar = ? WHERE id = ?").bind(new_avatar.trim(), targetId).run();
         }
 
         return new Response(JSON.stringify({ success: true, message: 'Akun berhasil diperbarui.' }), {

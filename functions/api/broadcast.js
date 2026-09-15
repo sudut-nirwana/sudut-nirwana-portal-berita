@@ -1,8 +1,31 @@
+function containsScriptPayload(str) {
+    if (!str || typeof str !== 'string') return false;
+    const pattern = /<script|javascript:|onerror\s*=|onload\s*=|onclick\s*=/gi;
+    return pattern.test(str);
+}
+
+function escapeHtml(str) {
+    if (!str || typeof str !== 'string') return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 export async function onRequestPost(context) {
     try {
         const { admin_email, slug, title, description, image, category } = await context.request.json();
         const db = context.env.DB;
         const resendApiKey = context.env.RESEND_API_KEY;
+
+        if (containsScriptPayload(admin_email) || containsScriptPayload(slug) || containsScriptPayload(title)) {
+            return new Response(JSON.stringify({ 
+                success: false, 
+                error: 'Anda sepertinya salah jalan... Segera putar balik dan pulang! 🛑' 
+            }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+        }
 
         if (!admin_email) {
             return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
@@ -10,12 +33,13 @@ export async function onRequestPost(context) {
             });
         }
 
-        // Validasi hak akses admin
-        const admin = await db.prepare("SELECT role FROM users WHERE email = ?").bind(admin_email).first();
+        const cleanAdminEmail = admin_email.trim().toLowerCase();
+        const admin = await db.prepare("SELECT role FROM users WHERE email = ?").bind(cleanAdminEmail).first();
         if (!admin || admin.role !== 'admin') {
-            return new Response(JSON.stringify({ success: false, error: 'Akses ditolak. Bukan admin.' }), {
-                status: 403, headers: { 'Content-Type': 'application/json' }
-            });
+            return new Response(JSON.stringify({ 
+                success: false, 
+                error: 'Anda sepertinya salah jalan... Segera putar balik dan pulang! 🛑' 
+            }), { status: 403, headers: { 'Content-Type': 'application/json' } });
         }
 
         if (!slug || !title) {
@@ -24,12 +48,13 @@ export async function onRequestPost(context) {
             });
         }
 
-        // AMBIL DAN BERSIHKAN KATEGORI LANGSUNG DARI REQUEST
+        const safeTitle = escapeHtml(title);
+        const safeDescription = escapeHtml(description);
         const rawCategory = (category || 'jurnal').split(',')[0].trim();
         const catSlug = rawCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-        const articleUrl = `https://sudutnirwana.com/${catSlug}/${slug}/`;
+        const safeSlug = slug.toLowerCase().replace(/[^a-z0-9-]+/g, '-');
+        const articleUrl = `https://sudutnirwana.com/${catSlug}/${safeSlug}/`;
 
-        // Ambil seluruh daftar email subscriber
         const { results: subscribers } = await db.prepare("SELECT email FROM subscribers").all();
         if (!subscribers || subscribers.length === 0) {
             return new Response(JSON.stringify({ success: false, error: 'Belum ada subscriber terdaftar.' }), {
@@ -55,12 +80,12 @@ export async function onRequestPost(context) {
                   </tr>
                   <tr>
                     <td>
-                      <img src="${absImage}" alt="${title}" style="width: 100%; height: auto; border-radius: 6px; display: block; margin-bottom: 16px;">
+                      <img src="${absImage}" alt="${safeTitle}" style="width: 100%; height: auto; border-radius: 6px; display: block; margin-bottom: 16px;">
                       <h3 style="font-size: 18px; margin: 0 0 10px 0; color: #1a1a1a;">
-                        <a href="${articleUrl}" style="color: #896340; text-decoration: none;">${title}</a>
+                        <a href="${articleUrl}" style="color: #896340; text-decoration: none;">${safeTitle}</a>
                       </h3>
                       <p style="font-size: 14px; line-height: 1.6; color: #585752; margin-bottom: 20px;">
-                        ${description || 'Baca selengkapnya artikel terbaru kami di situs Sudut Nirwana.'}
+                        ${safeDescription || 'Baca selengkapnya artikel terbaru kami di situs Sudut Nirwana.'}
                       </p>
                       <div style="text-align: center; margin-bottom: 30px;">
                         <a href="${articleUrl}" style="background: #896340; color: #ffffff; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block;">Baca Selengkapnya</a>

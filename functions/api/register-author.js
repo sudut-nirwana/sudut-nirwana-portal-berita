@@ -1,16 +1,29 @@
 export async function onRequestPost(context) {
     try {
         const { admin_email, email, password, name, role, slug, avatar, bio } = await context.request.json();
+        
+        // Deteksi Script Injection pada Pendaftaran Penulis
+        const scriptPattern = /<script|javascript:|onerror\s*=|onload\s*=|onclick\s*=/gi;
+        if (scriptPattern.test(name) || scriptPattern.test(bio) || scriptPattern.test(slug) || scriptPattern.test(email)) {
+            return new Response(JSON.stringify({ 
+                success: false, 
+                error: 'Anda sepertinya salah jalan... Segera putar balik dan pulang! 🛑' 
+            }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+        }
+
         const db = context.env.DB;
 
         const admin = await db.prepare("SELECT role FROM users WHERE email = ?").bind(admin_email).first();
         if (!admin || admin.role !== 'admin') {
-            return new Response(JSON.stringify({ success: false, error: 'Akses ditolak. Hanya admin.' }), {
+            return new Response(JSON.stringify({ 
+                success: false, 
+                error: 'Anda sepertinya salah jalan... Segera putar balik dan pulang! 🛑' 
+            }), {
                 status: 403, headers: { 'Content-Type': 'application/json' }
             });
         }
 
-        if (!email.endsWith('@sudutnirwana.com')) {
+        if (!email || !email.endsWith('@sudutnirwana.com')) {
             return new Response(JSON.stringify({ success: false, error: 'Email wajib menggunakan domain @sudutnirwana.com' }), {
                 status: 400, headers: { 'Content-Type': 'application/json' }
             });
@@ -28,27 +41,26 @@ export async function onRequestPost(context) {
             .map(b => b.toString(16).padStart(2, '0'))
             .join('');
 
-        // Simpan ke database (pastikan tabel users mendukung kolom slug, avatar, bio jika disimpan di DB)
         await db.prepare("INSERT INTO users (email, password_hash, role, name) VALUES (?, ?, ?, ?)")
             .bind(email, passwordHash, role || 'author', name)
             .run();
 
-        // Sinkronisasi file profil Markdown ke GitHub (_authors/[slug].md)
-        const authorSlug = slug || email.split('@')[0];
+        // Sanitasi Slug Penulis (Bebas Path Traversal)
+        const authorSlug = (slug || email.split('@')[0]).toLowerCase().replace(/[^a-z0-9-]+/g, '-');
         const authorAvatar = avatar || '/assets/images/authors/default.webp';
         const authorBio = bio || '';
 
         const markdownContent = `---
 layout: author
-name: "${name}"
-email: "${email}"
-avatar: "${authorAvatar}"
-bio: "${authorBio}"
+name: ${JSON.stringify(name || '')}
+email: ${JSON.stringify(email || '')}
+avatar: ${JSON.stringify(authorAvatar)}
+bio: ${JSON.stringify(authorBio)}
 ---
 `;
 
         const githubToken = context.env.GITHUB_TOKEN;
-        const repo = context.env.GITHUB_REPO; // format: username/repo
+        const repo = context.env.GITHUB_REPO;
         const path = `_authors/${authorSlug}.md`;
 
         const githubRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
